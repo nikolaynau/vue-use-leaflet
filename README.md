@@ -17,6 +17,28 @@ $ pnpm install vue-use-leaflet leaflet
 
 ## Usage
 
+```js
+import { useLeafletMap, useLeafletTileLayer } from 'vue-use-leaflet';
+
+export default {
+  setup() {
+    // dom element reference
+    const element = ref(null);
+
+    // create leaflet map
+    const map = useLeafletMap(element);
+
+    // create and add osm tile layer
+    const tileLayer = useLeafletTileLayer(
+      map,
+      'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+    );
+
+    return { element };
+  }
+};
+```
+
 ## License
 
 Licensed under the [MIT License](./LICENSE).
