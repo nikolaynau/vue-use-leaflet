@@ -20,7 +20,7 @@ export default defineConfig({
       external: ['vue-demi', 'leaflet', '@vueuse/core', '@vueuse/shared'],
       output: {
         globals: {
-          'vue-demi': 'Vue',
+          'vue-demi': 'VueDemi',
           leaflet: 'L',
           '@vueuse/core': 'VueUse',
           '@vueuse/shared': 'VueUse'
