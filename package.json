@@ -54,7 +54,7 @@
     "husky": "husky install"
   },
   "peerDependencies": {
-    "leaflet": "^1.9.3",
+    "leaflet": ">=1.9.0",
     "vue": "^2.0.0 || >=3.0.0"
   },
   "dependencies": {
