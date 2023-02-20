@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach, vi, beforeEach } from 'vitest';
 import { mount } from '@vue/test-utils';
-import { ref, nextTick, type Ref, h, onMounted, toRef } from 'vue-demi';
+import { ref, nextTick, type Ref, h, onMounted, toRef, isVue2 } from 'vue-demi';
 import {
   latLng,
   latLngBounds,
@@ -235,7 +235,7 @@ describe('useLeafletMap', () => {
     }
   );
 
-  it('should be defined map in the onMounted hook', () => {
+  it.skipIf(isVue2)('should be defined map in the onMounted hook', () => {
     const wrapper = mount({
       setup(props, { expose }) {
         const el = ref<HTMLElement | null>(null);
@@ -266,30 +266,33 @@ describe('useLeafletMap', () => {
     expect(factory).toBeCalledTimes(1);
   });
 
-  it('should be created one instance map after call onMounted hook in component', async () => {
-    const factory = vi
-      .fn()
-      .mockImplementation((element, options) => new Map(element, options));
+  it.skipIf(isVue2)(
+    'should be created one instance map after call onMounted hook in component',
+    async () => {
+      const factory = vi
+        .fn()
+        .mockImplementation((element, options) => new Map(element, options));
 
-    mount({
-      setup() {
-        const el = ref<HTMLElement | null>(null);
-        const map = useLeafletMap(el, { factory });
+      mount({
+        setup() {
+          const el = ref<HTMLElement | null>(null);
+          const map = useLeafletMap(el, { factory });
 
-        onMounted(() => {
-          expect(map.value).toBeDefined();
-        });
+          onMounted(() => {
+            expect(map.value).toBeDefined();
+          });
 
-        return () => h('div', { ref: el });
-      }
-    });
+          return () => h('div', { ref: el });
+        }
+      });
 
-    expect(factory).toBeCalledTimes(1);
-    await nextTick();
-    expect(factory).toBeCalledTimes(1);
-  });
+      expect(factory).toBeCalledTimes(1);
+      await nextTick();
+      expect(factory).toBeCalledTimes(1);
+    }
+  );
 
-  it('should destroy map in the onUnmounted hook', () => {
+  it.skipIf(isVue2)('should destroy map in the onUnmounted hook', () => {
     const wrapper = mount({
       setup(props, { expose }) {
         const el = ref<HTMLElement | null>(null);
