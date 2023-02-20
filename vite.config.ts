@@ -1,15 +1,7 @@
-/// <reference types="vitest" />
-
-import { fileURLToPath, URL } from 'node:url';
 import path from 'node:path';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
-    }
-  },
   build: {
     lib: {
       entry: path.resolve(__dirname, 'src/index.ts'),
@@ -27,8 +19,5 @@ export default defineConfig({
         }
       }
     }
-  },
-  test: {
-    environment: 'jsdom'
   }
 });

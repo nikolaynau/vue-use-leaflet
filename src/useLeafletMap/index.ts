@@ -18,7 +18,7 @@ import {
   type LatLngBounds,
   type LeafletEvent
 } from 'leaflet';
-import { useLeafletEvent } from '@/useLeafletEvent';
+import { useLeafletEvent } from '../useLeafletEvent';
 
 export interface UseLeafletMapOptions
   extends Omit<MapOptions, 'center' | 'zoom'> {
