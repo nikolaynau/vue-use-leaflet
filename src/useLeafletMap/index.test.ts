@@ -15,7 +15,7 @@ import {
   type LatLngBoundsLiteral,
   type LatLngExpression
 } from 'leaflet';
-import { mount as _mount } from '../../.test';
+import { mount } from '../../.test';
 import { useLeafletMap } from '.';
 
 describe('useLeafletMap', () => {
@@ -31,7 +31,7 @@ describe('useLeafletMap', () => {
     vi.restoreAllMocks();
   });
 
-  it('should work with default options', async () => {
+  it('should work with default options', () => {
     const map = useLeafletMap(element);
 
     expect(map.value).toBeDefined();
@@ -254,7 +254,7 @@ describe('useLeafletMap', () => {
   });
 
   it('should be defined map in the onMounted hook', () => {
-    const vm = _mount(
+    const vm = mount(
       defineComponent({
         setup() {
           const el = ref<HTMLElement | null>(null);
@@ -283,7 +283,7 @@ describe('useLeafletMap', () => {
       .fn()
       .mockImplementation((element, options) => new Map(element, options));
 
-    _mount(
+    mount(
       defineComponent({
         setup() {
           const el = ref<HTMLElement | null>(null);
@@ -304,7 +304,7 @@ describe('useLeafletMap', () => {
   });
 
   it('should destroy map in the onUnmounted hook', () => {
-    const vm = _mount(
+    const vm = mount(
       defineComponent({
         setup(props, { expose }) {
           const el = ref<HTMLElement | null>(null);
