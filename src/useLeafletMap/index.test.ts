@@ -1,6 +1,13 @@
 import { describe, it, expect, afterEach, vi, beforeEach } from 'vitest';
-import { mount } from '@vue/test-utils';
-import { ref, nextTick, type Ref, h, onMounted, toRef, isVue2 } from 'vue-demi';
+import {
+  ref,
+  nextTick,
+  type Ref,
+  h,
+  onMounted,
+  toRef,
+  defineComponent
+} from 'vue-demi';
 import {
   latLng,
   latLngBounds,
@@ -8,6 +15,7 @@ import {
   type LatLngBoundsLiteral,
   type LatLngExpression
 } from 'leaflet';
+import { mount as _mount } from '../../.test';
 import { useLeafletMap } from '.';
 
 describe('useLeafletMap', () => {
@@ -235,27 +243,6 @@ describe('useLeafletMap', () => {
     }
   );
 
-  it.skipIf(isVue2)('should be defined map in the onMounted hook', () => {
-    const wrapper = mount({
-      setup(props, { expose }) {
-        const el = ref<HTMLElement | null>(null);
-        const map = useLeafletMap(el);
-
-        expose({
-          map
-        });
-
-        onMounted(() => {
-          expect(map.value).toBeInstanceOf(Map);
-        });
-
-        return () => h('div', { ref: el });
-      }
-    });
-
-    expect((wrapper.vm as any).map).toBeInstanceOf(Map);
-  });
-
   it('should be created one instance of the Map class', () => {
     const factory = vi
       .fn()
@@ -266,14 +253,38 @@ describe('useLeafletMap', () => {
     expect(factory).toBeCalledTimes(1);
   });
 
-  it.skipIf(isVue2)(
-    'should be created one instance map after call onMounted hook in component',
-    async () => {
-      const factory = vi
-        .fn()
-        .mockImplementation((element, options) => new Map(element, options));
+  it('should be defined map in the onMounted hook', () => {
+    const vm = _mount(
+      defineComponent({
+        setup() {
+          const el = ref<HTMLElement | null>(null);
+          const map = useLeafletMap(el);
 
-      mount({
+          onMounted(() => {
+            expect(map.value).toBeInstanceOf(Map);
+          });
+
+          return {
+            map,
+            el
+          };
+        },
+        render() {
+          return h('div', { ref: 'el' });
+        }
+      })
+    );
+
+    expect(vm.map).toBeInstanceOf(Map);
+  });
+
+  it('should be created one instance map after call onMounted hook in component', async () => {
+    const factory = vi
+      .fn()
+      .mockImplementation((element, options) => new Map(element, options));
+
+    _mount(
+      defineComponent({
         setup() {
           const el = ref<HTMLElement | null>(null);
           const map = useLeafletMap(el, { factory });
@@ -284,32 +295,34 @@ describe('useLeafletMap', () => {
 
           return () => h('div', { ref: el });
         }
-      });
+      })
+    );
 
-      expect(factory).toBeCalledTimes(1);
-      await nextTick();
-      expect(factory).toBeCalledTimes(1);
-    }
-  );
+    expect(factory).toBeCalledTimes(1);
+    await nextTick();
+    expect(factory).toBeCalledTimes(1);
+  });
 
-  it.skipIf(isVue2)('should destroy map in the onUnmounted hook', () => {
-    const wrapper = mount({
-      setup(props, { expose }) {
-        const el = ref<HTMLElement | null>(null);
-        const map = useLeafletMap(el);
+  it('should destroy map in the onUnmounted hook', () => {
+    const vm = _mount(
+      defineComponent({
+        setup(props, { expose }) {
+          const el = ref<HTMLElement | null>(null);
+          const map = useLeafletMap(el);
 
-        expose({ map });
+          expose({ map });
 
-        return () => h('div', { ref: el });
-      }
-    });
+          return () => h('div', { ref: el });
+        }
+      })
+    );
 
-    const map = toRef(wrapper.vm as any, 'map');
+    const map = toRef(vm as any, 'map');
     expect(map.value).toBeDefined();
     const spy = vi.spyOn(map.value!, 'remove');
 
     expect(spy).toBeCalledTimes(0);
-    wrapper.unmount();
+    vm.unmount();
     expect(spy).toBeCalledTimes(1);
   });
 });
