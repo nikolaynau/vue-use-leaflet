@@ -28,11 +28,13 @@ export default {
     // create leaflet map
     const map = useLeafletMap(element);
 
-    // create and add osm tile layer
+    // create osm tile layer
     const tileLayer = useLeafletTileLayer(
-      map,
       'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
     );
+
+    // add layer to the map
+    useLeafletAddLayer(map, tileLayer);
 
     return { element };
   }
