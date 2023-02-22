@@ -34,7 +34,7 @@ export default {
     );
 
     // add layer to the map
-    useLeafletAddLayer(map, tileLayer);
+    useLeafletToggleLayer(map, tileLayer);
 
     return { element };
   }
