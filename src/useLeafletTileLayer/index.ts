@@ -5,13 +5,14 @@ import { useLeafletLayer } from '../useLeafletLayer';
 
 export interface UseLeafletTileLayerOptions extends TileLayerOptions {
   factory?: (...args: unknown[]) => TileLayer;
+  dispose?: boolean;
 }
 
 export function useLeafletTileLayer(
   url: MaybeComputedRef<string | null | undefined>,
   options: UseLeafletTileLayerOptions = {}
 ) {
-  const { factory, ...layerOptions } = options;
+  const { factory, dispose, ...layerOptions } = options;
   return useLeafletLayer<TileLayer>({
     create: () => {
       if (!isDefined(url)) {
@@ -28,7 +29,8 @@ export function useLeafletTileLayer(
         return null;
       }
       return instance.setUrl(unref(url) as string);
-    }
+    },
+    dispose
   });
 }
 

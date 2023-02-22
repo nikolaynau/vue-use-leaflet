@@ -107,7 +107,7 @@ describe('useLeafletTileLayer', () => {
     expect(tileLayer.value?.getTileSize()).toEqual({ x: 250, y: 250 });
   });
 
-  it('should destroy when unmounted component', async () => {
+  it('should destroy when component is unmounted', async () => {
     const vm = mount(
       defineComponent({
         setup() {
@@ -119,6 +119,29 @@ describe('useLeafletTileLayer', () => {
           onUnmounted(() => {
             expect(tileLayer.value).toBeNull();
             expect(spy).toBeCalledTimes(1);
+          });
+        },
+        render() {
+          return h('div');
+        }
+      })
+    );
+
+    vm.unmount();
+  });
+
+  it('should disable destroy when component is unmounted', async () => {
+    const vm = mount(
+      defineComponent({
+        setup() {
+          const tileLayer = useLeafletTileLayer(url, { dispose: false });
+
+          expect(tileLayer.value).toBeInstanceOf(TileLayer);
+          const spy = vi.spyOn(tileLayer.value!, 'remove');
+
+          onUnmounted(() => {
+            expect(tileLayer.value).toBeInstanceOf(TileLayer);
+            expect(spy).toBeCalledTimes(0);
           });
         },
         render() {

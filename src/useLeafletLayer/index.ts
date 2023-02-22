@@ -6,6 +6,7 @@ export interface UseLeafletLayerOptions<T> {
   create?: () => T | null;
   update?: (instance: T) => T | null | undefined;
   destroy?: (instance: T) => void;
+  dispose?: boolean;
 }
 
 export type UseLeafletLayerReturn<T> = Ref<T | null>;
@@ -13,7 +14,7 @@ export type UseLeafletLayerReturn<T> = Ref<T | null>;
 export function useLeafletLayer<T extends Layer = Layer>(
   options: UseLeafletLayerOptions<T> = {}
 ): UseLeafletLayerReturn<T> {
-  const { create, update, destroy } = options;
+  const { create, update, destroy, dispose = true } = options;
 
   const instance = shallowRef<T | null>(null);
 
@@ -45,9 +46,11 @@ export function useLeafletLayer<T extends Layer = Layer>(
     }
   }
 
-  tryOnScopeDispose(() => {
-    clean();
-  });
+  if (dispose) {
+    tryOnScopeDispose(() => {
+      clean();
+    });
+  }
 
   return instance;
 }

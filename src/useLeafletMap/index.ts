@@ -27,6 +27,7 @@ export interface UseLeafletMapOptions
   bounds?: MaybeComputedRef<LatLngBoundsExpression | undefined>;
   useFly?: MaybeComputedRef<boolean | undefined>;
   factory?: (...args: unknown[]) => Map;
+  dispose?: boolean;
   onViewChanged?: ViewChangedCallback;
 }
 
@@ -50,6 +51,7 @@ export function useLeafletMap(
     bounds,
     useFly = false,
     factory,
+    dispose = true,
     onViewChanged,
     ...leafletOptions
   } = options;
@@ -223,9 +225,11 @@ export function useLeafletMap(
     }
   });
 
-  tryOnScopeDispose(() => {
-    destroyMap();
-  });
+  if (dispose) {
+    tryOnScopeDispose(() => {
+      destroyMap();
+    });
+  }
 
   return map;
 }

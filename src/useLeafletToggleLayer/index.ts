@@ -17,7 +17,7 @@ export interface UseLeafletToggleLayerOptions<Controls extends boolean> {
   dispose?: boolean;
 }
 
-export interface LeafletAddableLayer {
+export interface LeafletAddLayer {
   addLayer(layer: Layer): this;
   removeLayer(layer: Layer): this;
   hasLayer(layer: Layer): boolean;
@@ -33,17 +33,17 @@ export interface UseLeafletToggleLayerReturnWithControls {
 }
 
 export function useLeafletToggleLayer(
-  source: MaybeComputedRef<LeafletAddableLayer | null | undefined>,
+  source: MaybeComputedRef<LeafletAddLayer | null | undefined>,
   target: MaybeComputedRef<Layer | null | undefined>,
   options?: UseLeafletToggleLayerOptions<false>
 ): UseLeafletToggleLayerReturn;
 export function useLeafletToggleLayer(
-  source: MaybeComputedRef<LeafletAddableLayer | null | undefined>,
+  source: MaybeComputedRef<LeafletAddLayer | null | undefined>,
   target: MaybeComputedRef<Layer | null | undefined>,
   options: UseLeafletToggleLayerOptions<true>
 ): UseLeafletToggleLayerReturnWithControls;
 export function useLeafletToggleLayer(
-  source: MaybeComputedRef<LeafletAddableLayer | null | undefined>,
+  source: MaybeComputedRef<LeafletAddLayer | null | undefined>,
   target: MaybeComputedRef<Layer | null | undefined>,
   options: UseLeafletToggleLayerOptions<boolean> = {}
 ): UseLeafletToggleLayerReturn | UseLeafletToggleLayerReturnWithControls {

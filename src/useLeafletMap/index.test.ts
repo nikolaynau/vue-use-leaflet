@@ -253,7 +253,7 @@ describe('useLeafletMap', () => {
     expect(factory).toBeCalledTimes(1);
   });
 
-  it('should be defined map in the onMounted hook', () => {
+  it('should be defined map when component is mounted', () => {
     const vm = mount(
       defineComponent({
         setup() {
@@ -278,7 +278,7 @@ describe('useLeafletMap', () => {
     expect(vm.map).toBeInstanceOf(Map);
   });
 
-  it('should be created one instance map after call onMounted hook in component', async () => {
+  it('should be created one instance map when component is mounted', async () => {
     const factory = vi
       .fn()
       .mockImplementation((element, options) => new Map(element, options));
@@ -303,7 +303,7 @@ describe('useLeafletMap', () => {
     expect(factory).toBeCalledTimes(1);
   });
 
-  it('should destroy map in the onUnmounted hook', () => {
+  it('should destroy map when component is unmounted', () => {
     const vm = mount(
       defineComponent({
         setup(props, { expose }) {
@@ -323,6 +323,31 @@ describe('useLeafletMap', () => {
 
     expect(spy).toBeCalledTimes(0);
     vm.unmount();
+    expect(map.value).toBeNull();
     expect(spy).toBeCalledTimes(1);
+  });
+
+  it('should disable destroy map when component is unmounted', () => {
+    const vm = mount(
+      defineComponent({
+        setup(props, { expose }) {
+          const el = ref<HTMLElement | null>(null);
+          const map = useLeafletMap(el, { dispose: false });
+
+          expose({ map });
+
+          return () => h('div', { ref: el });
+        }
+      })
+    );
+
+    const map = toRef(vm as any, 'map');
+    expect(map.value).toBeDefined();
+    const spy = vi.spyOn(map.value!, 'remove');
+
+    expect(spy).toBeCalledTimes(0);
+    vm.unmount();
+    expect(map.value).toBeDefined();
+    expect(spy).toBeCalledTimes(0);
   });
 });
