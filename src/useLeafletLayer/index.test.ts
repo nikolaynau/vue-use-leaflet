@@ -30,7 +30,6 @@ describe('useLeafletLayer', () => {
     const layer = useLeafletLayer({ create });
 
     expect(create).toBeCalledTimes(1);
-    expect(layer.value).toBeDefined();
     expect(layer.value).toBe(testLayer);
   });
 

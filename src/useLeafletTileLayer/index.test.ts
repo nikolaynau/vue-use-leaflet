@@ -21,10 +21,17 @@ describe('useLeafletTileLayer', () => {
     url = ref(testUrl);
   });
 
+  function expectToBeDefined(layer: any, expectedUrl: string = testUrl) {
+    layer = unref(layer);
+    expect(layer).toBeDefined();
+    expect(layer).not.toBeNull();
+    expect(layer).toBeInstanceOf(TileLayer);
+    expect(layer.getTileUrl({ z: 1 } as Coords)).toBe(expectedUrl);
+  }
+
   it('should create tile layer when url is defined', () => {
     const tileLayer = useLeafletTileLayer(url);
-    expect(tileLayer.value).toBeDefined();
-    expect(tileLayer.value?.getTileUrl({ z: 1 } as Coords)).toBe(testUrl);
+    expectToBeDefined(tileLayer);
   });
 
   it('should not create tile layer when url is null', () => {
@@ -41,7 +48,7 @@ describe('useLeafletTileLayer', () => {
     url.value = testUrl;
     await nextTick();
 
-    expect(tileLayer.value).toBeDefined();
+    expectToBeDefined(tileLayer);
     expect(tileLayer.value?.getTileUrl({ z: 1 } as Coords)).toBe(testUrl);
   });
 
@@ -49,19 +56,19 @@ describe('useLeafletTileLayer', () => {
     const urlB = 'https://d/e/f';
 
     const tileLayer = useLeafletTileLayer(url);
-    expect(tileLayer.value).toBeDefined();
+    expectToBeDefined(tileLayer);
     expect(tileLayer.value?.getTileUrl({ z: 1 } as Coords)).toBe(testUrl);
 
     url.value = urlB;
     await nextTick();
 
-    expect(tileLayer.value).toBeDefined();
+    expectToBeDefined(tileLayer, urlB);
     expect(tileLayer.value?.getTileUrl({ z: 1 } as Coords)).toBe(urlB);
   });
 
   it('should destroy when change url to null', async () => {
     const tileLayer = useLeafletTileLayer(url);
-    expect(tileLayer.value).toBeDefined();
+    expectToBeDefined(tileLayer);
     const spy = vi.spyOn(tileLayer.value!, 'remove');
 
     url.value = null;
@@ -77,7 +84,7 @@ describe('useLeafletTileLayer', () => {
     const factory = vi.fn().mockImplementation(() => instance);
     const tileLayer = useLeafletTileLayer(url, { factory, ...options });
 
-    expect(tileLayer.value).toBeDefined();
+    expectToBeDefined(tileLayer);
     expect(tileLayer.value).toBe(instance);
 
     expect(factory).toBeCalledTimes(1);
@@ -102,7 +109,7 @@ describe('useLeafletTileLayer', () => {
     tileSize.value = 250;
     await nextTick();
 
-    expect(tileLayer.value).toBeDefined();
+    expectToBeDefined(tileLayer);
     expect(tileLayer.value).toBe(instance);
     expect(tileLayer.value?.getTileSize()).toEqual({ x: 250, y: 250 });
   });
