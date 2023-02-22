@@ -1,4 +1,4 @@
-import { markRaw, ref, unref, watchEffect, type Ref } from 'vue-demi';
+import { markRaw, shallowRef, unref, watchEffect, type Ref } from 'vue-demi';
 import { isDefined, tryOnScopeDispose } from '@vueuse/shared';
 import type { Layer } from 'leaflet';
 
@@ -8,11 +8,14 @@ export interface UseLeafletLayerOptions<T> {
   destroy?: (instance: T) => void;
 }
 
+export type UseLeafletLayerReturn<T> = Ref<T | null>;
+
 export function useLeafletLayer<T extends Layer = Layer>(
   options: UseLeafletLayerOptions<T> = {}
-) {
+): UseLeafletLayerReturn<T> {
   const { create, update, destroy } = options;
-  const instance = ref<T | null>(null) as Ref<T | null>;
+
+  const instance = shallowRef<T | null>(null);
 
   watchEffect(() => {
     if (isDefined(instance) && update) {
@@ -48,5 +51,3 @@ export function useLeafletLayer<T extends Layer = Layer>(
 
   return instance;
 }
-
-export type UseLeafletLayerReturn = ReturnType<typeof useLeafletLayer>;

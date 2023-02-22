@@ -1,4 +1,4 @@
-import { ref, unref, markRaw, watch } from 'vue-demi';
+import { shallowRef, unref, markRaw, watch, type Ref } from 'vue-demi';
 import { type MaybeComputedElementRef, unrefElement } from '@vueuse/core';
 import {
   isDefined,
@@ -30,6 +30,8 @@ export interface UseLeafletMapOptions
   onViewChanged?: ViewChangedCallback;
 }
 
+export type UseLeafletMapReturn = Ref<Map | null>;
+
 export interface ViewChangedEvent extends LeafletEvent {
   center: LatLng;
   zoom: number;
@@ -41,7 +43,7 @@ export type ViewChangedCallback = (event: ViewChangedEvent) => void;
 export function useLeafletMap(
   element: MaybeComputedElementRef,
   options: UseLeafletMapOptions = {}
-) {
+): UseLeafletMapReturn {
   const {
     center = [0, 0],
     zoom = 0,
@@ -52,7 +54,7 @@ export function useLeafletMap(
     ...leafletOptions
   } = options;
 
-  const map = ref<Map | null>(null);
+  const map = shallowRef<Map | null>(null);
 
   function initializeMap(element: HTMLElement) {
     const mapOptions: MapOptions = { ...leafletOptions };
@@ -227,5 +229,3 @@ export function useLeafletMap(
 
   return map;
 }
-
-export type UseLeafletMapReturn = ReturnType<typeof useLeafletMap>;

@@ -9,13 +9,20 @@ export default defineConfig({
       fileName: format => `index.${format}.js`
     },
     rollupOptions: {
-      external: ['vue-demi', 'leaflet', '@vueuse/core', '@vueuse/shared'],
+      external: [
+        'vue-demi',
+        'leaflet',
+        '@vueuse/core',
+        '@vueuse/shared',
+        '@vueuse/math'
+      ],
       output: {
         globals: {
           'vue-demi': 'VueDemi',
           leaflet: 'L',
           '@vueuse/core': 'VueUse',
-          '@vueuse/shared': 'VueUse'
+          '@vueuse/shared': 'VueUse',
+          '@vueuse/math': 'VueUse'
         }
       }
     }
