@@ -1,3 +1,4 @@
+/* eslint-disable vue/no-deprecated-dollar-scopedslots-api */
 import { describe, it, expect, afterEach, vi, beforeEach } from 'vitest';
 import {
   ref,
@@ -424,7 +425,12 @@ describe('useLeafletMap', () => {
         return { el, map };
       },
       render() {
-        return h('div', { ref: 'el' }, this.map ? this.$slots.default() : null);
+        const children = this.map
+          ? this.$slots.default
+            ? this.$slots.default()
+            : this.$scopedSlots.default()
+          : null;
+        return h('div', { ref: 'el' }, children);
       }
     });
 
@@ -451,7 +457,9 @@ describe('useLeafletMap', () => {
 
     const Root = defineComponent({
       render() {
-        return h(Map, null, { default: () => h(Child) });
+        return h(Map, { scopedSlots: { default: () => h(Child) } }, {
+          default: () => h(Child)
+        } as any);
       }
     });
 

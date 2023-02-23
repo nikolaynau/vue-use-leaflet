@@ -156,27 +156,13 @@ export function useLeafletMap(
     return latLng(latLngA!).equals(latLng(latLngB!));
   }
 
-  watch(
-    () => unref(element),
-    () => {
-      if (
-        isDefined(element) &&
-        isDefined(map) &&
-        unrefElement(element) === unref(map).getContainer()
-      ) {
-        return;
-      }
-
-      destroyMap();
-      if (isDefined(element)) {
-        initializeMap(unrefElement(element) as HTMLElement);
-      }
-    },
-    {
-      immediate: true,
-      flush: flushSync ? 'sync' : 'post'
-    }
-  );
+  function isRendered(): boolean {
+    return (
+      isDefined(element) &&
+      isDefined(map) &&
+      unrefElement(element) === unref(map).getContainer()
+    );
+  }
 
   watch(
     () => unref(bounds),
@@ -206,6 +192,24 @@ export function useLeafletMap(
     }
   );
 
+  watch(
+    () => unref(element),
+    () => {
+      if (isRendered()) {
+        return;
+      }
+
+      destroyMap();
+      if (isDefined(element)) {
+        initializeMap(unrefElement(element) as HTMLElement);
+      }
+    },
+    {
+      immediate: true,
+      flush: flushSync ? 'sync' : 'post'
+    }
+  );
+
   if (onViewChanged) {
     useLeafletEvent(map, 'moveend', (ev: LeafletEvent) => {
       const map = ev.sourceTarget as Map;
@@ -219,7 +223,7 @@ export function useLeafletMap(
   }
 
   tryOnMounted(() => {
-    if (isDefined(map)) {
+    if (isRendered()) {
       return;
     }
     if (isDefined(element)) {
