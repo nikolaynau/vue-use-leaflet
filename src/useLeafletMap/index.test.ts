@@ -33,7 +33,7 @@ describe('useLeafletMap', () => {
     vi.restoreAllMocks();
   });
 
-  function expectToBeDefined(map: any) {
+  function expectMap(map: any) {
     map = unref(map);
     expect(map).toBeDefined();
     expect(map).not.toBeNull();
@@ -43,7 +43,7 @@ describe('useLeafletMap', () => {
   it('should work with default options', () => {
     const map = useLeafletMap(element);
 
-    expectToBeDefined(map);
+    expectMap(map);
     expect(map.value?.getCenter()).toEqual({ lat: 0, lng: 0 });
     expect(map.value?.getZoom()).toBe(0);
   });
@@ -54,7 +54,7 @@ describe('useLeafletMap', () => {
       zoom: 2
     });
 
-    expectToBeDefined(map);
+    expectMap(map);
     expect(map.value?.options.center).toBeDefined();
     expect(map.value?.options.zoom).toBeDefined();
     expect(map.value?.getCenter()).toEqual({ lat: 1, lng: 2 });
@@ -69,7 +69,7 @@ describe('useLeafletMap', () => {
       ]
     });
 
-    expectToBeDefined(map);
+    expectMap(map);
     expect(map.value?.options.center).toBeUndefined();
     expect(map.value?.options.zoom).toBeUndefined();
 
@@ -87,7 +87,7 @@ describe('useLeafletMap', () => {
     expect(map.value).toBeNull();
     element.value = domElement!;
     await nextTick();
-    expectToBeDefined(map);
+    expectMap(map);
   });
 
   it('should destroy previous map instance when element changes', async () => {
@@ -96,7 +96,7 @@ describe('useLeafletMap', () => {
 
     const element = ref<HTMLElement | null>(domElement1);
     const map = useLeafletMap(element);
-    expectToBeDefined(map);
+    expectMap(map);
 
     const map1 = map.value;
     const removeSpy = vi.spyOn(map1!, 'remove');
@@ -105,7 +105,7 @@ describe('useLeafletMap', () => {
     await nextTick();
     const map2 = map.value;
 
-    expectToBeDefined(map2);
+    expectMap(map2);
     expect(map1).not.toBe(map2);
     expect(removeSpy).toBeCalled();
   });
@@ -113,7 +113,7 @@ describe('useLeafletMap', () => {
   it('should destroy map instance when element changed to null', async () => {
     const map = useLeafletMap(element);
 
-    expectToBeDefined(map);
+    expectMap(map);
     const removeSpy = vi.spyOn(map.value!, 'remove');
 
     element.value = null;
@@ -152,7 +152,7 @@ describe('useLeafletMap', () => {
         useFly
       });
 
-      expectToBeDefined(map);
+      expectMap(map);
       const spy = vi.spyOn(map.value!, methodName as any);
 
       bounds.value = [
@@ -185,7 +185,7 @@ describe('useLeafletMap', () => {
         useFly
       });
 
-      expectToBeDefined(map);
+      expectMap(map);
       const spy = vi.spyOn(map.value!, methodName as any);
 
       center.value = [3, 4];
@@ -210,7 +210,7 @@ describe('useLeafletMap', () => {
         useFly
       });
 
-      expectToBeDefined(map);
+      expectMap(map);
       const spy = vi.spyOn(map.value!, methodName as any);
 
       center.value = [3, 4];
@@ -235,7 +235,7 @@ describe('useLeafletMap', () => {
         useFly
       });
 
-      expectToBeDefined(map);
+      expectMap(map);
       const spy = vi.spyOn(map.value!, methodName as any);
 
       zoom.value = 2;
@@ -257,7 +257,7 @@ describe('useLeafletMap', () => {
       .mockImplementation((element, options) => new Map(element, options));
     const map = useLeafletMap(element, { factory });
 
-    expectToBeDefined(map);
+    expectMap(map);
     expect(factory).toBeCalledTimes(1);
   });
 
@@ -269,7 +269,7 @@ describe('useLeafletMap', () => {
           const map = useLeafletMap(el);
 
           onMounted(() => {
-            expectToBeDefined(map);
+            expectMap(map);
           });
 
           return {
@@ -283,7 +283,7 @@ describe('useLeafletMap', () => {
       })
     );
 
-    expectToBeDefined(vm.map);
+    expectMap(vm.map);
   });
 
   it('should be map is null', () => {
@@ -320,7 +320,7 @@ describe('useLeafletMap', () => {
           const map = useLeafletMap(el, { factory });
 
           onMounted(() => {
-            expectToBeDefined(map);
+            expectMap(map);
           });
 
           return { el };
@@ -352,7 +352,7 @@ describe('useLeafletMap', () => {
     );
 
     const map = toRef(vm as any, 'map');
-    expectToBeDefined(map);
+    expectMap(map);
     const spy = vi.spyOn(map.value!, 'remove');
 
     vm.unmount();
@@ -376,12 +376,12 @@ describe('useLeafletMap', () => {
     );
 
     const map = (vm as any).map;
-    expectToBeDefined(map);
+    expectMap(map);
     const spy = vi.spyOn(map, 'remove');
 
     vm.unmount();
 
-    expectToBeDefined(map);
+    expectMap(map);
     expect(spy).toBeCalledTimes(0);
   });
 });
