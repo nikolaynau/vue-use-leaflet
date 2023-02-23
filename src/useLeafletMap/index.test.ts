@@ -90,6 +90,15 @@ describe('useLeafletMap', () => {
     expectMap(map);
   });
 
+  it('should work with flush sync', () => {
+    element.value = null;
+    const map = useLeafletMap(element, { flushSync: true });
+
+    expect(map.value).toBeNull();
+    element.value = domElement!;
+    expectMap(map);
+  });
+
   it('should destroy previous map instance when element changes', async () => {
     const domElement1 = document.createElement('div');
     const domElement2 = document.createElement('div');

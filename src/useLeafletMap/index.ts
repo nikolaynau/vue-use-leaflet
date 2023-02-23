@@ -28,6 +28,7 @@ export interface UseLeafletMapOptions
   useFly?: MaybeComputedRef<boolean | undefined>;
   factory?: (...args: unknown[]) => Map;
   dispose?: boolean;
+  flushSync?: boolean;
   onViewChanged?: ViewChangedCallback;
 }
 
@@ -52,6 +53,7 @@ export function useLeafletMap(
     useFly = false,
     factory,
     dispose = true,
+    flushSync = false,
     onViewChanged,
     ...leafletOptions
   } = options;
@@ -172,7 +174,7 @@ export function useLeafletMap(
     },
     {
       immediate: true,
-      flush: 'post'
+      flush: flushSync ? 'sync' : 'post'
     }
   );
 
