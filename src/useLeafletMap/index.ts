@@ -4,7 +4,7 @@ import {
   isDefined,
   isFunction,
   tryOnMounted,
-  tryOnScopeDispose,
+  tryOnUnmounted,
   type MaybeComputedRef
 } from '@vueuse/shared';
 import {
@@ -228,7 +228,7 @@ export function useLeafletMap(
   });
 
   if (dispose) {
-    tryOnScopeDispose(() => {
+    tryOnUnmounted(() => {
       destroyMap();
     });
   }

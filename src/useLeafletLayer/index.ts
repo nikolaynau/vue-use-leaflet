@@ -1,5 +1,5 @@
 import { markRaw, shallowRef, unref, watchEffect, type Ref } from 'vue-demi';
-import { isDefined, tryOnScopeDispose } from '@vueuse/shared';
+import { isDefined, tryOnUnmounted } from '@vueuse/shared';
 import type { Layer } from 'leaflet';
 
 export interface UseLeafletLayerOptions<T> {
@@ -47,7 +47,7 @@ export function useLeafletLayer<T extends Layer = Layer>(
   }
 
   if (dispose) {
-    tryOnScopeDispose(() => {
+    tryOnUnmounted(() => {
       clean();
     });
   }

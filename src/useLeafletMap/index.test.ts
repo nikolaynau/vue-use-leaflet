@@ -5,9 +5,13 @@ import {
   nextTick,
   type Ref,
   h,
-  onMounted,
   toRef,
-  defineComponent
+  defineComponent,
+  provide,
+  inject,
+  onMounted,
+  onBeforeUnmount,
+  onUnmounted
 } from 'vue-demi';
 import {
   latLng,
@@ -19,6 +23,7 @@ import {
 } from 'leaflet';
 import { mount } from '../../.test';
 import { useLeafletMap } from '.';
+import { isDefined } from '@vueuse/shared';
 
 describe('useLeafletMap', () => {
   let domElement: HTMLElement;
@@ -392,5 +397,66 @@ describe('useLeafletMap', () => {
 
     expectMap(map);
     expect(spy).toBeCalledTimes(0);
+  });
+
+  it('should be defined map in child before unmount hook', async () => {
+    expect.assertions(16);
+    const mapKey = Symbol('map');
+
+    const Map = defineComponent({
+      setup() {
+        const el = ref<HTMLElement | null>(null);
+        const map = useLeafletMap(el);
+        provide(mapKey, map);
+
+        onMounted(() => {
+          expectMap(map);
+        });
+
+        onBeforeUnmount(() => {
+          expectMap(map);
+        });
+
+        onUnmounted(() => {
+          expect(unref(map)).toBeNull();
+        });
+
+        return { el, map };
+      },
+      render() {
+        return h('div', { ref: 'el' }, this.map ? this.$slots.default() : null);
+      }
+    });
+
+    const Child = defineComponent({
+      setup() {
+        const map = inject(mapKey) as Ref<Map | null>;
+
+        onMounted(() => {
+          expectMap(map);
+        });
+
+        onBeforeUnmount(() => {
+          expectMap(map);
+        });
+
+        onUnmounted(() => {
+          expectMap(map);
+        });
+      },
+      render() {
+        return null;
+      }
+    });
+
+    const Root = defineComponent({
+      render() {
+        return h(Map, null, { default: () => h(Child) });
+      }
+    });
+
+    const vm = mount(Root);
+    await nextTick();
+    vm.unmount();
   });
 });
