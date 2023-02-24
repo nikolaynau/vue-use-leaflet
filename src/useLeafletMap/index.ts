@@ -3,7 +3,6 @@ import { type MaybeComputedElementRef, unrefElement } from '@vueuse/core';
 import {
   isDefined,
   isFunction,
-  tryOnMounted,
   tryOnUnmounted,
   type MaybeComputedRef
 } from '@vueuse/shared';
@@ -28,7 +27,6 @@ export interface UseLeafletMapOptions
   useFly?: MaybeComputedRef<boolean | undefined>;
   factory?: (...args: unknown[]) => Map;
   dispose?: boolean;
-  flushSync?: boolean;
   onViewChanged?: ViewChangedCallback;
 }
 
@@ -53,7 +51,6 @@ export function useLeafletMap(
     useFly = false,
     factory,
     dispose = true,
-    flushSync = false,
     onViewChanged,
     ...leafletOptions
   } = options;
@@ -156,14 +153,6 @@ export function useLeafletMap(
     return latLng(latLngA!).equals(latLng(latLngB!));
   }
 
-  function isRendered(): boolean {
-    return (
-      isDefined(element) &&
-      isDefined(map) &&
-      unrefElement(element) === unref(map).getContainer()
-    );
-  }
-
   watch(
     () => unref(bounds),
     () => {
@@ -195,10 +184,6 @@ export function useLeafletMap(
   watch(
     () => unref(element),
     () => {
-      if (isRendered()) {
-        return;
-      }
-
       destroyMap();
       if (isDefined(element)) {
         initializeMap(unrefElement(element) as HTMLElement);
@@ -206,7 +191,7 @@ export function useLeafletMap(
     },
     {
       immediate: true,
-      flush: flushSync ? 'sync' : 'post'
+      flush: 'post'
     }
   );
 
@@ -221,15 +206,6 @@ export function useLeafletMap(
       });
     });
   }
-
-  tryOnMounted(() => {
-    if (isRendered()) {
-      return;
-    }
-    if (isDefined(element)) {
-      initializeMap(unrefElement(element) as HTMLElement);
-    }
-  });
 
   if (dispose) {
     tryOnUnmounted(() => {

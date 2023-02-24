@@ -12,7 +12,8 @@ import {
   inject,
   onMounted,
   onBeforeUnmount,
-  onUnmounted
+  onUnmounted,
+  watch
 } from 'vue-demi';
 import {
   latLng,
@@ -24,7 +25,6 @@ import {
 } from 'leaflet';
 import { mount } from '../../.test';
 import { useLeafletMap } from '.';
-import { isDefined } from '@vueuse/shared';
 
 describe('useLeafletMap', () => {
   let domElement: HTMLElement;
@@ -93,15 +93,6 @@ describe('useLeafletMap', () => {
     expect(map.value).toBeNull();
     element.value = domElement!;
     await nextTick();
-    expectMap(map);
-  });
-
-  it('should work with flush sync', () => {
-    element.value = null;
-    const map = useLeafletMap(element, { flushSync: true });
-
-    expect(map.value).toBeNull();
-    element.value = domElement!;
     expectMap(map);
   });
 
@@ -276,14 +267,16 @@ describe('useLeafletMap', () => {
     expect(factory).toBeCalledTimes(1);
   });
 
-  it('should be defined map when component is mounted', () => {
+  it('should be defined map when component is rendered', async () => {
+    expect.assertions(6);
+
     const vm = mount(
       defineComponent({
         setup() {
           const el = ref<HTMLElement | null>(null);
           const map = useLeafletMap(el);
 
-          onMounted(() => {
+          watch(map, () => {
             expectMap(map);
           });
 
@@ -298,32 +291,14 @@ describe('useLeafletMap', () => {
       })
     );
 
+    await nextTick();
+
     expectMap(vm.map);
   });
 
-  it('should be map is null', () => {
-    mount(
-      defineComponent({
-        setup() {
-          let map: Ref<Map | null> | undefined = undefined;
-
-          onMounted(() => {
-            expect(unref(map)).toBeNull();
-          });
-
-          const el = ref<HTMLElement | null>(null);
-          map = useLeafletMap(el);
-
-          return { el };
-        },
-        render() {
-          return h('div', { ref: 'el' });
-        }
-      })
-    );
-  });
-
   it('should be created one instance map when component is mounted', async () => {
+    expect.assertions(4);
+
     const factory = vi
       .fn()
       .mockImplementation((element, options) => new Map(element, options));
@@ -334,7 +309,7 @@ describe('useLeafletMap', () => {
           const el = ref<HTMLElement | null>(null);
           const map = useLeafletMap(el, { factory });
 
-          onMounted(() => {
+          watch(map, () => {
             expectMap(map);
           });
 
@@ -346,12 +321,11 @@ describe('useLeafletMap', () => {
       })
     );
 
-    expect(factory).toBeCalledTimes(1);
     await nextTick();
     expect(factory).toBeCalledTimes(1);
   });
 
-  it('should destroy map when component is unmounted', () => {
+  it('should destroy map when component is unmounted', async () => {
     const vm = mount(
       defineComponent({
         setup() {
@@ -366,6 +340,8 @@ describe('useLeafletMap', () => {
       })
     );
 
+    await nextTick();
+
     const map = toRef(vm as any, 'map');
     expectMap(map);
     const spy = vi.spyOn(map.value!, 'remove');
@@ -376,7 +352,7 @@ describe('useLeafletMap', () => {
     expect(spy).toBeCalledTimes(1);
   });
 
-  it('should disable destroy map when component is unmounted', () => {
+  it('should disable destroy map when component is unmounted', async () => {
     const vm = mount(
       defineComponent({
         setup(props, { expose }) {
@@ -389,6 +365,8 @@ describe('useLeafletMap', () => {
         }
       })
     );
+
+    await nextTick();
 
     const map = (vm as any).map;
     expectMap(map);
@@ -410,7 +388,7 @@ describe('useLeafletMap', () => {
         const map = useLeafletMap(el);
         provide(mapKey, map);
 
-        onMounted(() => {
+        watch(map, () => {
           expectMap(map);
         });
 
