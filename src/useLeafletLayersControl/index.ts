@@ -13,10 +13,9 @@ import {
   ref,
   toRaw,
   markRaw,
-  isRef,
-  unref
+  watch
 } from 'vue-demi';
-import { Control, type Layer } from 'leaflet';
+import { Control, type Layer, type Map } from 'leaflet';
 
 export interface UseLeafletLayersControlOptions extends Control.LayersOptions {
   currentBaseLayer?: MaybeRef<string | Layer | null | undefined>;
@@ -64,14 +63,12 @@ export function useLeafletLayersControl(
     }
 
     if (isDefined(_instance)) {
-      instance.value = markRaw(_instance);
+      instance.value = markRaw(addHook(_instance));
     }
   }
 
   function toRawObject<T = any>(obj: any): T {
-    return filter({
-      ...toRaw(isRef(obj) ? unref(obj) : obj)
-    }) as T;
+    return filter(resolveUnref(obj) ?? {}) as T;
   }
 
   function filter(obj: Record<string, unknown>) {
@@ -100,6 +97,24 @@ export function useLeafletLayersControl(
     return _layers.find(predicate);
   }
 
+  function sync(layers: Control.LayersObject, overlay: boolean) {
+    //
+  }
+
+  function update(overlay?: boolean) {
+    //
+  }
+
+  function addHook(instance: Control.Layers): Control.Layers {
+    const superOnAdd = instance.addTo;
+    instance.addTo = (map: Map) => {
+      superOnAdd.call(instance, map);
+      update();
+      return instance;
+    };
+    return instance;
+  }
+
   function clean() {
     if (isDefined(instance)) {
       instance.value.remove();
@@ -112,6 +127,34 @@ export function useLeafletLayersControl(
       clean();
     });
   }
+
+  watch(
+    () => resolveUnref(baseLayers),
+    () => {
+      sync(toRawObject(baseLayers), false);
+    },
+    { deep: true }
+  );
+
+  watch(
+    () => resolveUnref(overlays),
+    () => {
+      sync(toRawObject(overlays), true);
+    },
+    { deep: true }
+  );
+
+  watch(currentBaseLayerRef, () => {
+    update(false);
+  });
+
+  watch(
+    currentOverlaysRef,
+    () => {
+      update(true);
+    },
+    { deep: true }
+  );
 
   create();
 
