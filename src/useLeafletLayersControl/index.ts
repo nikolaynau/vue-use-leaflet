@@ -13,13 +13,14 @@ import {
   ref,
   toRaw,
   markRaw,
-  watch
+  watch,
+  unref
 } from 'vue-demi';
 import { Control, type Layer, type Map } from 'leaflet';
 
 export interface UseLeafletLayersControlOptions extends Control.LayersOptions {
-  currentBaseLayer?: MaybeRef<string | Layer | null | undefined>;
-  currentOverlays?: MaybeRef<string[] | Layer[] | null | undefined>;
+  currentBaseLayer?: MaybeRef<string | null | undefined>;
+  currentOverlays?: MaybeRef<string[] | null | undefined>;
   factory?: (...args: unknown[]) => Control.Layers;
   dispose?: boolean;
 }
@@ -33,6 +34,12 @@ export interface NullableLayersObject {
 export type MaybeReactiveLayersObject =
   | UnwrapNestedRefs<NullableLayersObject>
   | MaybeComputedRef<NullableLayersObject | null | undefined>;
+
+interface LayerEntry {
+  name: string;
+  layer: Layer;
+  overlay: boolean;
+}
 
 export function useLeafletLayersControl(
   baseLayers?: MaybeReactiveLayersObject | null | undefined,
@@ -81,35 +88,109 @@ export function useLeafletLayersControl(
     return res;
   }
 
-  function find(
-    predicate: (item: {
-      name: string;
-      layer: Layer;
-      overlay: boolean;
-    }) => boolean
-  ) {
-    const _layers =
-      ((instance.value as any)?._layers as Array<{
-        name: string;
-        layer: Layer;
-        overlay: boolean;
-      }>) ?? [];
-    return _layers.find(predicate);
-  }
-
   function sync(layers: Control.LayersObject, overlay: boolean) {
-    //
+    removeAll(overlay);
+    addAll(
+      Object.keys(layers).map(key => ({
+        name: key,
+        layer: layers[key],
+        overlay
+      }))
+    );
+    update(overlay);
+    redraw();
   }
 
-  function update(overlay?: boolean) {
-    //
+  function removeAll(overlay: boolean) {
+    if (!isDefined(instance)) {
+      return;
+    }
+    const _instance = instance.value as any;
+    const _layers = _instance._layers as LayerEntry[];
+    const _baseLayers: LayerEntry[] = [];
+    const _overlays: LayerEntry[] = [];
+
+    _layers.forEach(entry => {
+      if (entry.overlay) {
+        _overlays.push(entry);
+      } else {
+        _baseLayers.push(entry);
+      }
+    });
+
+    (overlay ? _overlays : _baseLayers).forEach(entry => {
+      entry.layer?.off('add remove', _instance._onLayerChange, _instance);
+    });
+    _instance._layers = [...(overlay ? _baseLayers : _overlays)];
+  }
+
+  function addAll(layers: LayerEntry[]) {
+    if (!isDefined(instance)) {
+      return;
+    }
+    const _instance = instance.value as any;
+    layers.forEach(entry => {
+      _instance._addLayer(entry.layer, entry.name, entry.overlay);
+    });
+  }
+
+  function redraw() {
+    if (!isDefined(instance)) {
+      return;
+    }
+    const _instance = instance.value as any;
+    if (_instance._map) {
+      _instance._update();
+    }
+  }
+
+  function update(overlay: boolean) {
+    if (!isDefined(instance)) {
+      return;
+    }
+    const _instance = instance.value as any;
+    const map = _instance._map as Map;
+    if (!map) {
+      return;
+    }
+
+    const _layers = _instance._layers as LayerEntry[];
+    const _currBaseLayer = unref(currentBaseLayer);
+    const _currOverlays = unref(currentOverlays);
+
+    for (let i = 0; i < _layers.length; i++) {
+      const { name, layer, overlay: _overlay } = _layers[i];
+      if (!!_overlay !== overlay) {
+        continue;
+      }
+
+      const checked = map.hasLayer(layer);
+      if (
+        (!overlay && _currBaseLayer === name) ||
+        (overlay && _currOverlays && _currOverlays.includes(name))
+      ) {
+        if (!checked) {
+          map.addLayer(layer);
+        }
+      } else {
+        if (checked) {
+          map.removeLayer(layer);
+        }
+      }
+    }
+  }
+
+  function updateAll() {
+    update(false);
+    update(true);
   }
 
   function addHook(instance: Control.Layers): Control.Layers {
-    const superOnAdd = instance.addTo;
+    const _superOnAdd = instance.addTo;
+
     instance.addTo = (map: Map) => {
-      superOnAdd.call(instance, map);
-      update();
+      _superOnAdd.call(instance, map);
+      updateAll();
       return instance;
     };
     return instance;

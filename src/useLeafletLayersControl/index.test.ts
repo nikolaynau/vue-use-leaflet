@@ -1,14 +1,15 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import {
+  type UnwrapNestedRefs,
+  type Ref,
   ref,
   unref,
   reactive,
-  type UnwrapNestedRefs,
-  type Ref,
   defineComponent,
   onUnmounted,
   h,
-  nextTick
+  nextTick,
+  toRaw
 } from 'vue-demi';
 import { Control, Layer, Map } from 'leaflet';
 import { mount } from '../../.test';
@@ -79,6 +80,22 @@ describe('useLeafletLayersControl', () => {
     expectEmptyLayers(unref(instance));
   });
 
+  it('should work with factory', () => {
+    const factory = vi
+      .fn()
+      .mockImplementation(
+        (baseLayers, overlays, options) =>
+          new Control.Layers(baseLayers, overlays, options)
+      );
+    const instance = useLeafletLayersControl(rawBaseLayers, rawOverlays, {
+      factory
+    });
+
+    expectLayers(unref(instance), rawBaseLayers, false);
+    expectLayers(unref(instance), rawOverlays, true);
+    expect(factory).toBeCalledTimes(1);
+  });
+
   it('should be filter nullable reference', () => {
     expectEmptyLayers(unref(useLeafletLayersControl({ a: null }, { b: null })));
     expectEmptyLayers(
@@ -115,32 +132,153 @@ describe('useLeafletLayersControl', () => {
 
     (baseLayersRef.value as any).a = null;
     (baseLayersRef.value as any).d = new Layer();
+    await nextTick();
 
-    console.log('dsdfafa', baseLayersRef.value);
     expectLayers(unref(instance), unref(baseLayersRef), false);
   });
 
-  /*it('should be layer add to map when set current base layer', () => {
+  it('should be sync base layers when changed reactive', async () => {
+    const instance = useLeafletLayersControl(reactiveBaseLayers);
+    expectLayers(unref(instance), rawBaseLayers, false);
+
+    delete reactiveBaseLayers.a;
+    reactiveBaseLayers.c = new Layer();
+    await nextTick();
+
+    expectLayers(unref(instance), reactiveBaseLayers, false);
+  });
+
+  it('should be sync overlay layers when changed ref', async () => {
+    const instance = useLeafletLayersControl(null, overlaysRef);
+    expectLayers(unref(instance), rawOverlays, true);
+
+    delete overlaysRef.value.a;
+    overlaysRef.value.c = new Layer();
+    await nextTick();
+
+    expectLayers(unref(instance), unref(overlaysRef), true);
+  });
+
+  it('should be sync overlay layers when changed reactive', async () => {
+    const instance = useLeafletLayersControl(null, reactiveOverlays);
+    expectLayers(unref(instance), rawOverlays, true);
+
+    delete reactiveOverlays.a;
+    reactiveOverlays.c = new Layer();
+    await nextTick();
+
+    expectLayers(unref(instance), reactiveOverlays, true);
+  });
+
+  it('should be sync layers', async () => {
+    const instance = useLeafletLayersControl(
+      reactiveBaseLayers,
+      reactiveOverlays
+    );
+    expectLayers(unref(instance), reactiveBaseLayers, false);
+    expectLayers(unref(instance), reactiveOverlays, true);
+
+    delete reactiveBaseLayers.a;
+    reactiveBaseLayers.c = new Layer();
+    delete reactiveOverlays.c;
+    reactiveOverlays.e = new Layer();
+    await nextTick();
+
+    expectLayers(unref(instance), reactiveBaseLayers, false);
+    expectLayers(unref(instance), reactiveOverlays, true);
+  });
+
+  it('should be layer add to map when set current base layer', () => {
     const currentBaseLayer = ref('a');
-    const instance = useLeafletLayersControl(rawBaseLayers, null, {
-      currentBaseLayer
+    const currentOverlays = ref(['c', 'd']);
+
+    const instance = useLeafletLayersControl(rawBaseLayers, rawOverlays, {
+      currentBaseLayer,
+      currentOverlays
     });
     map.addControl(unref(instance)!);
 
     expect(map.hasLayer(rawBaseLayers['a'])).toBeTruthy();
     expect(map.hasLayer(rawBaseLayers['b'])).toBeFalsy();
+    expect(map.hasLayer(rawOverlays['c'])).toBeTruthy();
+    expect(map.hasLayer(rawOverlays['d'])).toBeTruthy();
   });
 
-  it('should be layer add to map when set current overlays', () => {
-    const currentOverlays = ref(['d']);
-    const instance = useLeafletLayersControl(null, rawOverlays, {
+  it('should be layers remove from map when current is empty', async () => {
+    const currentBaseLayer = ref<string | null>('b');
+    const currentOverlays = ref(['c', 'd']);
+
+    const instance = useLeafletLayersControl(rawBaseLayers, rawOverlays, {
+      currentBaseLayer,
       currentOverlays
     });
     map.addControl(unref(instance)!);
 
-    expect(map.hasLayer(rawBaseLayers['c'])).toBeFalsy();
-    expect(map.hasLayer(rawBaseLayers['d'])).toBeTruthy();
-  });*/
+    expect(map.hasLayer(rawBaseLayers['a'])).toBeFalsy();
+    expect(map.hasLayer(rawBaseLayers['b'])).toBeTruthy();
+    expect(map.hasLayer(rawOverlays['c'])).toBeTruthy();
+    expect(map.hasLayer(rawOverlays['d'])).toBeTruthy();
+
+    currentBaseLayer.value = null;
+    currentOverlays.value = [];
+    await nextTick();
+
+    expect(map.hasLayer(rawBaseLayers['a'])).toBeFalsy();
+    expect(map.hasLayer(rawBaseLayers['b'])).toBeFalsy();
+    expect(map.hasLayer(rawOverlays['c'])).toBeFalsy();
+    expect(map.hasLayer(rawOverlays['d'])).toBeFalsy();
+  });
+
+  it('should be current work', async () => {
+    const currentBaseLayer = ref<string | null>(null);
+    const currentOverlays = reactive<string[]>([]);
+
+    const instance = useLeafletLayersControl(rawBaseLayers, rawOverlays, {
+      currentBaseLayer,
+      currentOverlays
+    });
+    map.addControl(unref(instance)!);
+
+    expect(map.hasLayer(rawBaseLayers['a'])).toBeFalsy();
+    expect(map.hasLayer(rawBaseLayers['b'])).toBeFalsy();
+    expect(map.hasLayer(rawOverlays['c'])).toBeFalsy();
+    expect(map.hasLayer(rawOverlays['d'])).toBeFalsy();
+
+    currentBaseLayer.value = 'a';
+    currentOverlays.push('d');
+    await nextTick();
+
+    expect(map.hasLayer(rawBaseLayers['a'])).toBeTruthy();
+    expect(map.hasLayer(rawBaseLayers['b'])).toBeFalsy();
+    expect(map.hasLayer(rawOverlays['c'])).toBeFalsy();
+    expect(map.hasLayer(rawOverlays['d'])).toBeTruthy();
+  });
+
+  it('should be current work after add layers', async () => {
+    const currentBaseLayer = ref<string | null>(null);
+    const currentOverlays = reactive<string[]>([]);
+    const baseLayers = ref<{ [name: string]: Layer } | null>(null);
+    const overlays = ref<{ [name: string]: Layer } | null>(null);
+
+    const instance = useLeafletLayersControl(baseLayers, overlays, {
+      currentBaseLayer,
+      currentOverlays
+    });
+    map.addControl(unref(instance)!);
+
+    currentBaseLayer.value = 'a';
+    currentOverlays.push('d');
+    await nextTick();
+
+    baseLayers.value = rawBaseLayers;
+    overlays.value = rawOverlays;
+    await nextTick();
+
+    expect(map.hasLayer(rawBaseLayers['a'])).toBeTruthy();
+    expect(map.hasLayer(rawBaseLayers['b'])).toBeFalsy();
+    expect(map.hasLayer(rawOverlays['c'])).toBeFalsy();
+    expect(map.hasLayer(rawOverlays['d'])).toBeTruthy();
+  });
 
   it('should destroy instance when component is unmounted', async () => {
     expect.assertions(3);
@@ -174,7 +312,9 @@ describe('useLeafletLayersControl', () => {
   ) {
     expect(instance).toBeInstanceOf(Control.Layers);
     for (const [name, layer] of Object.entries(layers)) {
-      expect(hasLayer(instance!, name, layer, overlay)).toBeTruthy();
+      if (layer) {
+        expect(hasLayer(instance!, name, toRaw(layer), overlay)).toBeTruthy();
+      }
     }
   }
 
