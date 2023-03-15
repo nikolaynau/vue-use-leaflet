@@ -6,7 +6,6 @@ import {
   resolveUnref
 } from '@vueuse/shared';
 import {
-  type ShallowRef,
   type Ref,
   shallowRef,
   ref,
@@ -220,14 +219,28 @@ export function useLeafletLayersControl(
     currentBaseLayerRef.value = e.name;
   }
 
-  function onOverlayAdd(e: LayersControlEvent) {}
+  function onOverlayAdd(e: LayersControlEvent) {
+    if (!isDefined(currentOverlaysRef)) {
+      currentOverlaysRef.value = [];
+    }
+    if (!currentOverlaysRef.value!.includes(e.name)) {
+      currentOverlaysRef.value!.push(e.name);
+    }
+  }
 
-  function onOverlayRemove(e: LayersControlEvent) {}
+  function onOverlayRemove(e: LayersControlEvent) {
+    if (currentOverlaysRef.value?.includes(e.name)) {
+      const index = currentOverlaysRef.value!.indexOf(e.name);
+      if (index > -1) {
+        currentOverlaysRef.value!.splice(index, 1);
+      }
+    }
+  }
 
   function clean() {
     if (isDefined(instance)) {
       instance.value.remove();
-      (instance as ShallowRef<Control.Layers | null>).value = null;
+      (instance as Ref<Control.Layers | null>).value = null;
     }
   }
 

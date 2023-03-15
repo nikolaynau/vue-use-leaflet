@@ -295,6 +295,34 @@ describe('useLeafletLayersControl', () => {
     expect(unref(currentBaseLayer)).toBe('b');
   });
 
+  it('should be update current when check overlays', async () => {
+    const currentOverlays = ref<string[] | null>(null);
+
+    const instance = useLeafletLayersControl(null, rawOverlays, {
+      currentOverlays
+    });
+    map.addControl(unref(instance)!);
+    expect(unref(currentOverlays)).toBeNull();
+
+    rawOverlays.c.fire('add');
+    rawOverlays.d.fire('add');
+    await nextTick();
+
+    expect(unref(currentOverlays)).not.toBeNull();
+    expect(unref(currentOverlays)).toHaveLength(2);
+    expect(unref(currentOverlays)).toEqual(['c', 'd']);
+
+    rawOverlays.d.fire('remove');
+    await nextTick();
+
+    expect(unref(currentOverlays)).toEqual(['c']);
+
+    rawOverlays.c.fire('remove');
+    await nextTick();
+
+    expect(unref(currentOverlays)).toHaveLength(0);
+  });
+
   it('should destroy instance when component is unmounted', async () => {
     expect.assertions(4);
 
