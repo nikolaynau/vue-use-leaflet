@@ -170,7 +170,7 @@ describe('useLeafletLayersControl', () => {
     expectLayers(unref(instance), reactiveOverlays, true);
   });
 
-  it('should be sync layers', async () => {
+  it('should be sync base and overlay layers when changed', async () => {
     const instance = useLeafletLayersControl(
       reactiveBaseLayers,
       reactiveOverlays
