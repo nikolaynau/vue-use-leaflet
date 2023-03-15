@@ -1,12 +1,16 @@
 {
   "extends": "@vue/tsconfig/tsconfig.web.json",
-  "include": ["src/**/*"],
+  "include": [
+    "src/**/*",
+    "src/**/*.vue",
+    "playground/**/*",
+    "playground/**/*.vue"
+  ],
   "exclude": ["src/**/__tests__/*", "**/*/*.test.ts"],
   "compilerOptions": {
     "composite": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
       "vue-use-leaflet": ["./src/index.ts"]
     }
   }
