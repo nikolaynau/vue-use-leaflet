@@ -280,20 +280,38 @@ describe('useLeafletLayersControl', () => {
     expect(map.hasLayer(rawOverlays['d'])).toBeTruthy();
   });
 
+  it('should be update current when check base layers', async () => {
+    const currentBaseLayer = ref<string | null>(null);
+
+    const instance = useLeafletLayersControl(rawBaseLayers, null, {
+      currentBaseLayer
+    });
+    map.addControl(unref(instance)!);
+    expect(unref(currentBaseLayer)).toBeNull();
+
+    rawBaseLayers.b.fire('add');
+    await nextTick();
+
+    expect(unref(currentBaseLayer)).toBe('b');
+  });
+
   it('should destroy instance when component is unmounted', async () => {
-    expect.assertions(3);
+    expect.assertions(4);
 
     const vm = mount(
       defineComponent({
         setup() {
           const layersControl = useLeafletLayersControl();
+          map.addControl(unref(layersControl)!);
 
           expect(unref(layersControl)).toBeInstanceOf(Control.Layers);
-          const spy = vi.spyOn(unref(layersControl)!, 'remove');
+          const removeSpy = vi.spyOn(unref(layersControl)!, 'remove');
+          const onRemoveSpy = vi.spyOn(unref(layersControl)!, 'onRemove');
 
           onUnmounted(() => {
             expect(unref(layersControl)).toBeNull();
-            expect(spy).toBeCalledTimes(1);
+            expect(onRemoveSpy).toBeCalledTimes(1);
+            expect(removeSpy).toBeCalledTimes(1);
           });
         },
         render() {

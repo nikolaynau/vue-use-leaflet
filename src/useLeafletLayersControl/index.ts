@@ -6,7 +6,6 @@ import {
   resolveUnref
 } from '@vueuse/shared';
 import {
-  type UnwrapNestedRefs,
   type ShallowRef,
   type Ref,
   shallowRef,
@@ -16,7 +15,12 @@ import {
   watch,
   unref
 } from 'vue-demi';
-import { Control, type Layer, type Map } from 'leaflet';
+import {
+  Control,
+  type Layer,
+  type LayersControlEvent,
+  type Map
+} from 'leaflet';
 
 export interface UseLeafletLayersControlOptions extends Control.LayersOptions {
   currentBaseLayer?: MaybeRef<string | null | undefined>;
@@ -27,13 +31,9 @@ export interface UseLeafletLayersControlOptions extends Control.LayersOptions {
 
 export type UseLeafletLayersControlReturn = Ref<Control.Layers | null>;
 
-export interface NullableLayersObject {
+export interface LayersObject {
   [name: string]: MaybeComputedRef<Layer | null | undefined>;
 }
-
-export type MaybeReactiveLayersObject =
-  | UnwrapNestedRefs<NullableLayersObject>
-  | MaybeComputedRef<NullableLayersObject | null | undefined>;
 
 interface LayerEntry {
   name: string;
@@ -42,8 +42,8 @@ interface LayerEntry {
 }
 
 export function useLeafletLayersControl(
-  baseLayers?: MaybeReactiveLayersObject | null | undefined,
-  overlays?: MaybeReactiveLayersObject | null | undefined,
+  baseLayers?: MaybeComputedRef<LayersObject | null | undefined>,
+  overlays?: MaybeComputedRef<LayersObject | null | undefined>,
   options: UseLeafletLayersControlOptions = {}
 ): UseLeafletLayersControlReturn {
   const {
@@ -70,7 +70,7 @@ export function useLeafletLayersControl(
     }
 
     if (isDefined(_instance)) {
-      instance.value = markRaw(addHook(_instance));
+      instance.value = markRaw(addHooks(_instance));
     }
   }
 
@@ -167,7 +167,7 @@ export function useLeafletLayersControl(
       const checked = map.hasLayer(layer);
       if (
         (!overlay && _currBaseLayer === name) ||
-        (overlay && _currOverlays && _currOverlays.includes(name))
+        (overlay && _currOverlays?.includes(name))
       ) {
         if (!checked) {
           map.addLayer(layer);
@@ -185,16 +185,44 @@ export function useLeafletLayersControl(
     update(true);
   }
 
-  function addHook(instance: Control.Layers): Control.Layers {
-    const _superOnAdd = instance.addTo;
+  function addHooks(instance: Control.Layers): Control.Layers {
+    const _superOnAdd = instance.onAdd;
+    const _superOnRemove = instance.onRemove;
 
-    instance.addTo = (map: Map) => {
-      _superOnAdd.call(instance, map);
+    instance.onAdd = (map: Map) => {
+      const res = _superOnAdd!.call(instance, map);
+      addEvents(map);
       updateAll();
-      return instance;
+      return res;
+    };
+    instance.onRemove = (map: Map) => {
+      _superOnRemove!.call(instance, map);
+      removeEvents(map);
     };
     return instance;
   }
+
+  function addEvents(map: Map) {
+    map
+      .on('baselayerchange', onBaseLayer)
+      .on('overlayadd', onOverlayAdd)
+      .on('overlayremove', onOverlayRemove);
+  }
+
+  function removeEvents(map: Map) {
+    map
+      .off('baselayerchange', onBaseLayer)
+      .off('overlayadd', onOverlayAdd)
+      .off('overlayremove', onOverlayRemove);
+  }
+
+  function onBaseLayer(e: LayersControlEvent) {
+    currentBaseLayerRef.value = e.name;
+  }
+
+  function onOverlayAdd(e: LayersControlEvent) {}
+
+  function onOverlayRemove(e: LayersControlEvent) {}
 
   function clean() {
     if (isDefined(instance)) {
