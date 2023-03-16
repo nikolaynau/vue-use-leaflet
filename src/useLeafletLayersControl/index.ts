@@ -3,7 +3,8 @@ import {
   type MaybeRef,
   tryOnUnmounted,
   isDefined,
-  resolveUnref
+  resolveUnref,
+  resolveRef
 } from '@vueuse/shared';
 import {
   type Ref,
@@ -12,7 +13,7 @@ import {
   toRaw,
   markRaw,
   watch,
-  unref
+  computed
 } from 'vue-demi';
 import {
   Control,
@@ -40,6 +41,14 @@ interface LayerEntry {
   overlay: boolean;
 }
 
+interface PrivateControl extends Control.Layers {
+  _addLayer(layer: Layer, name: string, overlay: boolean): this;
+  _onLayerChange(): void;
+  _layers: LayerEntry[];
+  _map: Map;
+  _update(): void;
+}
+
 export function useLeafletLayersControl(
   baseLayers?: MaybeComputedRef<LayersObject | null | undefined>,
   overlays?: MaybeComputedRef<LayersObject | null | undefined>,
@@ -53,38 +62,34 @@ export function useLeafletLayersControl(
     ...controlOptions
   } = options;
 
-  const instance = shallowRef<Control.Layers | null>(null);
-  const currentBaseLayerRef = ref(currentBaseLayer);
-  const currentOverlaysRef = ref(currentOverlays);
+  const _instance = shallowRef<Control.Layers | null>(null);
+  const _currentBaseLayer = ref(currentBaseLayer);
+  const _currentOverlays = ref(currentOverlays);
+  const _baseLayers = resolveRef(baseLayers);
+  const _overlays = resolveRef(overlays);
+
+  const _currentBaseObject = computed(() =>
+    isDefined(_baseLayers) && isDefined(_currentBaseLayer)
+      ? (_baseLayers.value[_currentBaseLayer.value] as Layer | null | undefined)
+      : undefined
+  );
+
+  const _currentOverlayObjects = computed(() => {
+    if (isDefined(_overlays) && isDefined(_currentOverlays)) {
+      const obj = _overlays.value;
+      return _currentOverlays.value
+        .map(k => obj[k] as Layer)
+        .filter(v => isDefined(v));
+    }
+    return [];
+  });
 
   function create() {
-    const _baseLayers = toRawObject<Control.LayersObject>(baseLayers);
-    const _overlays = toRawObject<Control.LayersObject>(overlays);
-    let _instance: Control.Layers | null = null;
+    const instance: Control.Layers = factory
+      ? factory(raw(_baseLayers), raw(_overlays), controlOptions)
+      : new Control.Layers(raw(_baseLayers), raw(_overlays), controlOptions);
 
-    if (factory) {
-      _instance = factory(_baseLayers, _overlays, controlOptions);
-    } else {
-      _instance = new Control.Layers(_baseLayers, _overlays, controlOptions);
-    }
-
-    if (isDefined(_instance)) {
-      instance.value = markRaw(addHooks(_instance));
-    }
-  }
-
-  function toRawObject<T = any>(obj: any): T {
-    return filter(resolveUnref(obj) ?? {}) as T;
-  }
-
-  function filter(obj: Record<string, unknown>) {
-    const res: Record<string, unknown> = {};
-    Object.keys(obj).forEach(key => {
-      if (isDefined(obj[key])) {
-        res[key] = toRaw(resolveUnref(obj[key]));
-      }
-    });
-    return res;
+    _instance.value = markRaw(addHooks(instance));
   }
 
   function sync(layers: Control.LayersObject, overlay: boolean) {
@@ -96,92 +101,48 @@ export function useLeafletLayersControl(
         overlay
       }))
     );
-    update(overlay);
-    redraw();
-  }
-
-  function removeAll(overlay: boolean) {
-    if (!isDefined(instance)) {
-      return;
-    }
-    const _instance = instance.value as any;
-    const _layers = _instance._layers as LayerEntry[];
-    const _baseLayers: LayerEntry[] = [];
-    const _overlays: LayerEntry[] = [];
-
-    _layers.forEach(entry => {
-      if (entry.overlay) {
-        _overlays.push(entry);
-      } else {
-        _baseLayers.push(entry);
-      }
-    });
-
-    (overlay ? _overlays : _baseLayers).forEach(entry => {
-      entry.layer?.off('add remove', _instance._onLayerChange, _instance);
-    });
-    _instance._layers = [...(overlay ? _baseLayers : _overlays)];
+    repaint();
   }
 
   function addAll(layers: LayerEntry[]) {
-    if (!isDefined(instance)) {
-      return;
-    }
-    const _instance = instance.value as any;
     layers.forEach(entry => {
-      _instance._addLayer(entry.layer, entry.name, entry.overlay);
+      (_instance.value as PrivateControl)?._addLayer(
+        entry.layer,
+        entry.name,
+        entry.overlay
+      );
     });
   }
 
-  function redraw() {
-    if (!isDefined(instance)) {
+  function removeAll(overlay: boolean) {
+    if (!isDefined(_instance)) {
       return;
     }
-    const _instance = instance.value as any;
-    if (_instance._map) {
-      _instance._update();
-    }
-  }
+    const instance = _instance.value as PrivateControl;
+    const layers = instance._layers;
+    const baseLayers: LayerEntry[] = [];
+    const overlays: LayerEntry[] = [];
 
-  function update(overlay: boolean) {
-    if (!isDefined(instance)) {
-      return;
-    }
-    const _instance = instance.value as any;
-    const map = _instance._map as Map;
-    if (!map) {
-      return;
-    }
-
-    const _layers = _instance._layers as LayerEntry[];
-    const _currBaseLayer = unref(currentBaseLayer);
-    const _currOverlays = unref(currentOverlays);
-
-    for (let i = 0; i < _layers.length; i++) {
-      const { name, layer, overlay: _overlay } = _layers[i];
-      if (!!_overlay !== overlay) {
-        continue;
-      }
-
-      const checked = map.hasLayer(layer);
-      if (
-        (!overlay && _currBaseLayer === name) ||
-        (overlay && _currOverlays?.includes(name))
-      ) {
-        if (!checked) {
-          map.addLayer(layer);
-        }
+    layers.forEach(entry => {
+      if (entry.overlay) {
+        overlays.push(entry);
       } else {
-        if (checked) {
-          map.removeLayer(layer);
-        }
+        baseLayers.push(entry);
       }
-    }
+    });
+
+    (overlay ? overlays : baseLayers).forEach(entry => {
+      entry.layer?.off('add remove', instance._onLayerChange, instance);
+    });
+
+    instance._layers = [...(overlay ? baseLayers : overlays)];
   }
 
-  function updateAll() {
-    update(false);
-    update(true);
+  function repaint() {
+    const instance = _instance.value as PrivateControl | null;
+    if (instance?._map) {
+      instance._update();
+    }
   }
 
   function addHooks(instance: Control.Layers): Control.Layers {
@@ -191,7 +152,7 @@ export function useLeafletLayersControl(
     instance.onAdd = (map: Map) => {
       const res = _superOnAdd!.call(instance, map);
       addEvents(map);
-      updateAll();
+      onAdd(map);
       return res;
     };
     instance.onRemove = (map: Map) => {
@@ -216,31 +177,78 @@ export function useLeafletLayersControl(
   }
 
   function onBaseLayer(e: LayersControlEvent) {
-    currentBaseLayerRef.value = e.name;
+    _currentBaseLayer.value = e.name;
   }
 
   function onOverlayAdd(e: LayersControlEvent) {
-    if (!isDefined(currentOverlaysRef)) {
-      currentOverlaysRef.value = [];
+    if (!isDefined(_currentOverlays)) {
+      _currentOverlays.value = [];
     }
-    if (!currentOverlaysRef.value!.includes(e.name)) {
-      currentOverlaysRef.value!.push(e.name);
+    if (!_currentOverlays.value!.includes(e.name)) {
+      _currentOverlays.value!.push(e.name);
     }
   }
 
   function onOverlayRemove(e: LayersControlEvent) {
-    if (currentOverlaysRef.value?.includes(e.name)) {
-      const index = currentOverlaysRef.value!.indexOf(e.name);
+    if (_currentOverlays.value?.includes(e.name)) {
+      const index = _currentOverlays.value!.indexOf(e.name);
       if (index > -1) {
-        currentOverlaysRef.value!.splice(index, 1);
+        _currentOverlays.value!.splice(index, 1);
       }
     }
   }
 
+  function onAdd(map: Map) {
+    if (isDefined(_currentBaseObject)) {
+      addTo(rawObj(_currentBaseObject) as Layer, map);
+    }
+    _currentOverlayObjects.value.forEach(layer => {
+      addTo(rawObj(layer), map);
+    });
+  }
+
+  function addTo(layer: Layer, map?: Map) {
+    const instance = _instance.value as PrivateControl | null;
+    map = map ?? instance?._map;
+    if (map && !map.hasLayer(layer)) {
+      map.addLayer(layer);
+    }
+  }
+
+  function removeFrom(layer: Layer, map?: Map) {
+    const instance = _instance.value as PrivateControl | null;
+    map = map ?? instance?._map;
+    if (map && map.hasLayer(layer)) {
+      map.removeLayer(layer);
+    }
+  }
+
+  function raw<T = any>(obj: any): T {
+    return filter(resolveUnref(obj) ?? {}) as T;
+  }
+
+  function rawObj<T = any>(layer: MaybeComputedRef<T>): T {
+    return toRaw(resolveUnref(layer));
+  }
+
+  function filter(obj: Record<string, unknown>) {
+    const res: Record<string, unknown> = {};
+    Object.keys(obj).forEach(key => {
+      if (isDefined(obj[key])) {
+        res[key] = rawObj(obj[key]);
+      }
+    });
+    return res;
+  }
+
+  function diff<T>(arrA: T[], arrB: T[]): T[] {
+    return arrA.filter(x => !arrB.includes(x));
+  }
+
   function clean() {
-    if (isDefined(instance)) {
-      instance.value.remove();
-      (instance as Ref<Control.Layers | null>).value = null;
+    if (isDefined(_instance)) {
+      _instance.value.remove();
+      (_instance as Ref<Control.Layers | null>).value = null;
     }
   }
 
@@ -251,34 +259,38 @@ export function useLeafletLayersControl(
   }
 
   watch(
-    () => resolveUnref(baseLayers),
+    _baseLayers,
     () => {
-      sync(toRawObject(baseLayers), false);
+      sync(raw(_baseLayers), false);
     },
     { deep: true }
   );
 
   watch(
-    () => resolveUnref(overlays),
+    _overlays,
     () => {
-      sync(toRawObject(overlays), true);
+      sync(raw(_overlays), true);
     },
     { deep: true }
   );
 
-  watch(currentBaseLayerRef, () => {
-    update(false);
+  watch(_currentBaseObject, (_new, old) => {
+    old && removeFrom(rawObj(old));
+    _new && addTo(rawObj(_new));
   });
 
   watch(
-    currentOverlaysRef,
-    () => {
-      update(true);
+    () => [..._currentOverlayObjects.value],
+    (_new, old) => {
+      const add = diff(_new, old);
+      const remove = diff(old, _new);
+      remove.forEach(layer => removeFrom(rawObj(layer)));
+      add.forEach(layer => addTo(rawObj(layer)));
     },
     { deep: true }
   );
 
   create();
 
-  return instance;
+  return _instance;
 }
