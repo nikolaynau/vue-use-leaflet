@@ -14,14 +14,15 @@ import { mount } from '../../.test';
 import { useLeafletTileLayer } from '.';
 
 describe('useLeafletTileLayer', () => {
-  const testUrl = 'https://a/b/c';
+  let rawUrl: string;
   let url: Ref<string | null | undefined>;
 
   beforeEach(() => {
-    url = ref(testUrl);
+    rawUrl = 'https://a/b/c';
+    url = ref(rawUrl);
   });
 
-  function expectTileLayer(layer: any, expectedUrl: string = testUrl) {
+  function expectTileLayer(layer: any, expectedUrl: string) {
     layer = unref(layer);
     expect(layer).toBeDefined();
     expect(layer).not.toBeNull();
@@ -31,7 +32,7 @@ describe('useLeafletTileLayer', () => {
 
   it('should create tile layer when url is defined', () => {
     const tileLayer = useLeafletTileLayer(url);
-    expectTileLayer(tileLayer);
+    expectTileLayer(tileLayer, rawUrl);
   });
 
   it('should not create tile layer when url is null', () => {
@@ -45,19 +46,19 @@ describe('useLeafletTileLayer', () => {
     const tileLayer = useLeafletTileLayer(url);
     expect(tileLayer.value).toBeNull();
 
-    url.value = testUrl;
+    url.value = rawUrl;
     await nextTick();
 
-    expectTileLayer(tileLayer);
-    expect(tileLayer.value?.getTileUrl({ z: 1 } as Coords)).toBe(testUrl);
+    expectTileLayer(tileLayer, rawUrl);
+    expect(tileLayer.value?.getTileUrl({ z: 1 } as Coords)).toBe(rawUrl);
   });
 
   it('should update url', async () => {
     const urlB = 'https://d/e/f';
 
     const tileLayer = useLeafletTileLayer(url);
-    expectTileLayer(tileLayer);
-    expect(tileLayer.value?.getTileUrl({ z: 1 } as Coords)).toBe(testUrl);
+    expectTileLayer(tileLayer, rawUrl);
+    expect(tileLayer.value?.getTileUrl({ z: 1 } as Coords)).toBe(rawUrl);
 
     url.value = urlB;
     await nextTick();
@@ -68,7 +69,7 @@ describe('useLeafletTileLayer', () => {
 
   it('should destroy when change url to null', async () => {
     const tileLayer = useLeafletTileLayer(url);
-    expectTileLayer(tileLayer);
+    expectTileLayer(tileLayer, rawUrl);
     const spy = vi.spyOn(tileLayer.value!, 'remove');
 
     url.value = null;
@@ -80,15 +81,15 @@ describe('useLeafletTileLayer', () => {
 
   it('should work with factory', () => {
     const options: TileLayerOptions = { tileSize: 250 };
-    const instance = new TileLayer(testUrl, options);
+    const instance = new TileLayer(rawUrl, options);
     const factory = vi.fn().mockImplementation(() => instance);
     const tileLayer = useLeafletTileLayer(url, { factory, ...options });
 
-    expectTileLayer(tileLayer);
+    expectTileLayer(tileLayer, rawUrl);
     expect(tileLayer.value).toBe(instance);
 
     expect(factory).toBeCalledTimes(1);
-    expect(factory.mock.calls[0][0]).toBe(testUrl);
+    expect(factory.mock.calls[0][0]).toBe(rawUrl);
     expect(factory.mock.calls[0][1]).toEqual(options);
   });
 
@@ -109,7 +110,7 @@ describe('useLeafletTileLayer', () => {
     tileSize.value = 250;
     await nextTick();
 
-    expectTileLayer(tileLayer);
+    expectTileLayer(tileLayer, rawUrl);
     expect(tileLayer.value).toBe(instance);
     expect(tileLayer.value?.getTileSize()).toEqual({ x: 250, y: 250 });
   });
