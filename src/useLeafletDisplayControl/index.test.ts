@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { nextTick, Ref, ref, markRaw } from 'vue-demi';
 import { Control } from 'leaflet';
-import { type LeafletToggleControl, useLeafletToggleControl } from '.';
+import { type LeafletDisplayControl, useLeafletDisplayControl } from '.';
 
-describe('useLeafletToggleControl', () => {
-  let source: LeafletToggleControl;
+describe('useLeafletDisplayControl', () => {
+  let source: LeafletDisplayControl;
   let target: Control;
-  let sourceRef: Ref<LeafletToggleControl | null | undefined>;
+  let sourceRef: Ref<LeafletDisplayControl | null | undefined>;
   let targetRef: Ref<Control | null | undefined>;
 
   beforeEach(() => {
@@ -34,17 +34,17 @@ describe('useLeafletToggleControl', () => {
   }
 
   it('should work with raw', () => {
-    useLeafletToggleControl(source, target);
+    useLeafletDisplayControl(source, target);
     expectAddControlCalled();
   });
 
   it('should work with ref', () => {
-    useLeafletToggleControl(sourceRef, targetRef);
+    useLeafletDisplayControl(sourceRef, targetRef);
     expectAddControlCalled();
   });
 
   it('should work toggle', async () => {
-    const toggle = useLeafletToggleControl(sourceRef, targetRef);
+    const toggle = useLeafletDisplayControl(sourceRef, targetRef);
     expectAddControlCalled();
 
     (target as any)._map = {};
@@ -56,7 +56,7 @@ describe('useLeafletToggleControl', () => {
   });
 
   it('should work has with controls', async () => {
-    const { has } = useLeafletToggleControl(sourceRef, targetRef, {
+    const { has } = useLeafletDisplayControl(sourceRef, targetRef, {
       controls: true
     });
     expectAddControlCalled();
