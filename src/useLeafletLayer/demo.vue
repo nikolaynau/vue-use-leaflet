@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
+import { Marker } from 'leaflet';
 import {
   useLeafletMap,
   useLeafletTileLayer,
-  useLeafletToggleLayer
+  useLeafletToggleLayer,
+  useLeafletLayer
 } from 'vue-use-leaflet';
 
 const element = ref<HTMLElement | null>(null);
@@ -13,9 +15,11 @@ const tileLayer = useLeafletTileLayer(
 );
 useLeafletToggleLayer(map, tileLayer);
 
-watch(map, () => {
-  console.log(map.value);
+const marker = useLeafletLayer<Marker>({
+  create: () => new Marker([0, 0]),
+  destroy: instance => instance.off().remove()
 });
+useLeafletToggleLayer(map, marker);
 </script>
 
 <template>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 import {
   useLeafletMap,
   useLeafletTileLayer,
@@ -12,10 +12,6 @@ const tileLayer = useLeafletTileLayer(
   'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
 );
 useLeafletToggleLayer(map, tileLayer);
-
-watch(map, () => {
-  console.log(map.value);
-});
 </script>
 
 <template>

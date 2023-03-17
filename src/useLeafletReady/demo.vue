@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 import {
   useLeafletMap,
   useLeafletTileLayer,
-  useLeafletToggleLayer
+  useLeafletToggleLayer,
+  useLeafletReady
 } from 'vue-use-leaflet';
 
+const created = ref(false);
 const element = ref<HTMLElement | null>(null);
 const map = useLeafletMap(element);
 const tileLayer = useLeafletTileLayer(
@@ -13,11 +15,11 @@ const tileLayer = useLeafletTileLayer(
 );
 useLeafletToggleLayer(map, tileLayer);
 
-watch(map, () => {
-  console.log(map.value);
-});
+const ready = useLeafletReady(map, tileLayer);
 </script>
 
 <template>
-  <div ref="element" style="height: 250px"></div>
+  <div v-if="created" ref="element" style="height: 250px"></div>
+  <button v-else @click="created = true">Create Map</button>
+  <div>Ready: {{ ready }}</div>
 </template>
