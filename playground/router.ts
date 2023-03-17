@@ -1,8 +1,22 @@
 /// <reference types="vite/client" />
 
-import { createRouter, createWebHistory } from 'vue-router';
+import {
+  createRouter,
+  createWebHistory,
+  type RouteRecordRaw
+} from 'vue-router';
+import { getDemoList } from './utils';
+
 const Home = () => import('./Home.vue');
-const MapDemo = () => import('../src/useLeafletMap/demo.vue');
+
+const demoRoutes: RouteRecordRaw[] = getDemoList().map(
+  item =>
+    <RouteRecordRaw>{
+      path: item.url,
+      name: item.title,
+      component: item.component
+    }
+);
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -12,10 +26,7 @@ const router = createRouter({
       name: 'home',
       component: Home
     },
-    {
-      path: '/map',
-      component: MapDemo
-    }
+    ...demoRoutes
   ]
 });
 
