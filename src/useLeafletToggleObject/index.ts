@@ -7,16 +7,14 @@ import {
   whenever
 } from '@vueuse/shared';
 import { logicAnd } from '@vueuse/math';
-import { set, tryOnScopeDispose, type Fn } from '@vueuse/core';
+import { tryOnScopeDispose } from '@vueuse/core';
 
 export interface UseLeafletToggleObjectOptions<Controls extends boolean, S, T> {
   initialValue?: MaybeRef<boolean>;
   controls?: Controls;
   flushSync?: boolean;
   dispose?: boolean;
-  add?: (source: S, target: T) => void;
-  remove?: (source: S, target: T) => void;
-  has?: (source: S, target: T) => boolean;
+  onToggle?: (source: S, target: T, value: boolean) => void;
 }
 
 export type UseLeafletToggleObjectReturn = (value?: boolean) => boolean;
@@ -24,9 +22,6 @@ export type UseLeafletToggleObjectReturn = (value?: boolean) => boolean;
 export interface UseLeafletToggleObjectReturnWithControls {
   toggle: (value?: boolean) => boolean;
   value: Ref<boolean>;
-  add: Fn;
-  remove: Fn;
-  has: () => boolean;
 }
 
 export function useLeafletToggleObject<S, T>(
@@ -49,67 +44,44 @@ export function useLeafletToggleObject<S, T>(
     controls = false,
     flushSync = false,
     dispose = false,
-    add,
-    remove,
-    has
+    onToggle
   } = options;
 
   const value = ref(initialValue);
   const toggle = useToggle(value);
   const isBoth = logicAnd(source, target);
 
-  function _add() {
-    isBoth.value && add?.(resolveUnref(source)!, resolveUnref(target)!);
+  function callback(value: boolean) {
+    isBoth.value &&
+      onToggle?.(resolveUnref(source)!, resolveUnref(target)!, value);
   }
 
-  function _remove() {
-    isBoth.value && remove?.(resolveUnref(source)!, resolveUnref(target)!);
-  }
-
-  function _has(): boolean {
-    return (
-      isBoth.value &&
-      (has?.(resolveUnref(source)!, resolveUnref(target)!) ?? false)
-    );
-  }
-
-  watch(
-    value,
-    val => {
-      if (val) {
-        _add();
-      } else {
-        _remove();
-      }
-    },
-    {
-      flush: flushSync ? 'sync' : undefined
+  function initial() {
+    if (unref(value)) {
+      callback(unref(value));
     }
-  );
+  }
+
+  watch(value, callback, {
+    flush: flushSync ? 'sync' : undefined
+  });
 
   whenever(isBoth, () => {
-    if (unref(value)) {
-      _add();
-    }
+    initial();
   });
 
   if (dispose) {
     tryOnScopeDispose(() => {
-      _remove();
+      callback(false);
     });
   }
 
-  if (unref(value)) {
-    _add();
-  }
+  initial();
 
   if (controls) {
     return {
       toggle,
-      value,
-      add: () => set(value, true),
-      remove: () => set(value, false),
-      has: _has
+      value
     };
   }
 

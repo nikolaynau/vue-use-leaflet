@@ -9,30 +9,24 @@ import {
 } from 'vitest';
 import { defineComponent, nextTick, Ref, ref, unref } from 'vue-demi';
 import { mount } from '../../.test';
-import { useLeafletToggleObject } from '.';
+import { useLeafletToggleObject, UseLeafletToggleObjectOptions } from '.';
 
 describe('useLeafletToggleObject', () => {
   let source: string;
   let target: string;
   let sourceRef: Ref<string | null>;
   let targetRef: Ref<string | null>;
-  let addSpy: Mock;
-  let removeSpy: Mock;
-  let hasSpy: Mock;
-  let options: Record<string, Function>;
+  let callbackSpy: Mock;
+  let options: UseLeafletToggleObjectOptions<false, string, string>;
 
   beforeEach(() => {
     source = 'a';
     target = 'b';
     sourceRef = ref(source);
     targetRef = ref(target);
-    addSpy = vi.fn();
-    removeSpy = vi.fn();
-    hasSpy = vi.fn();
+    callbackSpy = vi.fn();
     options = {
-      add: addSpy,
-      remove: removeSpy,
-      has: hasSpy
+      onToggle: callbackSpy
     };
   });
 
@@ -40,51 +34,31 @@ describe('useLeafletToggleObject', () => {
     vi.restoreAllMocks();
   });
 
-  function expectAddCalled(count = 1) {
-    expect(addSpy).toBeCalledTimes(count);
-    expect(addSpy).toBeCalledWith(source, target);
+  function expectCallbackCalled(value = false, count = 1) {
+    expect(callbackSpy).toBeCalledTimes(count);
+    expect(callbackSpy).toBeCalledWith(source, target, value);
   }
 
-  function expectRemoveCalled(count = 1) {
-    expect(removeSpy).toBeCalledTimes(count);
-    expect(removeSpy).toBeCalledWith(source, target);
+  function expectCallbackCalledWithTrue(count = 1) {
+    expectCallbackCalled(true, count);
   }
 
-  function expectHasCalled(count = 1) {
-    expect(hasSpy).toBeCalledTimes(count);
-    expect(hasSpy).toBeCalledWith(source, target);
+  function expectCallbackCalledWithFalse(count = 1) {
+    expectCallbackCalled(false, count);
   }
 
-  function expectRemoveNotCalled() {
-    expect(removeSpy).toBeCalledTimes(0);
+  function expectCallbackNotCalled() {
+    expect(callbackSpy).not.toBeCalled();
   }
 
-  function expectHasNotCalled() {
-    expect(hasSpy).toBeCalledTimes(0);
-  }
-
-  function expectAddNotCalled() {
-    expect(addSpy).toBeCalledTimes(0);
-  }
-
-  function expectAllNotCalled() {
-    expectAddNotCalled();
-    expectRemoveNotCalled();
-    expectHasNotCalled();
-  }
-
-  it('should call add with ref', () => {
+  it('should work with ref', () => {
     useLeafletToggleObject(sourceRef, targetRef, options);
-    expectAddCalled();
-    expectRemoveNotCalled();
-    expectHasNotCalled();
+    expectCallbackCalledWithTrue();
   });
 
-  it('should call add with raw', () => {
+  it('should work with raw', () => {
     useLeafletToggleObject(source, target, options);
-    expectAddCalled();
-    expectRemoveNotCalled();
-    expectHasNotCalled();
+    expectCallbackCalledWithTrue();
   });
 
   it('should work when lazy init source and target', async () => {
@@ -92,37 +66,30 @@ describe('useLeafletToggleObject', () => {
     targetRef.value = null;
 
     useLeafletToggleObject(sourceRef, targetRef, options);
-    expectAllNotCalled();
+    expectCallbackNotCalled();
 
     sourceRef.value = source;
     await nextTick();
-    expectAllNotCalled();
+    expectCallbackNotCalled();
 
     targetRef.value = target;
     await nextTick();
-
-    expectAddCalled();
-    expectRemoveNotCalled();
-    expectHasNotCalled();
+    expectCallbackCalledWithTrue();
   });
 
   it('should work toggle fn', async () => {
     const toggle = useLeafletToggleObject(sourceRef, targetRef, options);
-    expectAddCalled();
-    expectRemoveNotCalled();
-    expectHasNotCalled();
 
     toggle();
     await nextTick();
-    expectAddCalled(1);
-    expectRemoveCalled();
-    expectHasNotCalled();
 
     toggle();
     await nextTick();
-    expectAddCalled(2);
-    expectRemoveCalled(1);
-    expectHasNotCalled();
+
+    expect(callbackSpy).toBeCalledTimes(3);
+    expect(callbackSpy.mock.calls[0]).toEqual([source, target, true]);
+    expect(callbackSpy.mock.calls[1]).toEqual([source, target, false]);
+    expect(callbackSpy.mock.calls[2]).toEqual([source, target, true]);
   });
 
   it('should work with flush sync', () => {
@@ -130,18 +97,14 @@ describe('useLeafletToggleObject', () => {
       ...options,
       flushSync: true
     });
-    expectAddCalled();
-    expectRemoveNotCalled();
-    expectHasNotCalled();
 
     toggle();
-    expectAddCalled(1);
-    expectRemoveCalled();
-    expectHasNotCalled();
-
     toggle();
-    expectAddCalled(2);
-    expectHasNotCalled();
+
+    expect(callbackSpy).toBeCalledTimes(3);
+    expect(callbackSpy.mock.calls[0]).toEqual([source, target, true]);
+    expect(callbackSpy.mock.calls[1]).toEqual([source, target, false]);
+    expect(callbackSpy.mock.calls[2]).toEqual([source, target, true]);
   });
 
   it('should work with initial value', async () => {
@@ -149,14 +112,12 @@ describe('useLeafletToggleObject', () => {
       ...options,
       initialValue: false
     });
-    expectAllNotCalled();
+    expectCallbackNotCalled();
 
     toggle();
     await nextTick();
 
-    expectAddCalled();
-    expectRemoveNotCalled();
-    expectHasNotCalled();
+    expectCallbackCalledWithTrue();
   });
 
   it('should work with initial value as ref', async () => {
@@ -165,15 +126,13 @@ describe('useLeafletToggleObject', () => {
       ...options,
       initialValue
     });
-    expectAllNotCalled();
+    expectCallbackNotCalled();
     expect(initialValue.value).toBe(false);
 
     toggle();
     await nextTick();
 
-    expectAddCalled();
-    expectRemoveNotCalled();
-    expectHasNotCalled();
+    expectCallbackCalledWithTrue();
     expect(initialValue.value).toBe(true);
   });
 
@@ -184,66 +143,14 @@ describe('useLeafletToggleObject', () => {
       initialValue
     });
 
-    expectAllNotCalled();
+    expectCallbackNotCalled();
     expect(initialValue.value).toBe(false);
 
     initialValue.value = true;
     await nextTick();
 
-    expectAddCalled();
-    expectRemoveNotCalled();
-    expectHasNotCalled();
+    expectCallbackCalledWithTrue();
     expect(initialValue.value).toBe(true);
-  });
-
-  it('should work when manually call add', async () => {
-    const { add } = useLeafletToggleObject(sourceRef, targetRef, {
-      ...options,
-      initialValue: false,
-      controls: true
-    });
-    expectAllNotCalled();
-
-    add();
-    await nextTick();
-
-    expectAddCalled();
-    expectRemoveNotCalled();
-    expectHasNotCalled();
-  });
-
-  it('should work when manually call remove', async () => {
-    const { remove } = useLeafletToggleObject(sourceRef, targetRef, {
-      ...options,
-      controls: true
-    });
-    expectAddCalled();
-    expectRemoveNotCalled();
-    expectHasNotCalled();
-
-    remove();
-    await nextTick();
-
-    expectAddCalled(1);
-    expectRemoveCalled();
-    expectHasNotCalled();
-  });
-
-  it('should work has', async () => {
-    const { has } = useLeafletToggleObject(sourceRef, targetRef, {
-      ...options,
-      controls: true
-    });
-    expectAddCalled();
-    expectRemoveNotCalled();
-    expectHasNotCalled();
-
-    has();
-    await nextTick();
-
-    expectAddCalled(1);
-    expectHasCalled();
-    expectRemoveNotCalled();
   });
 
   it('should work toggle with controls', async () => {
@@ -251,16 +158,12 @@ describe('useLeafletToggleObject', () => {
       ...options,
       controls: true
     });
-    expectAddCalled();
-    expectRemoveNotCalled();
-    expectHasNotCalled();
+    expectCallbackCalledWithTrue();
 
     toggle();
     await nextTick();
 
-    expectAddCalled(1);
-    expectRemoveCalled();
-    expectHasNotCalled();
+    expectCallbackCalledWithFalse(2);
   });
 
   it('should work value with controls', async () => {
@@ -268,22 +171,18 @@ describe('useLeafletToggleObject', () => {
       ...options,
       controls: true
     });
-    expectAddCalled();
-    expectRemoveNotCalled();
-    expectHasNotCalled();
+    expectCallbackCalledWithTrue();
     expect(unref(value)).toBeTruthy();
 
     value.value = false;
     await nextTick();
 
-    expectAddCalled(1);
-    expectRemoveCalled();
-    expectHasNotCalled();
+    expectCallbackCalledWithFalse(2);
     expect(unref(value)).toBeFalsy();
   });
 
   it('should work dispose', () => {
-    expect.assertions(9);
+    expect.assertions(4);
 
     const vm = mount(
       defineComponent({
@@ -292,9 +191,7 @@ describe('useLeafletToggleObject', () => {
             ...options,
             dispose: true
           });
-          expectAddCalled();
-          expectRemoveNotCalled();
-          expectHasNotCalled();
+          expectCallbackCalledWithTrue();
         },
         render() {
           return null;
@@ -303,8 +200,6 @@ describe('useLeafletToggleObject', () => {
     );
 
     vm.unmount();
-    expectAddCalled(1);
-    expectRemoveCalled();
-    expectHasNotCalled();
+    expectCallbackCalledWithFalse(2);
   });
 });
