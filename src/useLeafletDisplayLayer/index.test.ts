@@ -9,12 +9,12 @@ import {
 } from 'vitest';
 import { nextTick, Ref, ref, markRaw } from 'vue-demi';
 import { Layer } from 'leaflet';
-import { type LeafletToggleLayer, useLeafletToggleLayer } from '.';
+import { type LeafletDisplayLayer, useLeafletDisplayLayer } from '.';
 
-describe('useLeafletToggleLayer', () => {
-  let source: LeafletToggleLayer;
+describe('useLeafletDisplayLayer', () => {
+  let source: LeafletDisplayLayer;
   let target: Layer;
-  let sourceRef: Ref<LeafletToggleLayer | null | undefined>;
+  let sourceRef: Ref<LeafletDisplayLayer | null | undefined>;
   let targetRef: Ref<Layer | null | undefined>;
 
   beforeEach(() => {
@@ -48,19 +48,19 @@ describe('useLeafletToggleLayer', () => {
   }
 
   it('should work with raw', () => {
-    useLeafletToggleLayer(source, target);
+    useLeafletDisplayLayer(source, target);
     expectAddLayerCalled();
     expectHasLayerCalled();
   });
 
   it('should work with ref', () => {
-    useLeafletToggleLayer(sourceRef, targetRef);
+    useLeafletDisplayLayer(sourceRef, targetRef);
     expectAddLayerCalled();
     expectHasLayerCalled();
   });
 
   it('should work toggle', async () => {
-    const toggle = useLeafletToggleLayer(sourceRef, targetRef);
+    const toggle = useLeafletDisplayLayer(sourceRef, targetRef);
     expectAddLayerCalled(1);
     expectHasLayerCalled(1);
 
@@ -74,7 +74,7 @@ describe('useLeafletToggleLayer', () => {
   });
 
   it('should work has with controls', async () => {
-    const { has } = useLeafletToggleLayer(sourceRef, targetRef, {
+    const { has } = useLeafletDisplayLayer(sourceRef, targetRef, {
       controls: true
     });
     expectAddLayerCalled(1);

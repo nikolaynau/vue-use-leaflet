@@ -4,7 +4,7 @@ import { Marker } from 'leaflet';
 import {
   useLeafletMap,
   useLeafletTileLayer,
-  useLeafletToggleLayer,
+  useLeafletDisplayLayer,
   useLeafletLayer
 } from 'vue-use-leaflet';
 
@@ -13,13 +13,13 @@ const map = useLeafletMap(element);
 const tileLayer = useLeafletTileLayer(
   'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
 );
-useLeafletToggleLayer(map, tileLayer);
+useLeafletDisplayLayer(map, tileLayer);
 
 const marker = useLeafletLayer<Marker>({
   create: () => new Marker([0, 0]),
   destroy: instance => instance.off().remove()
 });
-useLeafletToggleLayer(map, marker);
+useLeafletDisplayLayer(map, marker);
 </script>
 
 <template>

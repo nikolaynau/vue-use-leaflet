@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import {
   useLeafletMap,
   useLeafletTileLayer,
-  useLeafletToggleLayer,
+  useLeafletDisplayLayer,
   useLeafletReady
 } from 'vue-use-leaflet';
 
@@ -13,7 +13,7 @@ const map = useLeafletMap(element);
 const tileLayer = useLeafletTileLayer(
   'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
 );
-useLeafletToggleLayer(map, tileLayer);
+useLeafletDisplayLayer(map, tileLayer);
 
 const ready = useLeafletReady(map, tileLayer);
 </script>
