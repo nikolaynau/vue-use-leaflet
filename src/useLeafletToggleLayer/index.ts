@@ -40,8 +40,10 @@ export function useLeafletToggleLayer(
 ): UseLeafletToggleLayerReturn | UseLeafletToggleLayerReturnWithControls {
   return useLeafletToggleObject<LeafletToggleLayer, Layer>(source, target, {
     ...(options as Object),
-    add: (source, target) => source.addLayer(target),
-    remove: (source, target) => source.removeLayer(target),
+    add: (source, target) =>
+      !source.hasLayer(target) && source.addLayer(target),
+    remove: (source, target) =>
+      source.hasLayer(target) && source.removeLayer(target),
     has: (source, target) => source.hasLayer(target)
   });
 }

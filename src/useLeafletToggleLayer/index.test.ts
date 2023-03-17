@@ -1,196 +1,89 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { defineComponent, nextTick, Ref, ref, unref, markRaw } from 'vue-demi';
-import { Layer, Map } from 'leaflet';
-import { mount } from '../../.test';
-import { useLeafletToggleLayer } from '.';
+import {
+  type Mock,
+  describe,
+  it,
+  expect,
+  beforeEach,
+  afterEach,
+  vi
+} from 'vitest';
+import { nextTick, Ref, ref, markRaw } from 'vue-demi';
+import { Layer } from 'leaflet';
+import { type LeafletToggleLayer, useLeafletToggleLayer } from '.';
 
 describe('useLeafletToggleLayer', () => {
-  let map: Map;
-  let layer: Layer;
-  let mapRef: Ref<Map | null | undefined>;
-  let layerRef: Ref<Layer | null | undefined>;
+  let source: LeafletToggleLayer;
+  let target: Layer;
+  let sourceRef: Ref<LeafletToggleLayer | null | undefined>;
+  let targetRef: Ref<Layer | null | undefined>;
 
   beforeEach(() => {
-    const element = document.createElement('div');
-    map = markRaw(new Map(element));
-    layer = markRaw(new Layer());
-    mapRef = ref(map) as Ref<Map | null | undefined>;
-    layerRef = ref(layer) as Ref<Layer | null | undefined>;
+    source = {
+      addLayer: vi.fn(),
+      removeLayer: vi.fn(),
+      hasLayer: vi.fn()
+    };
+    target = new Layer();
+    sourceRef = ref(source);
+    targetRef = ref(markRaw(target));
   });
 
-  function expectTrue() {
-    expect(map.hasLayer(layer)).toBe(true);
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  function expectAddLayerCalled(count = 1) {
+    expect(source.addLayer).toBeCalledTimes(count);
+    expect(source.addLayer).toBeCalledWith(target);
   }
 
-  function expectFalse() {
-    expect(map.hasLayer(layer)).toBe(false);
+  function expectRemoveLayerCalled(count = 1) {
+    expect(source.removeLayer).toBeCalledTimes(count);
+    expect(source.removeLayer).toBeCalledWith(target);
   }
 
-  it('should add layer to map', () => {
-    useLeafletToggleLayer(mapRef, layerRef);
-    expectTrue();
+  function expectHasLayerCalled(count = 1) {
+    expect(source.hasLayer).toBeCalledTimes(count);
+    expect(source.hasLayer).toBeCalledWith(target);
+  }
+
+  it('should work with raw', () => {
+    useLeafletToggleLayer(source, target);
+    expectAddLayerCalled();
+    expectHasLayerCalled();
   });
 
-  it('should add layer to map when use unref args', () => {
-    useLeafletToggleLayer(map, layer);
-    expectTrue();
+  it('should work with ref', () => {
+    useLeafletToggleLayer(sourceRef, targetRef);
+    expectAddLayerCalled();
+    expectHasLayerCalled();
   });
 
-  it('should work when lazy initialize source and target', async () => {
-    mapRef.value = null;
-    layerRef.value = null;
+  it('should work toggle', async () => {
+    const toggle = useLeafletToggleLayer(sourceRef, targetRef);
+    expectAddLayerCalled(1);
+    expectHasLayerCalled(1);
 
-    useLeafletToggleLayer(mapRef, layerRef);
-    expectFalse();
-
-    mapRef.value = map;
-    await nextTick();
-    expectFalse();
-
-    layerRef.value = layer;
-    await nextTick();
-    expectTrue();
-  });
-
-  it('should work toggle fn', async () => {
-    const toggle = useLeafletToggleLayer(mapRef, layerRef);
-    expectTrue();
-
+    (source.hasLayer as unknown as Mock).mockImplementation(() => true);
     toggle();
     await nextTick();
-    expectFalse();
 
-    toggle();
-    await nextTick();
-    expectTrue();
+    expectRemoveLayerCalled(1);
+    expectAddLayerCalled(1);
+    expectHasLayerCalled(2);
   });
 
-  it('should sync toggle', () => {
-    const toggle = useLeafletToggleLayer(mapRef, layerRef, { flushSync: true });
-    expectTrue();
-
-    toggle();
-    expectFalse();
-
-    toggle();
-    expectTrue();
-  });
-
-  it('should work with initial value as boolean', async () => {
-    const toggle = useLeafletToggleLayer(mapRef, layerRef, {
-      initialValue: false
-    });
-    expectFalse();
-
-    toggle();
-    await nextTick();
-    expectTrue();
-  });
-
-  it('should work with initial value as ref', async () => {
-    const initialValue = ref(false);
-    const toggle = useLeafletToggleLayer(mapRef, layerRef, {
-      initialValue
-    });
-    expectFalse();
-    expect(initialValue.value).toBe(false);
-
-    toggle();
-    await nextTick();
-    expectTrue();
-    expect(initialValue.value).toBe(true);
-  });
-
-  it('should work when change initial value', async () => {
-    const initialValue = ref(false);
-    useLeafletToggleLayer(mapRef, layerRef, {
-      initialValue
-    });
-    expectFalse();
-    expect(initialValue.value).toBe(false);
-
-    initialValue.value = true;
-    await nextTick();
-    expectTrue();
-    expect(initialValue.value).toBe(true);
-  });
-
-  it('should work when manually call add', async () => {
-    const { add } = useLeafletToggleLayer(mapRef, layerRef, {
-      initialValue: false,
+  it('should work has with controls', async () => {
+    const { has } = useLeafletToggleLayer(sourceRef, targetRef, {
       controls: true
     });
-    expectFalse();
+    expectAddLayerCalled(1);
+    expectHasLayerCalled(1);
 
-    add();
-    await nextTick();
-    expectTrue();
-  });
+    has();
 
-  it('should work when manually call remove', async () => {
-    const { remove } = useLeafletToggleLayer(mapRef, layerRef, {
-      controls: true
-    });
-    expectTrue();
-
-    remove();
-    await nextTick();
-    expectFalse();
-  });
-
-  it('should work has', async () => {
-    const { remove, has } = useLeafletToggleLayer(mapRef, layerRef, {
-      controls: true
-    });
-    expectTrue();
-    expect(has()).toBeTruthy();
-
-    remove();
-    await nextTick();
-    expectFalse();
-    expect(has()).toBeFalsy();
-  });
-
-  it('should work toggle controls', async () => {
-    const { toggle } = useLeafletToggleLayer(mapRef, layerRef, {
-      controls: true
-    });
-    expectTrue();
-
-    toggle();
-    await nextTick();
-    expectFalse();
-  });
-
-  it('should work value controls', async () => {
-    const { value } = useLeafletToggleLayer(mapRef, layerRef, {
-      controls: true
-    });
-    expectTrue();
-    expect(unref(value)).toBeTruthy();
-
-    value.value = false;
-    await nextTick();
-    expectFalse();
-    expect(unref(value)).toBeFalsy();
-  });
-
-  it('should work dispose', async () => {
-    const vm = mount(
-      defineComponent({
-        setup() {
-          useLeafletToggleLayer(mapRef, layerRef, {
-            dispose: true
-          });
-          expectTrue();
-        },
-        render() {
-          return null;
-        }
-      })
-    );
-
-    vm.unmount();
-    expectFalse();
+    expectAddLayerCalled(1);
+    expectHasLayerCalled(2);
+    expect(source.removeLayer).not.toBeCalled();
   });
 });

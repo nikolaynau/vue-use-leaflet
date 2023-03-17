@@ -83,7 +83,6 @@ export function useLeafletToggleObject<S, T>(
       }
     },
     {
-      immediate: true,
       flush: flushSync ? 'sync' : undefined
     }
   );
@@ -98,6 +97,10 @@ export function useLeafletToggleObject<S, T>(
     tryOnScopeDispose(() => {
       _remove();
     });
+  }
+
+  if (unref(value)) {
+    _add();
   }
 
   if (controls) {

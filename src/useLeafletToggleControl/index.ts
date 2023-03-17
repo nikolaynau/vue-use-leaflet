@@ -37,10 +37,14 @@ export function useLeafletToggleControl(
   target: MaybeComputedRef<Control | null | undefined>,
   options: UseLeafletToggleControlOptions<boolean> = {}
 ): UseLeafletToggleControlReturn | UseLeafletToggleControlReturnWithControls {
+  function hasControl(target: Control) {
+    return !!(target as any)._map;
+  }
   return useLeafletToggleObject<LeafletToggleControl, Control>(source, target, {
     ...(options as Object),
-    add: (source, target) => source.addControl(target),
-    remove: (source, target) => source.removeControl(target),
-    has: (source, target) => !!(target as any)._.map
+    add: (source, target) => !hasControl(target) && source.addControl(target),
+    remove: (source, target) =>
+      hasControl(target) && source.removeControl(target),
+    has: (source, target) => hasControl(target)
   });
 }
