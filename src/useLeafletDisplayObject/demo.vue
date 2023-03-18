@@ -3,23 +3,23 @@ import { ref } from 'vue';
 import {
   useLeafletMap,
   useLeafletTileLayer,
-  useLeafletDisplayLayer
+  useLeafletDisplayObject
 } from 'vue-use-leaflet';
 
-const visible = ref(false);
 const element = ref<HTMLElement | null>(null);
 const map = useLeafletMap(element);
 const tileLayer = useLeafletTileLayer(
   'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
 );
 
-const toggle = useLeafletDisplayLayer(map, tileLayer, {
-  initialValue: visible
+const toggle = useLeafletDisplayObject(map, tileLayer, {
+  show: (source, target) => source.addLayer(target),
+  hide: (source, target) => source.removeLayer(target),
+  shown: (source, target) => source.hasLayer(target)
 });
 </script>
 
 <template>
   <div ref="element" style="height: 250px"></div>
-  <button @click="toggle()">Toggle Visible</button>
-  <span> Visible: {{ visible }}</span>
+  <button @click="toggle()">Toggle</button>
 </template>

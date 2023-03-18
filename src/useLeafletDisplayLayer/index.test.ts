@@ -74,16 +74,35 @@ describe('useLeafletDisplayLayer', () => {
   });
 
   it('should work has with controls', async () => {
-    const { has } = useLeafletDisplayLayer(sourceRef, targetRef, {
+    let isShown = false;
+    (source.hasLayer as unknown as Mock).mockImplementation(() => isShown);
+    (source.addLayer as unknown as Mock).mockImplementation(
+      () => (isShown = true)
+    );
+    (source.removeLayer as unknown as Mock).mockImplementation(
+      () => (isShown = false)
+    );
+    const { show, hide, shown } = useLeafletDisplayLayer(sourceRef, targetRef, {
+      initialValue: false,
       controls: true
     });
-    expectAddLayerCalled(1);
-    expectHasLayerCalled(1);
-
-    has();
-
-    expectAddLayerCalled(1);
-    expectHasLayerCalled(2);
+    expect(source.addLayer).not.toBeCalled();
+    expect(source.hasLayer).not.toBeCalled();
     expect(source.removeLayer).not.toBeCalled();
+
+    expect(shown()).toBeFalsy();
+
+    show();
+    await nextTick();
+    expect(shown()).toBeTruthy();
+
+    hide();
+    await nextTick();
+    expect(shown()).toBeFalsy();
+
+    expect(source.addLayer).toBeCalledTimes(1);
+    expect(source.removeLayer).toBeCalledTimes(1);
+    expect(source.hasLayer).toBeCalledTimes(5);
+    expect(source.hasLayer).toBeCalledWith(target);
   });
 });

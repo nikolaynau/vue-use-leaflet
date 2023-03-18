@@ -1,15 +1,15 @@
 import type { MaybeComputedRef } from '@vueuse/shared';
 import type { Control } from 'leaflet';
 import {
-  type UseLeafletToggleObjectOptions,
-  type UseLeafletToggleObjectReturn,
-  type UseLeafletToggleObjectReturnWithControls,
-  useLeafletToggleObject
-} from '../useLeafletToggleObject';
+  type UseLeafletDisplayObjectOptions,
+  type UseLeafletDisplayObjectReturn,
+  type UseLeafletDisplayObjectReturnWithControls,
+  useLeafletDisplayObject
+} from '../useLeafletDisplayObject';
 
 export type UseLeafletDisplayControlOptions<Controls extends boolean> = Omit<
-  UseLeafletToggleObjectOptions<Controls, LeafletDisplayControl, Control>,
-  'add' | 'remove' | 'has'
+  UseLeafletDisplayObjectOptions<Controls, LeafletDisplayControl, Control>,
+  'show' | 'hide' | 'shown'
 >;
 
 export interface LeafletDisplayControl {
@@ -17,10 +17,10 @@ export interface LeafletDisplayControl {
   removeControl(control: Control): this;
 }
 
-export type UseLeafletDisplayControlReturn = UseLeafletToggleObjectReturn;
+export type UseLeafletDisplayControlReturn = UseLeafletDisplayObjectReturn;
 
 export type UseLeafletDisplayControlReturnWithControls =
-  UseLeafletToggleObjectReturnWithControls;
+  UseLeafletDisplayObjectReturnWithControls;
 
 export function useLeafletDisplayControl(
   source: MaybeComputedRef<LeafletDisplayControl | null | undefined>,
@@ -37,18 +37,14 @@ export function useLeafletDisplayControl(
   target: MaybeComputedRef<Control | null | undefined>,
   options: UseLeafletDisplayControlOptions<boolean> = {}
 ): UseLeafletDisplayControlReturn | UseLeafletDisplayControlReturnWithControls {
-  function hasControl(target: Control) {
-    return !!(target as any)._map;
-  }
-  return useLeafletToggleObject<LeafletDisplayControl, Control>(
+  return useLeafletDisplayObject<LeafletDisplayControl, Control>(
     source,
     target,
     {
-      ...(options as Object),
-      add: (source, target) => !hasControl(target) && source.addControl(target),
-      remove: (source, target) =>
-        hasControl(target) && source.removeControl(target),
-      has: (source, target) => hasControl(target)
+      ...(options as any),
+      show: (source, target) => source.addControl(target),
+      hide: (source, target) => source.removeControl(target),
+      shown: (source, target) => !!(target as any)._map
     }
   );
 }

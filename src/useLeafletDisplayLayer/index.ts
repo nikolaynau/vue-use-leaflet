@@ -1,15 +1,15 @@
 import type { MaybeComputedRef } from '@vueuse/shared';
 import type { Layer } from 'leaflet';
 import {
-  type UseLeafletToggleObjectOptions,
-  type UseLeafletToggleObjectReturn,
-  type UseLeafletToggleObjectReturnWithControls,
-  useLeafletToggleObject
-} from '../useLeafletToggleObject';
+  type UseLeafletDisplayObjectOptions,
+  type UseLeafletDisplayObjectReturn,
+  type UseLeafletDisplayObjectReturnWithControls,
+  useLeafletDisplayObject
+} from '../useLeafletDisplayObject';
 
 export type UseLeafletDisplayLayerOptions<Controls extends boolean> = Omit<
-  UseLeafletToggleObjectOptions<Controls, LeafletDisplayLayer, Layer>,
-  'add' | 'remove' | 'has'
+  UseLeafletDisplayObjectOptions<Controls, LeafletDisplayLayer, Layer>,
+  'show' | 'hide' | 'shown'
 >;
 
 export interface LeafletDisplayLayer {
@@ -18,10 +18,10 @@ export interface LeafletDisplayLayer {
   hasLayer(layer: Layer): boolean;
 }
 
-export type UseLeafletDisplayLayerReturn = UseLeafletToggleObjectReturn;
+export type UseLeafletDisplayLayerReturn = UseLeafletDisplayObjectReturn;
 
 export type UseLeafletDisplayLayerReturnWithControls =
-  UseLeafletToggleObjectReturnWithControls;
+  UseLeafletDisplayObjectReturnWithControls;
 
 export function useLeafletDisplayLayer(
   source: MaybeComputedRef<LeafletDisplayLayer | null | undefined>,
@@ -38,12 +38,10 @@ export function useLeafletDisplayLayer(
   target: MaybeComputedRef<Layer | null | undefined>,
   options: UseLeafletDisplayLayerOptions<boolean> = {}
 ): UseLeafletDisplayLayerReturn | UseLeafletDisplayLayerReturnWithControls {
-  return useLeafletToggleObject<LeafletDisplayLayer, Layer>(source, target, {
-    ...(options as Object),
-    add: (source, target) =>
-      !source.hasLayer(target) && source.addLayer(target),
-    remove: (source, target) =>
-      source.hasLayer(target) && source.removeLayer(target),
-    has: (source, target) => source.hasLayer(target)
+  return useLeafletDisplayObject<LeafletDisplayLayer, Layer>(source, target, {
+    ...(options as any),
+    show: (source, target) => source.addLayer(target),
+    hide: (source, target) => source.removeLayer(target),
+    shown: (source, target) => source.hasLayer(target)
   });
 }

@@ -128,6 +128,38 @@ describe('useLeafletDisplayObject', () => {
     expectShownCalled(3);
   });
 
+  it('should work with controls', async () => {
+    let isShown = false;
+    shownSpy.mockImplementation(() => isShown);
+    showSpy.mockImplementation(() => (isShown = true));
+    hideSpy.mockImplementation(() => (isShown = false));
+
+    const { shown, show, hide } = useLeafletDisplayObject(
+      sourceRef,
+      targetRef,
+      {
+        ...options,
+        initialValue: false,
+        controls: true
+      }
+    );
+    expectAllNotCalled();
+    expect(shown()).toBeFalsy();
+
+    show();
+    await nextTick();
+    expect(shown()).toBeTruthy();
+
+    hide();
+    await nextTick();
+    expect(shown()).toBeFalsy();
+
+    expect(showSpy.mock.calls).toHaveLength(1);
+    expect(hideSpy.mock.calls).toHaveLength(1);
+    expect(shownSpy.mock.calls).toHaveLength(5);
+    expect(shownSpy.mock.calls[0]).toEqual([source, target]);
+  });
+
   it('should work dispose', () => {
     expect.assertions(11);
 

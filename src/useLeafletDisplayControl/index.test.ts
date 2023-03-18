@@ -1,4 +1,12 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import {
+  describe,
+  it,
+  expect,
+  beforeEach,
+  afterEach,
+  vi,
+  type Mock
+} from 'vitest';
 import { nextTick, Ref, ref, markRaw } from 'vue-demi';
 import { Control } from 'leaflet';
 import { type LeafletDisplayControl, useLeafletDisplayControl } from '.';
@@ -56,16 +64,14 @@ describe('useLeafletDisplayControl', () => {
   });
 
   it('should work has with controls', async () => {
-    const { has } = useLeafletDisplayControl(sourceRef, targetRef, {
+    (source.addControl as unknown as Mock).mockImplementation(
+      target => (target._map = {})
+    );
+    const { shown } = useLeafletDisplayControl(sourceRef, targetRef, {
       controls: true
     });
     expectAddControlCalled();
-
-    expect(has()).toBeFalsy();
-    (target as any)._map = {};
-    expect(has()).toBeTruthy();
-
-    expectAddControlCalled(1);
+    expect(shown()).toBeTruthy();
     expect(source.removeControl).not.toBeCalled();
   });
 });
