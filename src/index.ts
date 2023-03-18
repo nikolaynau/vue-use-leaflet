@@ -4,6 +4,7 @@ export * from './useLeafletLayer';
 export * from './useLeafletTileLayer';
 export * from './useLeafletReady';
 export * from './useLeafletLayersControl';
+export * from './useLeafletAttributionControl';
 export * from './useLeafletToggleObject';
 export * from './useLeafletDisplayObject';
 export * from './useLeafletDisplayLayer';
