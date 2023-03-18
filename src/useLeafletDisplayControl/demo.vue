@@ -15,17 +15,17 @@ const tileLayer = useLeafletTileLayer(
 );
 useLeafletDisplayLayer(map, tileLayer);
 
-const controlVisible = ref(false);
+const visible = ref(false);
 const layersControl = useLeafletLayersControl({ 'Open Street Map': tileLayer });
 
 const { toggle } = useLeafletDisplayControl(map, layersControl, {
   controls: true,
-  initialValue: controlVisible
+  initialValue: visible
 });
 </script>
 
 <template>
   <div ref="element" style="height: 250px"></div>
   <button @click="toggle()">Toggle Control</button>
-  <span> Control Visible: {{ controlVisible }}</span>
+  <span> Visible: {{ visible }}</span>
 </template>
