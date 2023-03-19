@@ -41,6 +41,7 @@ export function useLeafletAttributionControl(
 
     _instance.value = markRaw(instance);
   }
+
   function init() {
     if (isDef(unref(prefix))) {
       _instance.value?.setPrefix(unref(_prefix)!);
