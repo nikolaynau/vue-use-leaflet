@@ -16,7 +16,7 @@ const tileLayer = useLeafletTileLayer(
 );
 useLeafletDisplayLayer(map, tileLayer);
 
-const prefix = ref(undefined);
+const prefix = ref<string | undefined>(undefined);
 const attributions = ref([]);
 const attributionControl = useLeafletAttributionControl({
   prefix,
