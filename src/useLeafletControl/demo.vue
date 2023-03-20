@@ -26,8 +26,8 @@ const disabled = ref(false);
 const controlElement = ref<HTMLElement | null>(null);
 const customControl = useLeafletControl({
   disabled,
-  onAdd: () => {
-    console.log('useLeafletControl::onAdd');
+  onAdd: map => {
+    console.log('useLeafletControl::onAdd', map);
 
     const container = document.createElement('div');
     DomEvent.disableClickPropagation(container);
@@ -38,9 +38,11 @@ const customControl = useLeafletControl({
     }
     return container;
   },
-  onRemove: () => console.log('useLeafletControl::onRemove'),
-  onDisable: () => console.log('useLeafletControl::onDisable'),
-  onEnable: () => console.log('useLeafletControl::onEnable')
+  onRemove: map => console.log('useLeafletControl::onRemove', map),
+  onDisable: (map, control) =>
+    console.log('useLeafletControl::onDisable', map, control),
+  onEnable: (map, control) =>
+    console.log('useLeafletControl::onEnable', map, control)
 });
 
 useLeafletDisplayControl(map, customControl);
