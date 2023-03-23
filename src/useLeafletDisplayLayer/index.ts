@@ -1,4 +1,4 @@
-import type { MaybeComputedRef } from '@vueuse/shared';
+import type { Arrayable, MaybeComputedRef } from '@vueuse/shared';
 import type { Layer } from 'leaflet';
 import {
   type UseLeafletDisplayObjectOptions,
@@ -25,23 +25,39 @@ export type UseLeafletDisplayLayerReturnWithControls =
 
 export function useLeafletDisplayLayer(
   source: MaybeComputedRef<LeafletDisplayLayer | null | undefined>,
-  target: MaybeComputedRef<Layer | null | undefined>,
+  target: MaybeComputedRef<Arrayable<Layer> | null | undefined>,
   options?: UseLeafletDisplayLayerOptions<false>
 ): UseLeafletDisplayLayerReturn;
 export function useLeafletDisplayLayer(
   source: MaybeComputedRef<LeafletDisplayLayer | null | undefined>,
-  target: MaybeComputedRef<Layer | null | undefined>,
+  target: MaybeComputedRef<Arrayable<Layer> | null | undefined>,
   options: UseLeafletDisplayLayerOptions<true>
 ): UseLeafletDisplayLayerReturnWithControls;
 export function useLeafletDisplayLayer(
   source: MaybeComputedRef<LeafletDisplayLayer | null | undefined>,
-  target: MaybeComputedRef<Layer | null | undefined>,
+  target: MaybeComputedRef<Arrayable<Layer> | null | undefined>,
   options: UseLeafletDisplayLayerOptions<boolean> = {}
 ): UseLeafletDisplayLayerReturn | UseLeafletDisplayLayerReturnWithControls {
-  return useLeafletDisplayObject<LeafletDisplayLayer, Layer>(source, target, {
+  return useLeafletDisplayObject(source, target, {
     ...(options as any),
-    show: (source, target) => source.addLayer(target),
-    hide: (source, target) => source.removeLayer(target),
-    shown: (source, target) => source.hasLayer(target)
+    show: (source, target) => {
+      Array.isArray(target)
+        ? target.forEach(item => {
+            source.addLayer(item);
+          })
+        : source.addLayer(target);
+    },
+    hide: (source, target) => {
+      Array.isArray(target)
+        ? target.forEach(item => {
+            source.removeLayer(item);
+          })
+        : source.removeLayer(target);
+    },
+    shown: (source, target) => {
+      return Array.isArray(target)
+        ? target.every(item => source.hasLayer(item))
+        : source.hasLayer(target);
+    }
   });
 }
