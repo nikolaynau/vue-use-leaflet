@@ -115,9 +115,6 @@ export function useLeafletLayersControl(
   }
 
   function removeAll(overlay: boolean) {
-    if (!isDefined(_instance)) {
-      return;
-    }
     const instance = _instance.value as PrivateControl;
     const layers = instance._layers;
     const baseLayers: LayerEntry[] = [];
