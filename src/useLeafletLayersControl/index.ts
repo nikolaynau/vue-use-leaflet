@@ -21,6 +21,7 @@ import {
   type LayersControlEvent,
   type Map
 } from 'leaflet';
+import type { LayersItemConfig } from './types';
 
 export interface UseLeafletLayersControlOptions extends Control.LayersOptions {
   currentBaseLayer?: MaybeRef<string | null | undefined>;
@@ -31,8 +32,14 @@ export interface UseLeafletLayersControlOptions extends Control.LayersOptions {
 
 export type UseLeafletLayersControlReturn = Ref<Control.Layers | null>;
 
-export interface LayersObject {
-  [name: string]: MaybeComputedRef<Layer | null | undefined>;
+export type { LayersItemConfig };
+
+interface PrivateLayersControl extends Control.Layers {
+  _addLayer(layer: Layer, name: string, overlay: boolean): this;
+  _onLayerChange(): void;
+  _layers: LayerEntry[];
+  _map: Map;
+  _update(): void;
 }
 
 interface LayerEntry {
@@ -41,17 +48,8 @@ interface LayerEntry {
   overlay: boolean;
 }
 
-interface PrivateControl extends Control.Layers {
-  _addLayer(layer: Layer, name: string, overlay: boolean): this;
-  _onLayerChange(): void;
-  _layers: LayerEntry[];
-  _map: Map;
-  _update(): void;
-}
-
 export function useLeafletLayersControl(
-  baseLayers?: MaybeComputedRef<LayersObject | null | undefined>,
-  overlays?: MaybeComputedRef<LayersObject | null | undefined>,
+  layers: MaybeComputedRef<LayersItemConfig[] | null | undefined>,
   options: UseLeafletLayersControlOptions = {}
 ): UseLeafletLayersControlReturn {
   const {
@@ -106,7 +104,7 @@ export function useLeafletLayersControl(
 
   function addAll(layers: LayerEntry[]) {
     layers.forEach(entry => {
-      (_instance.value as PrivateControl)?._addLayer(
+      (_instance.value as PrivateLayersControl)?._addLayer(
         entry.layer,
         entry.name,
         entry.overlay
@@ -115,7 +113,7 @@ export function useLeafletLayersControl(
   }
 
   function removeAll(overlay: boolean) {
-    const instance = _instance.value as PrivateControl;
+    const instance = _instance.value as PrivateLayersControl;
     const layers = instance._layers;
     const baseLayers: LayerEntry[] = [];
     const overlays: LayerEntry[] = [];
@@ -136,7 +134,7 @@ export function useLeafletLayersControl(
   }
 
   function repaint() {
-    const instance = _instance.value as PrivateControl | null;
+    const instance = _instance.value as PrivateLayersControl | null;
     if (instance?._map) {
       instance._update();
     }
@@ -205,7 +203,7 @@ export function useLeafletLayersControl(
   }
 
   function addTo(layer: Layer, map?: Map) {
-    const instance = _instance.value as PrivateControl | null;
+    const instance = _instance.value as PrivateLayersControl | null;
     map = map ?? instance?._map;
     if (map && !map.hasLayer(layer)) {
       map.addLayer(layer);
@@ -213,7 +211,7 @@ export function useLeafletLayersControl(
   }
 
   function removeFrom(layer: Layer, map?: Map) {
-    const instance = _instance.value as PrivateControl | null;
+    const instance = _instance.value as PrivateLayersControl | null;
     map = map ?? instance?._map;
     if (map && map.hasLayer(layer)) {
       map.removeLayer(layer);

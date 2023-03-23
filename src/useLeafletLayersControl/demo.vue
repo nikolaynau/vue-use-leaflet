@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Marker } from 'leaflet';
-import { ref, reactive } from 'vue';
+import { ref, reactive, computed } from 'vue';
 import {
   useLeafletMap,
   useLeafletTileLayer,
@@ -31,21 +31,26 @@ const arcGis = useLeafletTileLayer(
 const markerA = useLeafletLayer({ create: () => new Marker([0, 0]) });
 const markerB = useLeafletLayer({ create: () => new Marker([-10, -10]) });
 
-const baseLayers = reactive({
-  'Open Street Map': osm,
-  'Google Streets': google,
-  'Arc Gis': arcGis
-});
+const layers = reactive([
+  { name: 'Open Street Map', layer: osm },
+  { name: 'Google Streets', layer: google },
+  { name: 'Arc Gis', layer: arcGis },
+  { name: 'Marker A', layer: markerA, overlay: true },
+  { name: 'Marker B', layer: markerB, overlay: true }
+]);
 
-const overlays = reactive({
-  'Marker A': markerA,
-  'Marker B': markerB
-});
+const baseLayers = computed(() =>
+  layers.filter(({ overlay }) => !overlay).map(({ name }) => name)
+);
+
+const overlays = computed(() =>
+  layers.filter(({ overlay }) => overlay).map(({ name }) => name)
+);
 
 const currentBaseLayer = ref('Open Street Map');
 const currentOverlays = ref([]);
 
-const layersControl = useLeafletLayersControl(baseLayers, overlays, {
+const layersControl = useLeafletLayersControl(layers, {
   currentBaseLayer,
   currentOverlays
 });
@@ -58,7 +63,7 @@ useLeafletDisplayControl(map, layersControl);
   <div class="section">
     Current Base Layer:
     <select v-model="currentBaseLayer">
-      <option v-for="(value, name) in baseLayers" :key="name" :value="name">
+      <option v-for="name in baseLayers" :key="name" :value="name">
         {{ name }}
       </option>
     </select>
@@ -67,7 +72,7 @@ useLeafletDisplayControl(map, layersControl);
   <div class="section">
     Current Overlays:
     <select v-model="currentOverlays" multiple>
-      <option v-for="(value, name) in overlays" :key="name" :value="name">
+      <option v-for="name in overlays" :key="name" :value="name">
         {{ name }}
       </option>
     </select>
