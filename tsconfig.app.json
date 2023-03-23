@@ -9,6 +9,7 @@
   "exclude": ["src/**/__tests__/*", "**/*/*.test.ts"],
   "compilerOptions": {
     "composite": true,
+    "ignoreDeprecations": "5.0",
     "baseUrl": ".",
     "paths": {
       "vue-use-leaflet": ["./src/index.ts"]
