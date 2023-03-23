@@ -49,10 +49,11 @@ export function useLeafletDisplayObject<S, T>(
   }
 
   function _shown(): boolean {
-    if (shown && isDefined(source) && isDefined(target)) {
-      return shown(resolveUnref(source)!, resolveUnref(target)!);
-    }
-    return false;
+    return !!(
+      isDefined(source) &&
+      isDefined(target) &&
+      shown?.(resolveUnref(source)!, resolveUnref(target)!)
+    );
   }
 
   const toggle = useLeafletToggleObject(source, target, {
