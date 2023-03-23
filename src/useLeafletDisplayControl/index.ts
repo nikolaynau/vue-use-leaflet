@@ -49,10 +49,9 @@ export function useLeafletDisplayControl(
         ? target.forEach(item => source.removeControl(item))
         : source.removeControl(target);
     },
-    shown: (source, target) => {
-      return Array.isArray(target)
+    shown: (source, target) =>
+      Array.isArray(target)
         ? target.every(item => !!(item as any)._map)
-        : !!(target as any)._map;
-    }
+        : !!(target as any)._map
   });
 }

@@ -54,10 +54,9 @@ export function useLeafletDisplayLayer(
           })
         : source.removeLayer(target);
     },
-    shown: (source, target) => {
-      return Array.isArray(target)
+    shown: (source, target) =>
+      Array.isArray(target)
         ? target.every(item => source.hasLayer(item))
-        : source.hasLayer(target);
-    }
+        : source.hasLayer(target)
   });
 }
