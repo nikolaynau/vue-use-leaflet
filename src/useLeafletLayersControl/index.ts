@@ -6,7 +6,7 @@ import {
   resolveRef,
   isNumber
 } from '@vueuse/shared';
-import { type Ref, shallowRef, ref, markRaw, unref, computed } from 'vue-demi';
+import { type Ref, shallowRef, ref, markRaw, computed } from 'vue-demi';
 import {
   Control,
   type Layer,
@@ -24,6 +24,7 @@ import { useOverlayLayers } from './overlays';
 export interface UseLeafletLayersControlOptions extends Control.LayersOptions {
   currentBaseLayer?: MaybeRef<string | number | null | undefined>;
   currentOverlays?: MaybeRef<string[] | number[] | null | undefined>;
+  indexes?: boolean;
   factory?: (...args: unknown[]) => Control.Layers;
   dispose?: boolean;
 }
@@ -39,6 +40,7 @@ export function useLeafletLayersControl(
   const {
     currentBaseLayer,
     currentOverlays,
+    indexes = false,
     factory,
     dispose = true,
     ...controlOptions
@@ -121,7 +123,7 @@ export function useLeafletLayersControl(
   }
 
   function onBaseLayerChanged(e: LayersControlEvent) {
-    if (isNumber(unref(_currentBaseLayer))) {
+    if (indexes || isNumber(_currentBaseLayer.value)) {
       _currentBaseLayer.value = findIndex(_baseLayers.value, e.layer);
     } else {
       _currentBaseLayer.value = e.name;
@@ -133,7 +135,7 @@ export function useLeafletLayersControl(
       _currentOverlays.value = [];
     }
 
-    if (isNumber(_currentOverlays.value![0])) {
+    if (indexes || isNumber(_currentOverlays.value![0])) {
       const index = findIndex(_overlayLayers.value, e.layer);
       const arr = _currentOverlays.value as number[];
       if (index !== undefined && !arr.includes(index)) {
@@ -150,7 +152,7 @@ export function useLeafletLayersControl(
       _currentOverlays.value = [];
     }
 
-    if (isNumber(_currentOverlays.value![0])) {
+    if (indexes || isNumber(_currentOverlays.value![0])) {
       const arr = _currentOverlays.value as number[];
       const index = findIndex(_overlayLayers.value, e.layer);
       if (index !== undefined) {
