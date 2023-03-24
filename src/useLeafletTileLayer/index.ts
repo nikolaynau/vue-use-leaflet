@@ -1,4 +1,4 @@
-import { isDefined, resolveUnref, type MaybeComputedRef } from '@vueuse/shared';
+import { resolveUnref, type MaybeComputedRef } from '@vueuse/shared';
 import { TileLayer, type TileLayerOptions } from 'leaflet';
 import { useLeafletLayer } from '../useLeafletLayer';
 

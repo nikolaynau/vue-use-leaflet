@@ -20,3 +20,11 @@ export interface LayerEntry {
   layer: Layer;
   overlay: boolean;
 }
+
+export interface PrivateLayersControl extends Control.Layers {
+  _addLayer(layer: Layer, name: string, overlay: boolean): this;
+  _onLayerChange(): void;
+  _layers: LayerEntry[];
+  _map: Map;
+  _update(): void;
+}
