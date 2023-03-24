@@ -1,10 +1,11 @@
-import { ref, unref, watch, type Ref } from 'vue-demi';
+import { unref, watch, type Ref } from 'vue-demi';
 import {
   type MaybeRef,
   type MaybeComputedRef,
   resolveUnref,
   useToggle,
-  whenever
+  whenever,
+  resolveRef
 } from '@vueuse/shared';
 import { logicAnd } from '@vueuse/math';
 import { tryOnScopeDispose } from '@vueuse/core';
@@ -47,7 +48,7 @@ export function useLeafletToggleObject<S, T>(
     onToggle
   } = options;
 
-  const value = ref(initialValue);
+  const value = resolveRef(initialValue);
   const toggle = useToggle(value);
   const isBoth = logicAnd(source, target);
 

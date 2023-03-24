@@ -1,6 +1,5 @@
 import { markRaw, shallowRef, unref, watch, type Ref } from 'vue-demi';
 import {
-  isDef,
   isDefined,
   resolveRef,
   tryOnUnmounted,
@@ -43,7 +42,7 @@ export function useLeafletAttributionControl(
   }
 
   function init() {
-    if (isDef(unref(prefix))) {
+    if (unref(_prefix) !== undefined) {
       _instance.value?.setPrefix(unref(_prefix)!);
     }
     if (isDefined(_attributions)) {
