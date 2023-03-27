@@ -15,8 +15,10 @@ const tileLayer = useLeafletTileLayer(
 );
 useLeafletDisplayLayer(map, tileLayer);
 
-const visible = ref(false);
-const layersControl = useLeafletLayersControl({ 'Open Street Map': tileLayer });
+const visible = ref(true);
+const layersControl = useLeafletLayersControl([
+  { name: 'Open Street Map', layer: tileLayer }
+]);
 
 const { toggle } = useLeafletDisplayControl(map, layersControl, {
   controls: true,
