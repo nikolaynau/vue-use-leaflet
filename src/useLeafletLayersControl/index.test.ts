@@ -258,7 +258,8 @@ describe('useLeafletLayersControl', () => {
 
     const instance = useLeafletLayersControl(rawLayers, {
       currentBaseLayer,
-      currentOverlays
+      currentOverlays,
+      indexes: true
     });
     map.addControl(unref(instance)!);
 

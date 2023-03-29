@@ -3,8 +3,7 @@ import {
   type MaybeRef,
   tryOnUnmounted,
   isDefined,
-  resolveRef,
-  isNumber
+  resolveRef
 } from '@vueuse/shared';
 import { type Ref, shallowRef, ref, markRaw, computed } from 'vue-demi';
 import {
@@ -123,7 +122,7 @@ export function useLeafletLayersControl(
   }
 
   function onBaseLayerChanged(e: LayersControlEvent) {
-    if (indexes || isNumber(_currentBaseLayer.value)) {
+    if (indexes) {
       _currentBaseLayer.value = findIndex(_baseLayers.value, e.layer);
     } else {
       _currentBaseLayer.value = e.name;
@@ -135,7 +134,7 @@ export function useLeafletLayersControl(
       _currentOverlays.value = [];
     }
 
-    if (indexes || isNumber(_currentOverlays.value![0])) {
+    if (indexes) {
       const index = findIndex(_overlayLayers.value, e.layer);
       const arr = _currentOverlays.value as number[];
       if (index !== undefined && !arr.includes(index)) {
@@ -152,7 +151,7 @@ export function useLeafletLayersControl(
       _currentOverlays.value = [];
     }
 
-    if (indexes || isNumber(_currentOverlays.value![0])) {
+    if (indexes) {
       const arr = _currentOverlays.value as number[];
       const index = findIndex(_overlayLayers.value, e.layer);
       if (index !== undefined) {
