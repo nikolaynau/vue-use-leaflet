@@ -1,4 +1,4 @@
-import { type MaybeComputedRef, resolveUnref, isDefined } from '@vueuse/shared';
+import { type MaybeComputedRef, resolveUnref } from '@vueuse/shared';
 import type { Fn } from '@vueuse/core';
 import {
   useLeafletToggleObject,
@@ -49,11 +49,9 @@ export function useLeafletDisplayObject<S, T>(
   }
 
   function _shown(): boolean {
-    return !!(
-      isDefined(source) &&
-      isDefined(target) &&
-      shown?.(resolveUnref(source)!, resolveUnref(target)!)
-    );
+    const _source = resolveUnref(source);
+    const _target = resolveUnref(target);
+    return !!(_source && _target && shown?.(_source, _target));
   }
 
   const toggle = useLeafletToggleObject(source, target, {
