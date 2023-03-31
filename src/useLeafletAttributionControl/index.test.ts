@@ -8,7 +8,7 @@ import {
   nextTick,
   reactive
 } from 'vue-demi';
-import { Control } from 'leaflet';
+import { Control, Map } from 'leaflet';
 import { mount } from '../../.test';
 import { useLeafletAttributionControl } from '.';
 
@@ -102,15 +102,17 @@ describe('useLeafletAttributionControl', () => {
     });
   });
 
-  it('should destroy instance when component is unmounted', async () => {
+  it('should destroy instance when component is unmounted', () => {
     expect.assertions(3);
 
     const vm = mount(
       defineComponent({
         setup() {
+          const map = new Map(document.createElement('div'));
           const instance = useLeafletAttributionControl();
 
           expect(unref(instance)).toBeInstanceOf(Control.Attribution);
+          map.addControl(unref(instance)!);
           const removeSpy = vi.spyOn(unref(instance)!, 'remove');
 
           onUnmounted(() => {
@@ -125,5 +127,19 @@ describe('useLeafletAttributionControl', () => {
     );
 
     vm.unmount();
+  });
+
+  it('should destroy instance when clean ref', () => {
+    const map = new Map(document.createElement('div'));
+    const instance = useLeafletAttributionControl();
+
+    expect(unref(instance)).toBeInstanceOf(Control.Attribution);
+    map.addControl(unref(instance)!);
+    const removeSpy = vi.spyOn(unref(instance)!, 'remove');
+
+    instance.value = null;
+
+    expect(unref(instance)).toBeNull();
+    expect(removeSpy).toBeCalledTimes(1);
   });
 });

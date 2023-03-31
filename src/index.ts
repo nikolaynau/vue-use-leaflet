@@ -15,3 +15,4 @@ export * from './useLeafletDisplayControl';
 export * from './useLeafletPane';
 export * from './useLeafletDeps';
 export * from './useLeafletRemoveObject';
+export * from './useLeafletRemoveControl';
