@@ -9,6 +9,7 @@ import {
 
 export interface UseLeafletRemoveObjectOptions<T> {
   remove?: (source: T) => void;
+  isRemoved?: (source: T) => boolean;
   watch?: WatchSource<any>;
   cleanRef?: boolean;
   cleanVal?: any;
@@ -24,6 +25,7 @@ export function useLeafletRemoveObject<T = any>(
 ): UseLeafletRemoveObjectReturn {
   const {
     remove,
+    isRemoved,
     watch: _watch,
     cleanRef,
     cleanVal = null,
@@ -39,7 +41,7 @@ export function useLeafletRemoveObject<T = any>(
     _source,
     (_new, old) => {
       if (!_locked) {
-        !_new && old && remove?.(old);
+        !_new && old && _remove(old);
       } else {
         _locked = false;
       }
@@ -57,9 +59,13 @@ export function useLeafletRemoveObject<T = any>(
     );
   }
 
+  function _remove(source: T) {
+    !(isRemoved?.(source) ?? false) && remove?.(source);
+  }
+
   function clean() {
-    if (isDefined(_source) && remove) {
-      remove(_source.value);
+    if (isDefined(_source)) {
+      _remove(_source.value);
       if (cleanRef && !isReadonly(_source)) {
         _locked = true;
         _source.value = cleanVal;

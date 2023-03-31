@@ -14,18 +14,20 @@ const tileLayer = useLeafletTileLayer(
 );
 useLeafletDisplayLayer(map, tileLayer);
 
-const destroy = ref(false);
+const destroyed = ref(false);
 
 const remove = useLeafletRemoveObject(map, {
   remove: map => map.off().remove(),
+  isRemoved: map => !(map.getContainer() as any)._leaflet_id,
   cleanRef: true,
-  watch: destroy
+  watch: destroyed
 });
 </script>
 
 <template>
   <div ref="element" style="height: 250px"></div>
-  <button @click="destroy = true">Destroy Map</button>
+  <button @click="destroyed = true">Destroy Map</button>
+  Destroyed: {{ destroyed }}
   <br />
   <button @click="remove">Manual Destroy Map</button>
 </template>
