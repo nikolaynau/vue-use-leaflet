@@ -50,26 +50,34 @@ export function useLeafletToggleObject<S, T>(
 
   const value = resolveRef(initialValue);
   const toggle = useToggle(value);
-  const isBoth = logicAnd(source, target);
+  const flush = flushSync ? 'sync' : undefined;
 
   function callback(value: boolean) {
-    isBoth.value &&
-      onToggle?.(resolveUnref(source)!, resolveUnref(target)!, value);
+    const _source = resolveUnref(source);
+    const _target = resolveUnref(target);
+
+    if (_source && _target) {
+      onToggle?.(_source, _target, value);
+    }
   }
 
-  function initial() {
+  function init() {
     if (unref(value)) {
       callback(unref(value));
     }
   }
 
   watch(value, callback, {
-    flush: flushSync ? 'sync' : undefined
+    flush
   });
 
-  whenever(isBoth, () => {
-    initial();
-  });
+  whenever(
+    logicAnd(source, target),
+    () => {
+      init();
+    },
+    { flush }
+  );
 
   if (dispose) {
     tryOnScopeDispose(() => {
@@ -77,7 +85,7 @@ export function useLeafletToggleObject<S, T>(
     });
   }
 
-  initial();
+  init();
 
   if (controls) {
     return {
