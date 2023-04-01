@@ -6,7 +6,7 @@ import {
   useLeafletTileLayer,
   useLeafletDisplayControl,
   useLeafletDisplayLayer,
-  useLeafletControl,
+  useLeafletCustomControl,
   useLeafletLayer
 } from 'vue-use-leaflet';
 
@@ -24,10 +24,10 @@ const { value: visible } = useLeafletDisplayLayer(map, marker, {
 
 const disabled = ref(false);
 const controlElement = ref<HTMLElement | null>(null);
-const customControl = useLeafletControl({
+const customControl = useLeafletCustomControl({
   disabled,
   onAdd: map => {
-    console.log('useLeafletControl::onAdd', map);
+    console.log('useLeafletCustomControl::onAdd', map);
 
     const container = document.createElement('div');
     DomEvent.disableClickPropagation(container);
@@ -38,11 +38,11 @@ const customControl = useLeafletControl({
     }
     return container;
   },
-  onRemove: map => console.log('useLeafletControl::onRemove', map),
+  onRemove: map => console.log('useLeafletCustomControl::onRemove', map),
   onDisable: (map, control) =>
-    console.log('useLeafletControl::onDisable', map, control),
+    console.log('useLeafletCustomControl::onDisable', map, control),
   onEnable: (map, control) =>
-    console.log('useLeafletControl::onEnable', map, control)
+    console.log('useLeafletCustomControl::onEnable', map, control)
 });
 
 useLeafletDisplayControl(map, customControl);

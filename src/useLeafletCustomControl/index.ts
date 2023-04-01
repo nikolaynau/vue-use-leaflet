@@ -7,7 +7,7 @@ import {
 } from '@vueuse/shared';
 import { Control, type ControlOptions, type Map } from 'leaflet';
 
-export interface UseLeafletControlOptions extends ControlOptions {
+export interface UseLeafletCustomControlOptions extends ControlOptions {
   disabled?: MaybeComputedRef<boolean>;
   factory?: (...args: unknown[]) => Control;
   dispose?: boolean;
@@ -17,11 +17,11 @@ export interface UseLeafletControlOptions extends ControlOptions {
   onEnable?: (map: Map, control: Control) => void;
 }
 
-export type UseLeafletControlReturn = Ref<Control | null>;
+export type UseLeafletCustomControlReturn = Ref<Control | null>;
 
-export function useLeafletControl(
-  options: UseLeafletControlOptions = {}
-): UseLeafletControlReturn {
+export function useLeafletCustomControl(
+  options: UseLeafletCustomControlOptions = {}
+): UseLeafletCustomControlReturn {
   const {
     disabled,
     factory,

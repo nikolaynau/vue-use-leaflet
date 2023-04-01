@@ -9,14 +9,17 @@ import {
 } from 'vue-demi';
 import { Control, Map } from 'leaflet';
 import { mount } from '../../.test';
-import { useLeafletControl, type UseLeafletControlOptions } from '.';
+import {
+  useLeafletCustomControl,
+  type UseLeafletCustomControlOptions
+} from '.';
 
-describe('useLeafletControl', () => {
+describe('useLeafletCustomControl', () => {
   let onAddSpy: Mock;
   let onRemoveSpy: Mock;
   let onDisableSpy: Mock;
   let onEnableSpy: Mock;
-  let options: UseLeafletControlOptions;
+  let options: UseLeafletCustomControlOptions;
   let map: Map;
 
   beforeEach(() => {
@@ -43,12 +46,12 @@ describe('useLeafletControl', () => {
   }
 
   it('should return not empty instance', () => {
-    expect(unref(useLeafletControl())).toBeInstanceOf(Control);
+    expect(unref(useLeafletCustomControl())).toBeInstanceOf(Control);
   });
 
   it('should work with factory', () => {
     const factory = vi.fn().mockImplementation(options => new Control(options));
-    const instance = useLeafletControl({
+    const instance = useLeafletCustomControl({
       factory
     });
     expect(unref(instance)).toBeInstanceOf(Control);
@@ -58,7 +61,7 @@ describe('useLeafletControl', () => {
   it('should work with callbacks', () => {
     onAddSpy.mockImplementation(() => document.createElement('div'));
 
-    const instance = useLeafletControl(options);
+    const instance = useLeafletCustomControl(options);
     expect(unref(instance)).toBeInstanceOf(Control);
     expectNotCalled();
 
@@ -82,7 +85,7 @@ describe('useLeafletControl', () => {
 
   it('should not call callbacks when control not added to map', async () => {
     const disabled = ref(false);
-    const instance = useLeafletControl({ ...options, disabled });
+    const instance = useLeafletCustomControl({ ...options, disabled });
     expect(unref(instance)).toBeInstanceOf(Control);
     expectNotCalled();
 
@@ -96,7 +99,7 @@ describe('useLeafletControl', () => {
     onAddSpy.mockImplementation(() => document.createElement('div'));
 
     const disabled = ref(false);
-    const instance = useLeafletControl({ ...options, disabled });
+    const instance = useLeafletCustomControl({ ...options, disabled });
     expect(unref(instance)).toBeInstanceOf(Control);
     expectNotCalled();
 
@@ -126,7 +129,7 @@ describe('useLeafletControl', () => {
     const vm = mount(
       defineComponent({
         setup() {
-          const instance = useLeafletControl();
+          const instance = useLeafletCustomControl();
 
           expect(unref(instance)).toBeInstanceOf(Control);
           const removeSpy = vi.spyOn(unref(instance)!, 'remove');
