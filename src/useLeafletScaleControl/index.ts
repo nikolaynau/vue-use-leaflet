@@ -1,6 +1,6 @@
 import { markRaw, shallowRef, type Ref } from 'vue-demi';
-import { isDefined, tryOnUnmounted } from '@vueuse/shared';
 import { Control } from 'leaflet';
+import { useLeafletRemoveControl } from 'src/useLeafletRemoveControl';
 
 export interface UseLeafletScaleControlOptions extends Control.ScaleOptions {
   factory?: (...args: unknown[]) => Control.Attribution;
@@ -24,18 +24,7 @@ export function useLeafletScaleControl(
     _instance.value = markRaw(instance);
   }
 
-  function clean() {
-    if (isDefined(_instance)) {
-      _instance.value.remove();
-      (_instance as Ref<Control.Scale | null>).value = null;
-    }
-  }
-
-  if (dispose) {
-    tryOnUnmounted(() => {
-      clean();
-    });
-  }
+  useLeafletRemoveControl(_instance, { dispose });
 
   create();
 

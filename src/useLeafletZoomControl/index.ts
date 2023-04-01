@@ -1,12 +1,7 @@
-import {
-  isDefined,
-  isFunction,
-  resolveRef,
-  tryOnUnmounted,
-  type MaybeComputedRef
-} from '@vueuse/shared';
+import { isFunction, resolveRef, type MaybeComputedRef } from '@vueuse/shared';
 import { markRaw, shallowRef, unref, watch, type Ref } from 'vue-demi';
 import { Control } from 'leaflet';
+import { useLeafletRemoveControl } from 'src/useLeafletRemoveControl';
 
 export interface UseLeafletZoomControlOptions extends Control.ZoomOptions {
   disabled?: MaybeComputedRef<boolean>;
@@ -50,18 +45,7 @@ export function useLeafletZoomControl(
     }
   }
 
-  function clean() {
-    if (isDefined(_instance)) {
-      _instance.value.remove();
-      (_instance as Ref<Control.Zoom | null>).value = null;
-    }
-  }
-
-  if (dispose) {
-    tryOnUnmounted(() => {
-      clean();
-    });
-  }
+  useLeafletRemoveControl(_instance, { dispose });
 
   watch(_disabled, update);
 

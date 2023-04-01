@@ -61,9 +61,12 @@ describe('useLeafletZoomControl', () => {
     const vm = mount(
       defineComponent({
         setup() {
+          const map = new Map(document.createElement('div'));
           const instance = useLeafletZoomControl();
 
           expect(unref(instance)).toBeInstanceOf(Control.Zoom);
+          map.addControl(unref(instance)!);
+
           const removeSpy = vi.spyOn(unref(instance)!, 'remove');
 
           onUnmounted(() => {
@@ -78,5 +81,19 @@ describe('useLeafletZoomControl', () => {
     );
 
     vm.unmount();
+  });
+
+  it('should destroy instance when clean ref', () => {
+    const map = new Map(document.createElement('div'));
+    const instance = useLeafletZoomControl();
+
+    expect(unref(instance)).toBeInstanceOf(Control.Zoom);
+    map.addControl(unref(instance)!);
+    const removeSpy = vi.spyOn(unref(instance)!, 'remove');
+
+    instance.value = null;
+
+    expect(unref(instance)).toBeNull();
+    expect(removeSpy).toBeCalledTimes(1);
   });
 });
