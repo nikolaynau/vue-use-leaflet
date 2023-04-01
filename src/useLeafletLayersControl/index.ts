@@ -18,7 +18,7 @@ import type {
 } from './types';
 import { useBaseLayers } from './baseLayers';
 import { useOverlayLayers } from './overlays';
-import { useLeafletRemoveControl } from 'src/useLeafletRemoveControl';
+import { useLeafletRemoveControl } from '../useLeafletRemoveControl';
 
 export interface UseLeafletLayersControlOptions extends Control.LayersOptions {
   currentBaseLayer?: MaybeRef<string | number | null | undefined>;

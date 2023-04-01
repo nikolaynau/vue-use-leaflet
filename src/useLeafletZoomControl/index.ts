@@ -1,7 +1,7 @@
 import { isFunction, resolveRef, type MaybeComputedRef } from '@vueuse/shared';
 import { markRaw, shallowRef, unref, watch, type Ref } from 'vue-demi';
 import { Control } from 'leaflet';
-import { useLeafletRemoveControl } from 'src/useLeafletRemoveControl';
+import { useLeafletRemoveControl } from '../useLeafletRemoveControl';
 
 export interface UseLeafletZoomControlOptions extends Control.ZoomOptions {
   disabled?: MaybeComputedRef<boolean>;
