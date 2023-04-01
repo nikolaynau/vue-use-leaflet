@@ -14,6 +14,7 @@ describe('useLeafletRemoveControl', () => {
 
     useLeafletRemoveControl(control);
     control.value = null;
+
     expect(removeSpy).toBeCalledTimes(1);
   });
 

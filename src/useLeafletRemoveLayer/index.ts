@@ -5,18 +5,19 @@ import {
   type UseLeafletRemoveObjectReturn
 } from '../useLeafletRemoveObject';
 
-export interface LeafletRemovableControl {
+export interface LeafletRemovableLayer {
+  off(): this;
   remove(): this;
 }
 
-export function useLeafletRemoveControl<
-  T extends LeafletRemovableControl = LeafletRemovableControl
+export function useLeafletRemoveLayer<
+  T extends LeafletRemovableLayer = LeafletRemovableLayer
 >(
   source: MaybeComputedRef<T | null | undefined>,
   options: UseLeafletRemoveObjectOptions<T> = {}
 ): UseLeafletRemoveObjectReturn {
   const {
-    remove = source => source.remove(),
+    remove = source => source.off().remove(),
     isRemoved = source => !(source as any)._map,
     cleanRef = true,
     flushSync = true,
