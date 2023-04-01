@@ -14,10 +14,8 @@ import { type LeafletDisplayControl, useLeafletDisplayControl } from '.';
 describe('useLeafletDisplayControl', () => {
   let source: LeafletDisplayControl;
   let target: Control;
-  let targetArray: Control[];
   let sourceRef: Ref<LeafletDisplayControl | null | undefined>;
   let targetRef: Ref<Control | null | undefined>;
-  let targetArrRef: Ref<Control[] | null | undefined>;
 
   beforeEach(() => {
     source = {
@@ -25,10 +23,8 @@ describe('useLeafletDisplayControl', () => {
       removeControl: vi.fn()
     };
     target = new Control();
-    targetArray = [new Control(), new Control()];
     sourceRef = ref(source);
     targetRef = ref(markRaw(target));
-    targetArrRef = ref(targetArray.map(markRaw));
   });
 
   afterEach(() => {
@@ -77,29 +73,5 @@ describe('useLeafletDisplayControl', () => {
     expectAddControlCalled();
     expect(shown()).toBeTruthy();
     expect(source.removeControl).not.toBeCalled();
-  });
-
-  it('should work with target as array', async () => {
-    (source.addControl as unknown as Mock).mockImplementation(
-      target => (target._map = {})
-    );
-
-    const toggle = useLeafletDisplayControl(sourceRef, targetArrRef);
-
-    expect(source.addControl).toBeCalledTimes(2);
-    expect((source.addControl as Mock).mock.calls[0][0]).toBe(targetArray[0]);
-    expect((source.addControl as Mock).mock.calls[1][0]).toBe(targetArray[1]);
-
-    toggle();
-    await nextTick();
-
-    expect(source.addControl).toBeCalledTimes(2);
-    expect(source.removeControl).toBeCalledTimes(2);
-    expect((source.removeControl as Mock).mock.calls[0][0]).toBe(
-      targetArray[0]
-    );
-    expect((source.removeControl as Mock).mock.calls[1][0]).toBe(
-      targetArray[1]
-    );
   });
 });

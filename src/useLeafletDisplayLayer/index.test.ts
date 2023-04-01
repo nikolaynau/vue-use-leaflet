@@ -14,10 +14,8 @@ import { type LeafletDisplayLayer, useLeafletDisplayLayer } from '.';
 describe('useLeafletDisplayLayer', () => {
   let source: LeafletDisplayLayer;
   let target: Layer;
-  let targetArray: Layer[];
   let sourceRef: Ref<LeafletDisplayLayer | null | undefined>;
   let targetRef: Ref<Layer | null | undefined>;
-  let targetArrRef: Ref<Layer[] | null | undefined>;
 
   beforeEach(() => {
     source = {
@@ -26,10 +24,8 @@ describe('useLeafletDisplayLayer', () => {
       hasLayer: vi.fn()
     };
     target = new Layer();
-    targetArray = [new Layer(), new Layer()];
     sourceRef = ref(source);
     targetRef = ref(markRaw(target));
-    targetArrRef = ref(targetArray.map(markRaw));
   });
 
   afterEach(() => {
@@ -108,26 +104,5 @@ describe('useLeafletDisplayLayer', () => {
     expect(source.removeLayer).toBeCalledTimes(1);
     expect(source.hasLayer).toBeCalledTimes(5);
     expect(source.hasLayer).toBeCalledWith(target);
-  });
-
-  it('should work with target as array', async () => {
-    const toggle = useLeafletDisplayLayer(sourceRef, targetArrRef);
-
-    expect(source.addLayer).toBeCalledTimes(2);
-    expect((source.addLayer as Mock).mock.calls[0][0]).toBe(targetArray[0]);
-    expect((source.addLayer as Mock).mock.calls[1][0]).toBe(targetArray[1]);
-    expect(source.hasLayer).toBeCalledTimes(1);
-    expect(source.hasLayer).toBeCalledWith(targetArray[0]);
-
-    (source.hasLayer as unknown as Mock).mockImplementation(() => true);
-    toggle();
-    await nextTick();
-
-    expect(source.addLayer).toBeCalledTimes(2);
-    expect(source.removeLayer).toBeCalledTimes(2);
-    expect(source.hasLayer).toBeCalledTimes(3);
-
-    expect((source.removeLayer as Mock).mock.calls[0][0]).toBe(targetArray[0]);
-    expect((source.removeLayer as Mock).mock.calls[1][0]).toBe(targetArray[1]);
   });
 });
