@@ -1,11 +1,7 @@
 import { markRaw, shallowRef, unref, watch, type Ref } from 'vue-demi';
-import {
-  isDefined,
-  resolveRef,
-  tryOnUnmounted,
-  type MaybeComputedRef
-} from '@vueuse/shared';
+import { resolveRef, type MaybeComputedRef } from '@vueuse/shared';
 import { Control, type ControlOptions, type Map } from 'leaflet';
+import { useLeafletRemoveControl } from '../useLeafletRemoveControl';
 
 export interface UseLeafletCustomControlOptions extends ControlOptions {
   disabled?: MaybeComputedRef<boolean>;
@@ -68,18 +64,9 @@ export function useLeafletCustomControl(
     }
   }
 
-  function clean() {
-    if (isDefined(_instance)) {
-      _instance.value.remove();
-      (_instance as Ref<Control | null>).value = null;
-    }
-  }
-
-  if (dispose) {
-    tryOnUnmounted(() => {
-      clean();
-    });
-  }
+  useLeafletRemoveControl(_instance, {
+    dispose
+  });
 
   watch(_disabled, update);
 

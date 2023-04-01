@@ -130,6 +130,7 @@ describe('useLeafletCustomControl', () => {
       defineComponent({
         setup() {
           const instance = useLeafletCustomControl();
+          map.addControl(unref(instance)!);
 
           expect(unref(instance)).toBeInstanceOf(Control);
           const removeSpy = vi.spyOn(unref(instance)!, 'remove');
@@ -146,5 +147,18 @@ describe('useLeafletCustomControl', () => {
     );
 
     vm.unmount();
+  });
+
+  it('should destroy instance when clean ref', () => {
+    const instance = useLeafletCustomControl();
+    expect(unref(instance)).toBeInstanceOf(Control);
+
+    map.addControl(unref(instance)!);
+    const removeSpy = vi.spyOn(unref(instance)!, 'remove');
+
+    instance.value = null;
+
+    expect(unref(instance)).toBeNull();
+    expect(removeSpy).toBeCalledTimes(1);
   });
 });
