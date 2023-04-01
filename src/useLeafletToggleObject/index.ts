@@ -8,7 +8,7 @@ import {
   resolveRef
 } from '@vueuse/shared';
 import { logicAnd } from '@vueuse/math';
-import { tryOnScopeDispose } from '@vueuse/core';
+import { tryOnUnmounted } from '@vueuse/core';
 
 export interface UseLeafletToggleObjectOptions<Controls extends boolean, S, T> {
   initialValue?: MaybeRef<boolean>;
@@ -80,7 +80,7 @@ export function useLeafletToggleObject<S, T>(
   );
 
   if (dispose) {
-    tryOnScopeDispose(() => {
+    tryOnUnmounted(() => {
       callback(false);
     });
   }
