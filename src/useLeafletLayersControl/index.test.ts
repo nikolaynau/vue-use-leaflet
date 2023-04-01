@@ -354,6 +354,19 @@ describe('useLeafletLayersControl', () => {
     vm.unmount();
   });
 
+  it('should destroy instance when clean ref', () => {
+    const instance = useLeafletLayersControl([]);
+    expect(unref(instance)).toBeInstanceOf(Control);
+
+    map.addControl(unref(instance)!);
+    const removeSpy = vi.spyOn(unref(instance)!, 'remove');
+
+    instance.value = null;
+
+    expect(unref(instance)).toBeNull();
+    expect(removeSpy).toBeCalledTimes(1);
+  });
+
   function expectLayers(
     instance: Control.Layers | null,
     layers: LayersItemConfig[]

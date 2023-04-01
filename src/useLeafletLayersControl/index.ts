@@ -1,7 +1,6 @@
 import {
   type MaybeComputedRef,
   type MaybeRef,
-  tryOnUnmounted,
   isDefined,
   resolveRef
 } from '@vueuse/shared';
@@ -19,6 +18,7 @@ import type {
 } from './types';
 import { useBaseLayers } from './baseLayers';
 import { useOverlayLayers } from './overlays';
+import { useLeafletRemoveControl } from 'src/useLeafletRemoveControl';
 
 export interface UseLeafletLayersControlOptions extends Control.LayersOptions {
   currentBaseLayer?: MaybeRef<string | number | null | undefined>;
@@ -233,18 +233,7 @@ export function useLeafletLayersControl(
     }
   }
 
-  function clean() {
-    if (isDefined(_instance)) {
-      _instance.value.remove();
-      (_instance as Ref<Control.Layers | null>).value = null;
-    }
-  }
-
-  if (dispose) {
-    tryOnUnmounted(() => {
-      clean();
-    });
-  }
+  useLeafletRemoveControl(_instance, { dispose });
 
   create();
   init();
