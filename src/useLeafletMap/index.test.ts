@@ -352,6 +352,18 @@ describe('useLeafletMap', () => {
     expect(spy).toBeCalledTimes(1);
   });
 
+  it('should destroy instance when clean ref', () => {
+    const map = useLeafletMap(element);
+
+    expectMap(map.value);
+    const removeSpy = vi.spyOn(map.value!, 'remove');
+
+    map.value = null;
+
+    expect(map.value).toBeNull();
+    expect(removeSpy).toBeCalledTimes(1);
+  });
+
   it('should disable destroy map when component is unmounted', async () => {
     const vm = mount(
       defineComponent({
@@ -444,5 +456,25 @@ describe('useLeafletMap', () => {
     const vm = mount(Root);
     await nextTick();
     vm.unmount();
+  });
+
+  it('should work with flush sync', () => {
+    mount(
+      defineComponent({
+        setup() {
+          const el = ref<HTMLElement | null>(null);
+          const map = useLeafletMap(el, { flushSync: true });
+
+          onMounted(() => {
+            expectMap(map);
+          });
+
+          return { el };
+        },
+        render() {
+          return h('div', { ref: 'el' });
+        }
+      })
+    );
   });
 });

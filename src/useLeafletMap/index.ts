@@ -4,7 +4,6 @@ import {
   isDefined,
   isFunction,
   resolveUnref,
-  tryOnUnmounted,
   type MaybeComputedRef
 } from '@vueuse/shared';
 import {
@@ -19,15 +18,21 @@ import {
   type LeafletEvent
 } from 'leaflet';
 import { useLeafletEvent } from '../useLeafletEvent';
+import { useLeafletRemoveLayer } from '../useLeafletRemoveLayer';
 
 export interface UseLeafletMapOptions
-  extends Omit<MapOptions, 'center' | 'zoom'> {
+  extends Omit<MapOptions, 'center' | 'zoom'>,
+    UseLeafletMapCallbacks {
   center?: MaybeComputedRef<LatLngExpression | undefined>;
   zoom?: MaybeComputedRef<number | undefined>;
   bounds?: MaybeComputedRef<LatLngBoundsExpression | undefined>;
   useFly?: MaybeComputedRef<boolean | undefined>;
+  flushSync?: boolean;
   factory?: (...args: unknown[]) => Map;
   dispose?: boolean;
+}
+
+export interface UseLeafletMapCallbacks {
   onViewChanged?: ViewChangedCallback;
 }
 
@@ -50,13 +55,14 @@ export function useLeafletMap(
     zoom = 0,
     bounds,
     useFly = false,
+    flushSync,
     factory,
     dispose = true,
     onViewChanged,
     ...leafletOptions
   } = options;
 
-  const instance = shallowRef<Map | null>(null);
+  const _instance = shallowRef<Map | null>(null);
 
   function create(element: HTMLElement) {
     const mapOptions: MapOptions = { ...leafletOptions };
@@ -75,7 +81,7 @@ export function useLeafletMap(
       setInitialView(map);
     }
 
-    instance.value = markRaw(map);
+    _instance.value = markRaw(map);
   }
 
   function resetView(map: Map): Map {
@@ -108,33 +114,33 @@ export function useLeafletMap(
     }
 
     if (resolveUnref(useFly)) {
-      instance.value?.flyToBounds(bounds);
+      _instance.value?.flyToBounds(bounds);
     } else {
-      instance.value?.fitBounds(bounds);
+      _instance.value?.fitBounds(bounds);
     }
   }
 
   function setView(center: LatLngExpression, zoom?: number) {
     if (resolveUnref(useFly)) {
-      instance.value?.flyTo(center, zoom);
+      _instance.value?.flyTo(center, zoom);
     } else {
-      instance.value?.setView(center, zoom);
+      _instance.value?.setView(center, zoom);
     }
   }
 
   function setCenter(center: LatLngExpression) {
     if (resolveUnref(useFly)) {
-      instance.value?.flyTo(center);
+      _instance.value?.flyTo(center);
     } else {
-      instance.value?.panTo(center);
+      _instance.value?.panTo(center);
     }
   }
 
   function setZoom(zoom: number) {
     if (resolveUnref(useFly)) {
-      instance.value?.flyTo(instance.value?.getCenter(), zoom);
+      _instance.value?.flyTo(_instance.value?.getCenter(), zoom);
     } else {
-      instance.value?.setZoom(zoom);
+      _instance.value?.setZoom(zoom);
     }
   }
 
@@ -150,6 +156,11 @@ export function useLeafletMap(
     }
     return latLng(latLngA!).equals(latLng(latLngB!));
   }
+
+  const remove = useLeafletRemoveLayer(_instance, {
+    isRemoved: source => !(source.getContainer() as any)._leaflet_id,
+    dispose
+  });
 
   watch(
     () => resolveUnref(bounds),
@@ -182,19 +193,19 @@ export function useLeafletMap(
   watch(
     () => unrefElement(element),
     el => {
-      clean();
+      remove();
       if (el) {
         create(el as HTMLElement);
       }
     },
     {
       immediate: true,
-      flush: 'post'
+      flush: flushSync ? 'sync' : 'post'
     }
   );
 
   if (onViewChanged) {
-    useLeafletEvent(instance, 'moveend', (ev: LeafletEvent) => {
+    useLeafletEvent(_instance, 'moveend', (ev: LeafletEvent) => {
       const map = ev.sourceTarget as Map;
       onViewChanged({
         center: map.getCenter(),
@@ -205,18 +216,5 @@ export function useLeafletMap(
     });
   }
 
-  function clean() {
-    if (isDefined(instance)) {
-      instance.value.off().remove();
-      (instance as Ref<Map | null>).value = null;
-    }
-  }
-
-  if (dispose) {
-    tryOnUnmounted(() => {
-      clean();
-    });
-  }
-
-  return instance;
+  return _instance;
 }
