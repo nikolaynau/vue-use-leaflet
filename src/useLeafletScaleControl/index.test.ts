@@ -47,7 +47,7 @@ describe('useLeafletScaleControl', () => {
     vm.unmount();
   });
 
-  it('should destroy instance when clean ref', () => {
+  it('should destroy instance when clear ref', () => {
     const map = new Map(document.createElement('div'));
     const instance = useLeafletScaleControl();
 

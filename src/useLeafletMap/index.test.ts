@@ -352,7 +352,7 @@ describe('useLeafletMap', () => {
     expect(spy).toBeCalledTimes(1);
   });
 
-  it('should destroy instance when clean ref', () => {
+  it('should destroy instance when clear ref', () => {
     const map = useLeafletMap(element);
 
     expectMap(map.value);

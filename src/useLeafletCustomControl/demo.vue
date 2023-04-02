@@ -17,7 +17,7 @@ const tileLayer = useLeafletTileLayer(
 );
 useLeafletDisplayLayer(map, tileLayer);
 
-const marker = useLeafletLayer({ create: () => new Marker([0, 0]) });
+const marker = useLeafletLayer(() => new Marker([0, 0]));
 const { value: visible } = useLeafletDisplayLayer(map, marker, {
   controls: true
 });

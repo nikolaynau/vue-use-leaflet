@@ -149,7 +149,7 @@ describe('useLeafletCustomControl', () => {
     vm.unmount();
   });
 
-  it('should destroy instance when clean ref', () => {
+  it('should destroy instance when clear ref', () => {
     const instance = useLeafletCustomControl();
     expect(unref(instance)).toBeInstanceOf(Control);
 

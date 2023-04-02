@@ -8,7 +8,6 @@ import {
   ref,
   unref
 } from 'vue-demi';
-import { isDefined } from '@vueuse/shared';
 import { Coords, TileLayer, TileLayerOptions } from 'leaflet';
 import { mount } from '../../.test';
 import { useLeafletTileLayer } from '.';
@@ -67,18 +66,6 @@ describe('useLeafletTileLayer', () => {
     expect(tileLayer.value?.getTileUrl({ z: 1 } as Coords)).toBe(urlB);
   });
 
-  it('should destroy when change url to null', async () => {
-    const tileLayer = useLeafletTileLayer(url);
-    expectTileLayer(tileLayer, rawUrl);
-    const spy = vi.spyOn(tileLayer.value!, 'remove');
-
-    url.value = null;
-    await nextTick();
-
-    expect(tileLayer.value).toBeNull();
-    expect(spy).toBeCalledTimes(1);
-  });
-
   it('should work with factory', () => {
     const options: TileLayerOptions = { tileSize: 250 };
     const instance = new TileLayer(rawUrl, options);
@@ -93,40 +80,42 @@ describe('useLeafletTileLayer', () => {
     expect(factory.mock.calls[0][1]).toEqual(options);
   });
 
-  it('should not set instance when factory return is null', async () => {
-    const tileSize = ref<number | null>(null);
-    let instance: TileLayer | undefined = undefined;
-
-    const factory = vi.fn().mockImplementation((url, options) => {
-      if (!isDefined(tileSize)) {
-        return null;
-      }
-      instance = new TileLayer(url, { ...options, tileSize: unref(tileSize)! });
-      return instance;
+  it('should work with update', async () => {
+    const opacity = ref<number | null>(null);
+    const update = vi.fn(instance => {
+      opacity.value && instance?.setOpacity(opacity.value);
     });
-    const tileLayer = useLeafletTileLayer(url, { factory });
-    expect(tileLayer.value).toBeNull();
 
-    tileSize.value = 250;
+    const tileLayer = useLeafletTileLayer(url, { update });
+    expectTileLayer(tileLayer, rawUrl);
+    expect(update).toBeCalledTimes(1);
+    expect(update).toBeCalledWith(null);
+    const setOpacitySpy = vi.spyOn(tileLayer.value!, 'setOpacity');
+
+    opacity.value = 1;
     await nextTick();
 
-    expectTileLayer(tileLayer, rawUrl);
-    expect(tileLayer.value).toBe(instance);
-    expect(tileLayer.value?.getTileSize()).toEqual({ x: 250, y: 250 });
+    expect(update).toBeCalledTimes(2);
+    expect(update).toBeCalledWith(tileLayer.value);
+    expect(setOpacitySpy).toBeCalledTimes(1);
+    expect(setOpacitySpy).toBeCalledWith(1);
   });
 
-  it('should destroy when component is unmounted', async () => {
+  it('should destroy when component is unmounted', () => {
+    expect.assertions(3);
+
     const vm = mount(
       defineComponent({
         setup() {
           const tileLayer = useLeafletTileLayer(url);
-
           expect(tileLayer.value).toBeInstanceOf(TileLayer);
-          const spy = vi.spyOn(tileLayer.value!, 'remove');
+          const remove = vi.fn();
+          tileLayer.value!.remove = remove;
+          (tileLayer.value as any)._map = {};
 
           onUnmounted(() => {
             expect(tileLayer.value).toBeNull();
-            expect(spy).toBeCalledTimes(1);
+            expect(remove).toBeCalledTimes(1);
           });
         },
         render() {
@@ -138,18 +127,21 @@ describe('useLeafletTileLayer', () => {
     vm.unmount();
   });
 
-  it('should disable destroy when component is unmounted', async () => {
+  it('should disable destroy when component is unmounted', () => {
+    expect.assertions(3);
+
     const vm = mount(
       defineComponent({
         setup() {
           const tileLayer = useLeafletTileLayer(url, { dispose: false });
-
           expect(tileLayer.value).toBeInstanceOf(TileLayer);
-          const spy = vi.spyOn(tileLayer.value!, 'remove');
+          const remove = vi.fn();
+          tileLayer.value!.remove = remove;
+          (tileLayer.value as any)._map = {};
 
           onUnmounted(() => {
             expect(tileLayer.value).toBeInstanceOf(TileLayer);
-            expect(spy).toBeCalledTimes(0);
+            expect(remove).toBeCalledTimes(0);
           });
         },
         render() {
@@ -159,5 +151,18 @@ describe('useLeafletTileLayer', () => {
     );
 
     vm.unmount();
+  });
+
+  it('should destroy instance when clear ref', () => {
+    const tileLayer = useLeafletTileLayer(url);
+    expect(tileLayer.value).toBeInstanceOf(TileLayer);
+    const remove = vi.fn();
+    tileLayer.value!.remove = remove;
+    (tileLayer.value as any)._map = {};
+
+    tileLayer.value = null;
+
+    expect(tileLayer.value).toBeNull();
+    expect(remove).toBeCalledTimes(1);
   });
 });

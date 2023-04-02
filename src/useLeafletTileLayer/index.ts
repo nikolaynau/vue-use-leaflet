@@ -1,33 +1,36 @@
-import { resolveUnref, type MaybeComputedRef } from '@vueuse/shared';
+import type { Ref } from 'vue-demi';
+import { type MaybeComputedRef, resolveRef } from '@vueuse/shared';
 import { TileLayer, type TileLayerOptions } from 'leaflet';
 import { useLeafletLayer } from '../useLeafletLayer';
 
 export interface UseLeafletTileLayerOptions extends TileLayerOptions {
+  update?: (insatnce: TileLayer | null) => void;
   factory?: (...args: unknown[]) => TileLayer;
   dispose?: boolean;
 }
 
+export type UseLeafletTileLayerReturn = Ref<TileLayer | null>;
+
 export function useLeafletTileLayer(
   url: MaybeComputedRef<string | null | undefined>,
   options: UseLeafletTileLayerOptions = {}
-) {
-  const { factory, dispose, ...layerOptions } = options;
+): UseLeafletTileLayerReturn {
+  const { factory, update, dispose, ...layerOptions } = options;
 
-  return useLeafletLayer<TileLayer>({
-    create: () => {
-      if (!resolveUnref(url)) {
-        return null;
-      }
-      if (factory) {
-        return factory(resolveUnref(url), layerOptions);
-      } else {
-        return new TileLayer(resolveUnref(url) as string, layerOptions);
-      }
-    },
-    update: instance =>
-      resolveUnref(url) ? instance.setUrl(resolveUnref(url)!) : null,
-    dispose
-  });
+  const _url = resolveRef(url);
+
+  return useLeafletLayer(
+    () =>
+      factory
+        ? factory(_url.value, layerOptions)
+        : new TileLayer(_url.value!, layerOptions),
+    {
+      watch: _url,
+      update: instance => {
+        _url.value && instance?.setUrl(_url.value);
+        update?.(instance);
+      },
+      dispose
+    }
+  );
 }
-
-export type UseLeafletTileLayerReturn = ReturnType<typeof useLeafletTileLayer>;

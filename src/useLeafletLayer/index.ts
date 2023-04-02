@@ -1,56 +1,69 @@
-import { markRaw, shallowRef, unref, watchEffect, type Ref } from 'vue-demi';
-import { isDefined, tryOnUnmounted } from '@vueuse/shared';
+import {
+  markRaw,
+  shallowRef,
+  watchEffect,
+  watch,
+  type Ref,
+  type WatchSource,
+  nextTick
+} from 'vue-demi';
 import type { Layer } from 'leaflet';
+import { useLeafletRemoveLayer } from '../useLeafletRemoveLayer';
+import { resolveRef } from '@vueuse/shared';
 
 export interface UseLeafletLayerOptions<T> {
-  create?: () => T | null;
-  update?: (instance: T) => T | null | undefined;
-  destroy?: (instance: T) => void;
+  watch?: WatchSource<any>;
+  flushSync?: boolean;
+  update?: (instance: T | null) => void;
+  remove?: (instance: T) => void;
   dispose?: boolean;
 }
 
 export type UseLeafletLayerReturn<T> = Ref<T | null>;
 
 export function useLeafletLayer<T extends Layer = Layer>(
+  factory: () => T,
   options: UseLeafletLayerOptions<T> = {}
 ): UseLeafletLayerReturn<T> {
-  const { create, update, destroy, dispose = true } = options;
+  const { watch: _watch, flushSync, update, remove, dispose } = options;
 
-  const instance = shallowRef<T | null>(null);
+  const _instance = shallowRef<T | null>(null);
+  const _flush = flushSync ? 'sync' : undefined;
 
-  watchEffect(() => {
-    if (isDefined(instance) && update) {
-      const inst = update(unref(instance));
-      if (isDefined(inst)) {
-        if (instance.value !== inst) {
-          clean();
-          instance.value = markRaw(inst);
-        }
-      } else {
-        clean();
-      }
-    } else if (create) {
-      const inst = create();
-      instance.value = isDefined(inst) ? markRaw(inst) : null;
-    }
-  });
-
-  function clean() {
-    if (isDefined(instance)) {
-      if (destroy) {
-        destroy(unref(instance));
-      } else {
-        instance.value.off().remove();
-      }
-      (instance as Ref<T | null>).value = null;
-    }
+  function create() {
+    _instance.value = markRaw(factory());
   }
 
-  if (dispose) {
-    tryOnUnmounted(() => {
-      clean();
+  if (update) {
+    watchEffect(() => {
+      update(_instance.value);
     });
   }
 
-  return instance;
+  useLeafletRemoveLayer(_instance, {
+    remove,
+    dispose
+  });
+
+  if (_watch) {
+    const _watchRef = resolveRef(_watch);
+    if (_watchRef.value) {
+      create();
+    } else {
+      const stop = watch(
+        _watchRef,
+        val => {
+          if (val) {
+            nextTick(() => stop());
+            create();
+          }
+        },
+        { flush: _flush }
+      );
+    }
+  } else {
+    create();
+  }
+
+  return _instance;
 }

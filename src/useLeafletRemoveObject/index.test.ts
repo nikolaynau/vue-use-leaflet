@@ -124,7 +124,7 @@ describe('useLeafletRemoveObject', () => {
     expect(remove).toBeCalledWith('foo');
   });
 
-  it('should work with clean ref', () => {
+  it('should work with clear ref', () => {
     const source = ref<string | null>('foo');
     const remove = vi.fn();
 

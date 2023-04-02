@@ -354,7 +354,7 @@ describe('useLeafletLayersControl', () => {
     vm.unmount();
   });
 
-  it('should destroy instance when clean ref', () => {
+  it('should destroy instance when clear ref', () => {
     const instance = useLeafletLayersControl([]);
     expect(unref(instance)).toBeInstanceOf(Control);
 

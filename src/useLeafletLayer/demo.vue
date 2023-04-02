@@ -15,10 +15,7 @@ const tileLayer = useLeafletTileLayer(
 );
 useLeafletDisplayLayer(map, tileLayer);
 
-const marker = useLeafletLayer<Marker>({
-  create: () => new Marker([0, 0]),
-  destroy: instance => instance.off().remove()
-});
+const marker = useLeafletLayer(() => new Marker([0, 0]));
 useLeafletDisplayLayer(map, marker);
 </script>
 

@@ -28,8 +28,8 @@ const arcGis = useLeafletTileLayer(
   'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}'
 );
 
-const markerA = useLeafletLayer({ create: () => new Marker([0, 0]) });
-const markerB = useLeafletLayer({ create: () => new Marker([-10, -10]) });
+const markerA = useLeafletLayer(() => new Marker([0, 0]));
+const markerB = useLeafletLayer(() => new Marker([-10, -10]));
 
 const layers = reactive([
   { name: 'Open Street Map', layer: osm },
