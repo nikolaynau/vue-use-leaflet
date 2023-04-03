@@ -6,7 +6,7 @@ import {
   useLeafletDisplayLayer
 } from 'vue-use-leaflet';
 
-const visible = ref(false);
+const visible = ref(true);
 const element = ref<HTMLElement | null>(null);
 const map = useLeafletMap(element);
 const tileLayer = useLeafletTileLayer(
@@ -22,4 +22,6 @@ const toggle = useLeafletDisplayLayer(map, tileLayer, {
   <div ref="element" style="height: 250px"></div>
   <button @click="toggle()">Toggle Visible</button>
   <span> Visible: {{ visible }}</span>
+  <br />
+  <button @click="tileLayer = null">Clear Ref</button>
 </template>
