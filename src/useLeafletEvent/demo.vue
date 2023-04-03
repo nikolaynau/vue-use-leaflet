@@ -8,10 +8,10 @@ import {
   useLeafletDisplayLayer
 } from 'vue-use-leaflet';
 
-const element = ref<HTMLElement | null>(null);
+const el = ref<HTMLElement | null>(null);
 const center = ref<LatLng | null>(null);
 
-const map = useLeafletMap(element);
+const map = useLeafletMap(el);
 const tileLayer = useLeafletTileLayer(
   'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
 );
@@ -23,6 +23,6 @@ useLeafletEvent(map, 'moveend', (e: LeafletEvent) => {
 </script>
 
 <template>
-  <div ref="element" style="height: 250px"></div>
+  <div ref="el" style="height: 250px"></div>
   <div>Center: {{ center }}</div>
 </template>

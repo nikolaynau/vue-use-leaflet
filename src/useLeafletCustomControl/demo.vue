@@ -10,8 +10,8 @@ import {
   useLeafletLayer
 } from 'vue-use-leaflet';
 
-const element = ref<HTMLElement | null>(null);
-const map = useLeafletMap(element);
+const el = ref<HTMLElement | null>(null);
+const map = useLeafletMap(el);
 const tileLayer = useLeafletTileLayer(
   'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
 );
@@ -49,7 +49,7 @@ useLeafletDisplayControl(map, customControl);
 </script>
 
 <template>
-  <div ref="element" style="height: 250px"></div>
+  <div ref="el" style="height: 250px"></div>
   <div
     ref="controlElement"
     class="custom-control"

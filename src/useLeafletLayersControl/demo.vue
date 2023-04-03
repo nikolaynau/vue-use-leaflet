@@ -9,8 +9,8 @@ import {
   useLeafletDisplayControl
 } from 'vue-use-leaflet';
 
-const element = ref<HTMLElement | null>(null);
-const map = useLeafletMap(element);
+const el = ref<HTMLElement | null>(null);
+const map = useLeafletMap(el);
 
 // Open Street Map
 const osm = useLeafletTileLayer(
@@ -59,7 +59,7 @@ useLeafletDisplayControl(map, layersControl);
 </script>
 
 <template>
-  <div ref="element" style="height: 250px"></div>
+  <div ref="el" style="height: 250px"></div>
   <div class="section">
     Current Base Layer:
     <select v-model="currentBaseLayer">

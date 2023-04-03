@@ -8,8 +8,8 @@ import {
   useLeafletZoomControl
 } from 'vue-use-leaflet';
 
-const element = ref<HTMLElement | null>(null);
-const map = useLeafletMap(element, { zoomControl: false });
+const el = ref<HTMLElement | null>(null);
+const map = useLeafletMap(el, { zoomControl: false });
 const tileLayer = useLeafletTileLayer(
   'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
 );
@@ -23,7 +23,7 @@ useLeafletDisplayControl(map, zoomControl);
 </script>
 
 <template>
-  <div ref="element" style="height: 250px"></div>
+  <div ref="el" style="height: 250px"></div>
   <button @click="disabled = !disabled">
     {{ disabled ? 'Enable' : 'Disable' }}
   </button>

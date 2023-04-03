@@ -8,8 +8,8 @@ import {
   useLeafletAttributionControl
 } from 'vue-use-leaflet';
 
-const element = ref<HTMLElement | null>(null);
-const map = useLeafletMap(element, { attributionControl: false });
+const el = ref<HTMLElement | null>(null);
+const map = useLeafletMap(el, { attributionControl: false });
 const tileLayer = useLeafletTileLayer(
   'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
   { attribution: 'Open Street Map' }
@@ -26,7 +26,7 @@ useLeafletDisplayControl(map, attributionControl);
 </script>
 
 <template>
-  <div ref="element" style="height: 250px"></div>
+  <div ref="el" style="height: 250px"></div>
   <div>Prefix: <input type="text" v-model="prefix" /></div>
   <br />
   <div>

@@ -9,8 +9,8 @@ import {
   useLeafletDeps
 } from 'vue-use-leaflet';
 
-const element = ref<HTMLElement | null>(null);
-const map = useLeafletMap(element);
+const el = ref<HTMLElement | null>(null);
+const map = useLeafletMap(el);
 const tileLayer = useLeafletTileLayer(
   'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
 );
@@ -23,7 +23,7 @@ useLeafletDisplayLayer(map, useLeafletDeps(marker, dep));
 </script>
 
 <template>
-  <div ref="element" style="height: 250px"></div>
+  <div ref="el" style="height: 250px"></div>
   <button @click="dep = !dep">Toggle Dep</button>
   <br />
   Dep: {{ dep }}
