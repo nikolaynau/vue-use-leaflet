@@ -1,4 +1,5 @@
-import { type MaybeComputedRef, resolveUnref } from '@vueuse/shared';
+import { watch } from 'vue-demi';
+import { type MaybeComputedRef, resolveRef } from '@vueuse/shared';
 import type { Fn } from '@vueuse/core';
 import {
   useLeafletToggleObject,
@@ -38,7 +39,17 @@ export function useLeafletDisplayObject<S, T>(
   target: MaybeComputedRef<T | null | undefined>,
   options: UseLeafletDisplayObjectOptions<boolean, S, T> = {}
 ): UseLeafletDisplayObjectReturn | UseLeafletDisplayObjectReturnWithControls {
-  const { show, hide, shown, ...toggleOptions } = options;
+  const { show, hide, shown, flushSync, ...toggleOptions } = options;
+
+  const _source = resolveRef(source);
+  const _target = resolveRef(target);
+  const _flush = flushSync ? 'sync' : undefined;
+
+  const toggle = useLeafletToggleObject(source, target, {
+    ...(toggleOptions as any),
+    flushSync,
+    onToggle
+  });
 
   function onToggle(source: S, target: T, value: boolean) {
     if (value) {
@@ -49,15 +60,31 @@ export function useLeafletDisplayObject<S, T>(
   }
 
   function _shown(): boolean {
-    const _source = resolveUnref(source);
-    const _target = resolveUnref(target);
-    return !!(_source && _target && shown?.(_source, _target));
+    return !!(
+      _source.value &&
+      _target.value &&
+      shown?.(_source.value, _target.value)
+    );
   }
 
-  const toggle = useLeafletToggleObject(source, target, {
-    ...(toggleOptions as any),
-    onToggle
-  });
+  watch(
+    _target,
+    (_new, old) => {
+      if (!_source.value) {
+        return;
+      }
+
+      if (!_new && old) {
+        onToggle(_source.value, old, false);
+      } else if (_new && !old) {
+        onToggle(_source.value, _new, true);
+      } else if (_new && old && _new !== old) {
+        onToggle(_source.value, old, false);
+        onToggle(_source.value, _new, true);
+      }
+    },
+    { flush: _flush }
+  );
 
   if (options.controls) {
     const { toggle: _toggle, value } =

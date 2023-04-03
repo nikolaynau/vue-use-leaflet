@@ -61,6 +61,19 @@ describe('useLeafletLayer', () => {
     expect(create).toBeCalledTimes(1);
   });
 
+  it('should create with watch sync', () => {
+    const a = ref<number | null>(null);
+    create.mockImplementation(() => testLayer);
+
+    const layer = useLeafletLayer(create, { watch: a, flushSync: true });
+    expect(layer.value).toBeNull();
+
+    a.value = 1;
+
+    expect(layer.value).toBe(testLayer);
+    expect(create).toBeCalledTimes(1);
+  });
+
   it('should work update', async () => {
     const a = ref<number>(1);
     update.mockImplementation(instance => {

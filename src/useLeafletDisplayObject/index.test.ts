@@ -91,6 +91,11 @@ describe('useLeafletDisplayObject', () => {
   });
 
   it('should work when lazy init source and target', async () => {
+    let isShown = false;
+    shownSpy.mockImplementation(() => isShown);
+    showSpy.mockImplementation(() => (isShown = true));
+    hideSpy.mockImplementation(() => (isShown = false));
+
     sourceRef.value = null;
     targetRef.value = null;
 
@@ -104,9 +109,63 @@ describe('useLeafletDisplayObject', () => {
     targetRef.value = target;
     await nextTick();
 
+    expectShowCalled(1);
+    expectShownCalled(2);
+    expectHideNotCalled();
+  });
+
+  it('should call hide when toggle target ref', async () => {
+    let isShown = false;
+    shownSpy.mockImplementation(() => isShown);
+    showSpy.mockImplementation(() => (isShown = true));
+    hideSpy.mockImplementation(() => (isShown = false));
+
+    useLeafletDisplayObject(sourceRef, targetRef, options);
     expectShowCalled();
     expectShownCalled();
     expectHideNotCalled();
+
+    targetRef.value = null;
+    await nextTick();
+
+    expectShowCalled(1);
+    expectShownCalled(2);
+    expectHideCalled(1);
+
+    targetRef.value = target;
+    await nextTick();
+
+    expectShowCalled(2);
+    expectShownCalled(4);
+    expectHideCalled(1);
+  });
+
+  it.each([[true], [false]])('should work change target', async sync => {
+    let isShown = false;
+    shownSpy.mockImplementation(() => isShown);
+    showSpy.mockImplementation(() => (isShown = true));
+    hideSpy.mockImplementation(() => (isShown = false));
+
+    const newTarget = 'c';
+
+    useLeafletDisplayObject(sourceRef, targetRef, {
+      flushSync: sync,
+      ...options
+    });
+    expectShowCalled();
+    expectShownCalled();
+    expectHideNotCalled();
+
+    targetRef.value = newTarget;
+    if (!sync) {
+      await nextTick();
+    }
+
+    expect(hideSpy).toBeCalledTimes(1);
+    expect(hideSpy).toBeCalledWith(source, target);
+
+    expect(showSpy).toBeCalledTimes(2);
+    expect(showSpy).toBeCalledWith(source, newTarget);
   });
 
   it('should work toggle fn', async () => {
