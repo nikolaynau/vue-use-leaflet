@@ -17,7 +17,7 @@ describe('useLeafletLayer', () => {
     destroy = vi.fn();
   });
 
-  it('should return instance when create defined', () => {
+  it('should work create', () => {
     create.mockImplementation(() => testLayer);
     const layer = useLeafletLayer(create);
 
@@ -25,21 +25,43 @@ describe('useLeafletLayer', () => {
     expect(layer.value).toBe(testLayer);
   });
 
-  it('should create fn is watched', async () => {
+  it('should create with watch is defined', async () => {
+    const a = ref(true);
+    create.mockImplementation(() => testLayer);
+
+    const layer = useLeafletLayer(create, { watch: a });
+
+    expect(layer.value).toBe(testLayer);
+    expect(create).toBeCalledTimes(1);
+  });
+
+  it('should create with watch', async () => {
     const a = ref<number | null>(null);
     create.mockImplementation(() => testLayer);
 
     const layer = useLeafletLayer(create, { watch: a });
     expect(layer.value).toBeNull();
 
+    a.value = 0;
+    await nextTick();
+
+    expect(layer.value).toBeNull();
+    expect(create).toBeCalledTimes(0);
+
     a.value = 1;
+    await nextTick();
+
+    expect(layer.value).toBe(testLayer);
+    expect(create).toBeCalledTimes(1);
+
+    a.value = 2;
     await nextTick();
 
     expect(layer.value).toBe(testLayer);
     expect(create).toBeCalledTimes(1);
   });
 
-  it('should work update fn', async () => {
+  it('should work update', async () => {
     const a = ref<number>(1);
     update.mockImplementation(instance => {
       const _a = a.value;
@@ -63,7 +85,7 @@ describe('useLeafletLayer', () => {
     expect((testLayer as any).a).toBe(2);
   });
 
-  it('should work remove fn', () => {
+  it('should work remove', () => {
     const layer = useLeafletLayer(() => testLayer, {
       remove: destroy
     });
@@ -105,7 +127,7 @@ describe('useLeafletLayer', () => {
     vm.unmount();
   });
 
-  it('should call destroy fn when component is unmounted', () => {
+  it('should call destroy when component is unmounted', () => {
     const vm = mount(
       defineComponent({
         setup() {

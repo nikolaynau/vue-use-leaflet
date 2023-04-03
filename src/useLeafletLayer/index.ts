@@ -7,9 +7,9 @@ import {
   type WatchSource,
   nextTick
 } from 'vue-demi';
+import { resolveRef } from '@vueuse/shared';
 import type { Layer } from 'leaflet';
 import { useLeafletRemoveLayer } from '../useLeafletRemoveLayer';
-import { resolveRef } from '@vueuse/shared';
 
 export interface UseLeafletLayerOptions<T> {
   watch?: WatchSource<any>;
