@@ -51,6 +51,7 @@ html.dark {
   margin-right: -2rem;
 }
 
+/* sidebar */
 .sidebar-item.sidebar-heading {
   font-size: 1em;
 }
@@ -59,6 +60,7 @@ html.dark {
   font-size: 0.9em;
 }
 
+/* base */
 tr:nth-child(2n) {
   background-color: transparent;
 }
@@ -71,6 +73,7 @@ h2 + .demo {
   border-top: none;
 }
 
+/* navbar */
 .navbar-items .navbar-item a.external-link[href*='github'] {
   font-size: 0;
 
@@ -95,4 +98,9 @@ h2 + .demo {
     color: #39a2db;
     margin-bottom: 10px;
   }
+}
+
+/* links */
+.external-link-icon {
+  display: none;
 }

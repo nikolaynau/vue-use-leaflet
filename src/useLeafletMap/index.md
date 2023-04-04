@@ -4,7 +4,7 @@ category: Map
 
 # useLeafletMap
 
-Creates a leaflet map.
+Create a leaflet map.
 
 ## Usage
 
@@ -12,9 +12,9 @@ Creates a leaflet map.
 <script setup lang="ts">
 import { ref } from 'vue';
 import {
-  useLeafletMap,
   useLeafletTileLayer,
-  useLeafletDisplayLayer
+  useLeafletDisplayLayer,
+  useLeafletMap
 } from 'vue-use-leaflet';
 
 const el = ref<HTMLElement | null>(null);

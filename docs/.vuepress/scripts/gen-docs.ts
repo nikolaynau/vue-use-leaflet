@@ -8,9 +8,13 @@ const vuepressDir = resolve(__dirname, '../');
 const rootDocsDir = resolve(vuepressDir, '../');
 const rootDir = resolve(rootDocsDir, '../');
 const srcDir = resolve(rootDir, 'src');
+const typesDir = resolve(rootDir, 'dist', 'types');
 
 const sidebarFile = resolve(vuepressDir, 'functions-config.js');
 const docsDir = resolve(rootDocsDir, 'functions');
+
+const githubSrcUrl =
+  'https://github.com/nikolaynau/vue-use-leaflet/blob/master/src/';
 
 interface FileEntry {
   path: string;
@@ -77,17 +81,27 @@ async function generateDocs(files: FileEntry[]) {
     await fs.mkdir(docsDir);
   }
 
-  await createDocFiles(docsDir, files);
+  await createDocFiles(docsDir, files, [
+    addDemoBlock,
+    addTypeDeclarationsBlock,
+    addSourceBlock
+  ]);
   await createDocIndex(docsDir, files);
 }
 
 async function createDocFiles(
   basePath: string,
-  files: FileEntry[]
+  files: FileEntry[],
+  plugins: Array<
+    (content: string, file: FileEntry) => string | Promise<string>
+  > = []
 ): Promise<void> {
   for (const file of files) {
     await fs.mkdir(resolve(basePath, file.baseDir));
-    const content = (await fs.readFile(file.path)).toString();
+    let content = (await fs.readFile(file.path)).toString();
+    for (const plugin of plugins) {
+      content = await plugin(content, file);
+    }
     await fs.writeFile(resolve(basePath, file.baseDir, 'index.md'), content);
   }
 }
@@ -137,6 +151,48 @@ function getSortedByCategories(files: FileEntry[]): CategoryEntry[] {
 
   result.sort((a, b) => a.order - b.order);
   return result;
+}
+
+function addSourceBlock(content: string, file: FileEntry): string {
+  content += `
+## Source
+
+[Source](${githubSrcUrl}${file.baseDir}/index.ts) • [Demo](${githubSrcUrl}${file.baseDir}/demo.vue) • [Docs](${githubSrcUrl}${file.baseDir}/index.md)
+`;
+
+  return content;
+}
+
+async function addTypeDeclarationsBlock(
+  content: string,
+  file: FileEntry
+): Promise<string> {
+  const typeDeclarations = await getTypeDeclarations(file);
+
+  if (typeDeclarations) {
+    content += `
+## Type Declarations
+
+\`\`\`ts
+${typeDeclarations}
+\`\`\`
+`;
+  }
+  return content;
+}
+
+async function getTypeDeclarations(
+  file: FileEntry
+): Promise<string | undefined> {
+  const dtsPath = resolve(typesDir, file.baseDir, 'index.d.ts');
+  if (existsSync(dtsPath)) {
+    return (await fs.readFile(dtsPath)).toString().trim();
+  }
+  return undefined;
+}
+
+function addDemoBlock(content: string, file: FileEntry): string {
+  return content;
 }
 
 run();
