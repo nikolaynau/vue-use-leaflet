@@ -1,5 +1,5 @@
 ---
-category: Map
+sidebarDepth: 0
 ---
 
 # useLeafletMap

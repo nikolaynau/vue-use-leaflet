@@ -1,0 +1,98 @@
+:root,
+html.dark {
+  // brand colors
+  --c-brand: #44bd87;
+  --c-brand-light: #34d399;
+
+  // custom container colors
+  --c-tip: #39a2db;
+}
+
+html.dark {
+  --c-bg: #1e1e1e;
+
+  --c-text: rgba(255, 255, 255, 0.87);
+  --code-bg-color: #242424;
+  --c-border: #000000;
+
+  --c-text-light: rgba(255, 255, 255, 0.87);
+  --c-text-lighter: rgba(235, 235, 235, 0.6);
+  --c-text-lightest: rgba(235, 235, 235, 0.38);
+}
+
+/* home */
+.home {
+  max-width: none;
+}
+
+/* hero */
+.home .hero {
+  max-width: var(--homepage-width);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.home .hero .description {
+  font-size: 1.4rem;
+}
+
+/* features */
+.home .features {
+  border-top: none;
+  max-width: var(--homepage-width);
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 2.5rem;
+}
+
+/* footer */
+.home .footer {
+  margin-left: -2rem;
+  margin-right: -2rem;
+}
+
+.sidebar-item.sidebar-heading {
+  font-size: 1em;
+}
+
+.sidebar-item:not(.sidebar-heading) {
+  font-size: 0.9em;
+}
+
+tr:nth-child(2n) {
+  background-color: transparent;
+}
+
+h2 {
+  border-bottom: none;
+}
+
+h2 + .demo {
+  border-top: none;
+}
+
+.navbar-items .navbar-item a.external-link[href*='github'] {
+  font-size: 0;
+
+  & > span {
+    display: none;
+  }
+
+  &:hover {
+    margin-bottom: 0;
+    border-bottom: none;
+  }
+
+  &::before {
+    content: '';
+    vertical-align: middle;
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    background-color: var(--c-text);
+    mask-repeat: no-repeat;
+    mask-image: url('/github.svg');
+    color: #39a2db;
+    margin-bottom: 10px;
+  }
+}
