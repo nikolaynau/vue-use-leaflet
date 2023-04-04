@@ -1,7 +1,8 @@
-import functionsSidebar from "./functions-sidebar";
+import functionsConfig from "./functions-config";
 
 export default {
   logo: '/favicon.svg',
+  sidebarDepth: 0,
   navbar: [
     { text: 'Guide', link: '/guide/quick-start.md' },
     { text: 'Functions', link: '/functions/' },
@@ -15,6 +16,6 @@ export default {
         children: ['/guide/quick-start.md']
       }
     ],
-    '/functions/': functionsSidebar
+    '/functions/': functionsConfig
   }
 };
