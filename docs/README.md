@@ -12,17 +12,11 @@ actions:
     link: /functions/
     type: secondary
 features:
-  - title: Feature1
-    details: Text.
-  - title: Feature2
-    details: Text.
-  - title: Feature3
-    details: Text.
-  - title: Feature4
-    details: Text.
-  - title: Feature5
-    details: Text.
-  - title: Feature6
-    details: Text.
+  - title: Fullness
+    details: The set of functions fully covers the possibilities for working with the map and more
+  - title: Reactivity
+    details: It became possible to work with the leaflet API reactively
+  - title: Interactive demos
+    details: Documentation of functions also come with interactive demos
 footer: MIT Licensed | Copyright © 2023
 ---
