@@ -3,6 +3,8 @@ import { promises as fs, existsSync } from 'fs';
 import fg from 'fast-glob';
 import rimraf from 'rimraf';
 import metadataParser from 'markdown-yaml-metadata-parser';
+import { parse } from '@babel/parser';
+import generator from '@babel/generator';
 
 const vuepressDir = resolve(__dirname, '../');
 const rootDocsDir = resolve(vuepressDir, '../');
@@ -186,9 +188,21 @@ async function getTypeDeclarations(
 ): Promise<string | undefined> {
   const dtsPath = resolve(typesDir, file.baseDir, 'index.d.ts');
   if (existsSync(dtsPath)) {
-    return (await fs.readFile(dtsPath)).toString().trim();
+    const content = (await fs.readFile(dtsPath)).toString().trim();
+    return removeImportDeclarations(content);
   }
   return undefined;
+}
+
+function removeImportDeclarations(source: string): string {
+  const ast = parse(source, {
+    sourceType: 'module',
+    plugins: [['typescript', { dts: true }]]
+  });
+  ast.program.body = ast.program.body.filter(
+    node => node.type !== 'ImportDeclaration'
+  );
+  return generator(ast, {}).code;
 }
 
 function addDemoBlock(content: string, file: FileEntry): string {

@@ -50,8 +50,9 @@
     "test:3": "vue-demi-switch 3 && vitest run",
     "test:all": "npm run test:3 && npm run test:2 && vue-demi-switch 3",
     "test:cov": "vitest run --coverage",
-    "docs:dev": "npm run docs:gen && vuepress dev docs",
-    "docs:build": "npm run docs:gen && vuepress build docs",
+    "docs:prepare": "npm run build-types && npm run docs:gen",
+    "docs:dev": "npm run docs:prepare && vuepress dev docs",
+    "docs:build": "npm run docs:prepare && vuepress build docs",
     "docs:gen": "esno docs/.vuepress/scripts/gen-docs.ts",
     "postversion": "npm run push",
     "push": "git push origin master --tags",
@@ -69,7 +70,8 @@
     "vue-demi": "latest"
   },
   "devDependencies": {
-    "@babel/types": "^7.21.3",
+    "@babel/generator": "^7.21.4",
+    "@babel/parser": "^7.21.4",
     "@commitlint/cli": "^17.4.4",
     "@commitlint/config-angular": "^17.4.4",
     "@rushstack/eslint-patch": "^1.2.0",
