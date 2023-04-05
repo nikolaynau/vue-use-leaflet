@@ -1,0 +1,23 @@
+/* vars */
+:root {
+  --demo-height: 25rem;
+  --c-bg: #fff;
+  --c-text: #000;
+}
+
+html.dark {
+  --c-bg: #242424;
+  --c-text: rgba(255, 255, 255, 0.87);
+}
+
+/* base */
+html,
+body {
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  background-color: var(--c-bg);
+  color: var(--c-text);
+}

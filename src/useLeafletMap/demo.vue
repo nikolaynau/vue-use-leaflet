@@ -19,5 +19,5 @@ watch(map, () => {
 </script>
 
 <template>
-  <div ref="el" style="height: 250px"></div>
+  <div ref="el" style="height: 25rem"></div>
 </template>

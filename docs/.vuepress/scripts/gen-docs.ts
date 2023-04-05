@@ -214,6 +214,18 @@ async function formatCode(code: string): Promise<string> {
 }
 
 function addDemoBlock(content: string, file: FileEntry): string {
+  const demoBlock = `## Demo
+
+<ClientOnly>
+  <Demo name="${file.baseDir}" source-url="${githubSrcUrl}${file.baseDir}/demo.vue" />
+</ClientOnly>`;
+  const pos = content.indexOf('## Usage');
+  if (pos > -1) {
+    content = `${content.substring(
+      0,
+      pos
+    )}\n\n${demoBlock}\n\n${content.substring(pos)}`;
+  }
   return content;
 }
 
