@@ -41,7 +41,7 @@ watch(map, () => {
 <style scoped>
 .output {
   display: flex;
-  align-items: center;
+  align-items: end;
   height: 3rem;
 }
 </style>
