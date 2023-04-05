@@ -21,8 +21,7 @@ import { useLeafletEvent } from '../useLeafletEvent';
 import { useLeafletRemoveLayer } from '../useLeafletRemoveLayer';
 
 export interface UseLeafletMapOptions
-  extends Omit<MapOptions, 'center' | 'zoom'>,
-    UseLeafletMapCallbacks {
+  extends Omit<MapOptions, 'center' | 'zoom'> {
   center?: MaybeComputedRef<LatLngExpression | undefined>;
   zoom?: MaybeComputedRef<number | undefined>;
   bounds?: MaybeComputedRef<LatLngBoundsExpression | undefined>;
@@ -30,10 +29,7 @@ export interface UseLeafletMapOptions
   flushSync?: boolean;
   factory?: (...args: unknown[]) => Map;
   dispose?: boolean;
-}
-
-export interface UseLeafletMapCallbacks {
-  onViewChanged?: ViewChangedCallback;
+  onViewChanged?: (event: ViewChangedEvent) => void;
 }
 
 export type UseLeafletMapReturn = Ref<Map | null>;
@@ -43,8 +39,6 @@ export interface ViewChangedEvent extends LeafletEvent {
   zoom: number;
   bounds: LatLngBounds;
 }
-
-export type ViewChangedCallback = (event: ViewChangedEvent) => void;
 
 export function useLeafletMap(
   element: MaybeComputedElementRef,

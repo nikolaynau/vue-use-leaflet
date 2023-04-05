@@ -5,6 +5,7 @@ import rimraf from 'rimraf';
 import metadataParser from 'markdown-yaml-metadata-parser';
 import { parse } from '@babel/parser';
 import generator from '@babel/generator';
+import prettier from 'prettier';
 
 const vuepressDir = resolve(__dirname, '../');
 const rootDocsDir = resolve(vuepressDir, '../');
@@ -188,8 +189,10 @@ async function getTypeDeclarations(
 ): Promise<string | undefined> {
   const dtsPath = resolve(typesDir, file.baseDir, 'index.d.ts');
   if (existsSync(dtsPath)) {
-    const content = (await fs.readFile(dtsPath)).toString().trim();
-    return removeImportDeclarations(content);
+    let content = (await fs.readFile(dtsPath)).toString();
+    content = removeImportDeclarations(content);
+    content = await formatCode(content);
+    return content.trim();
   }
   return undefined;
 }
@@ -203,6 +206,11 @@ function removeImportDeclarations(source: string): string {
     node => node.type !== 'ImportDeclaration'
   );
   return generator(ast, {}).code;
+}
+
+async function formatCode(code: string): Promise<string> {
+  const options = await prettier.resolveConfig(rootDir);
+  return prettier.format(code, { ...options, parser: 'typescript' });
 }
 
 function addDemoBlock(content: string, file: FileEntry): string {

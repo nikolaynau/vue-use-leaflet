@@ -16,6 +16,9 @@ node_modules
 # Generated dirs
 dist
 
+# Docs
+docs/functions
+
 # Nuxt
 .nuxt
 .output
