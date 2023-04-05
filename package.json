@@ -43,7 +43,7 @@
     "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false",
     "build-types": "vue-tsc -p tsconfig.dts.json",
     "playground": "vite playground",
-    "playground:build": "vite build playground",
+    "playground:build": "vite build --base=/playground/ playground",
     "playground:postbuild": "cp -r ./playground/dist ./docs/.vuepress/dist/playground",
     "lint": "eslint . --ext .vue,.js,.ts,.css --fix --ignore-path .gitignore",
     "format": "prettier --write \"{src,playground,.test}/**/*.{js,ts,vue,css}\"",
