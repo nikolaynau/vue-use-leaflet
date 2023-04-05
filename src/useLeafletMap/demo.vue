@@ -34,7 +34,7 @@ watch(map, () => {
 </script>
 
 <template>
-  <div ref="el" style="height: 23rem"></div>
+  <div ref="el" style="height: 22rem"></div>
   <div class="output">Center: {{ center }}, Zoom: {{ zoom }}</div>
 </template>
 
@@ -42,6 +42,6 @@ watch(map, () => {
 .output {
   display: flex;
   align-items: center;
-  height: 2rem;
+  height: 3rem;
 }
 </style>
