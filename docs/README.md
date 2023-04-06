@@ -13,7 +13,7 @@ actions:
     type: secondary
 features:  
   - title: Reactivity
-    details: It became possible to work with the leaflet API reactively
+    details: It possible to work with the leaflet API reactively
   - title: Fullness
     details: The set of functions fully covers the possibilities for working with the map and more
   - title: Interactive demos
