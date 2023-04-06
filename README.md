@@ -2,6 +2,8 @@
 
 > Vue composition utilities for leaflet map.
 
+[Demo & Documentation](https://vueuseleaflet.org)
+
 ## Installation
 
 ```bash
