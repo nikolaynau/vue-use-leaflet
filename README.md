@@ -18,7 +18,7 @@ $ pnpm install vue-use-leaflet leaflet
 ## Usage
 
 ```js
-import { useLeafletMap, useLeafletTileLayer } from 'vue-use-leaflet';
+import { useLeafletMap, useLeafletTileLayer, useLeafletDisplayLayer } from 'vue-use-leaflet';
 
 export default {
   setup() {

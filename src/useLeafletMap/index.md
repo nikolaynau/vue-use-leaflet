@@ -11,11 +11,7 @@ Create a leaflet map.
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue';
-import {
-  useLeafletTileLayer,
-  useLeafletDisplayLayer,
-  useLeafletMap
-} from 'vue-use-leaflet';
+import {  useLeafletMap, useLeafletTileLayer, useLeafletDisplayLayer } from 'vue-use-leaflet';
 
 const el = ref<HTMLElement | null>(null);
 const map = useLeafletMap(el);
