@@ -11,11 +11,11 @@ actions:
   - text: Functions
     link: /functions/
     type: secondary
-features:
-  - title: Fullness
-    details: The set of functions fully covers the possibilities for working with the map and more
+features:  
   - title: Reactivity
     details: It became possible to work with the leaflet API reactively
+  - title: Fullness
+    details: The set of functions fully covers the possibilities for working with the map and more
   - title: Interactive demos
     details: Documentation of functions also come with interactive demos
 footer: MIT Licensed | Copyright © 2023
