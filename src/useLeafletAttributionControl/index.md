@@ -1,3 +1,16 @@
+---
+category: Control
+---
+
+# useLeafletAttributionControl
+
+The attribution control allows you to display attribution data in a small text box on a map.
+
+## Usage
+
+It is put on the map by default unless you set its `attributionControl` option to `false`.
+
+```vue
 <script setup lang="ts">
 import { ref } from 'vue';
 import {
@@ -16,28 +29,23 @@ const tileLayer = useLeafletTileLayer(
 );
 useLeafletDisplayLayer(map, tileLayer);
 
-const prefix = ref<string | undefined>(undefined);
-const attributions = ref([]);
+// starts with attribution text
+const prefix = ref<string | undefined>('Some Prefix');
+
+// custom attributions
+const attributions = ref(['A', 'B', 'C']);
+
+// create attributions control
 const attributionControl = useLeafletAttributionControl({
   prefix,
   attributions
 });
+
+// display attributions control
 useLeafletDisplayControl(map, attributionControl);
 </script>
 
 <template>
   <div ref="el" style="height: 250px"></div>
-  <br />
-  <div>Prefix: <input type="text" v-model="prefix" /></div>
-  <br />
-  <div>
-    Attributions:
-    <select v-model="attributions" multiple>
-      <option value="">None</option>
-      <option value="A">A</option>
-      <option value="B">B</option>
-      <option value="C">C</option>
-    </select>
-    Selected: {{ attributions }}
-  </div>
 </template>
+```

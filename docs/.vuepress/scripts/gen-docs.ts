@@ -6,6 +6,7 @@ import metadataParser from 'markdown-yaml-metadata-parser';
 import { parse } from '@babel/parser';
 import generator from '@babel/generator';
 import prettier from 'prettier';
+import categories from './categories';
 
 const vuepressDir = resolve(__dirname, '../');
 const rootDocsDir = resolve(vuepressDir, '../');
@@ -34,11 +35,6 @@ interface CategoryEntry {
 type Metadata = {
   category?: string;
 };
-
-const CATEGORIES = Object.freeze({
-  Map: 1,
-  Control: 2
-});
 
 async function run() {
   await cleanDocs();
@@ -148,7 +144,7 @@ function getSortedByCategories(files: FileEntry[]): CategoryEntry[] {
 
   const result = Object.keys(byCategory).map<CategoryEntry>(key => ({
     name: key,
-    order: CATEGORIES[key] ?? 0,
+    order: categories[key] ?? 0,
     files: byCategory[key]
   }));
 
