@@ -1,3 +1,14 @@
+---
+category: Control
+---
+
+# useLeafletScaleControl
+
+A simple scale control that shows the scale of the current center of screen in metric (m/km) and imperial (mi/ft) systems.
+
+## Usage
+
+```vue
 <script setup lang="ts">
 import { ref } from 'vue';
 import {
@@ -15,10 +26,14 @@ const tileLayer = useLeafletTileLayer(
 );
 useLeafletDisplayLayer(map, tileLayer);
 
+// create scale control
 const scaleControl = useLeafletScaleControl();
+
+// display scale control
 useLeafletDisplayControl(map, scaleControl);
 </script>
 
 <template>
-  <div ref="el" style="height: 25rem"></div>
+  <div ref="el" style="height: 250px"></div>
 </template>
+```
