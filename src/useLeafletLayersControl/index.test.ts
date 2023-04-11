@@ -861,8 +861,8 @@ describe('useOverlayLayers', () => {
     current.value.push(1);
     await nextTick();
 
-    expect(addSpy).toBeCalledTimes(8);
-    expect(removeSpy).toBeCalledTimes(6);
+    expect(addSpy).toBeCalledTimes(4);
+    expect(removeSpy).toBeCalledTimes(2);
   });
 
   it('should call change callback when change layers', async () => {
