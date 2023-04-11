@@ -71,6 +71,7 @@ useLeafletDisplayControl(map, customControl);
   background-color: rgba(255, 255, 255, 0.6);
   border-radius: 4px;
   user-select: none;
+  color: black;
 }
 .custom-control--disabled {
   opacity: 70%;
