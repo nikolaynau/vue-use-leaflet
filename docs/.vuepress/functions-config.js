@@ -11,6 +11,7 @@ export default [
       "/functions/useLeafletAttributionControl/index.md",
       "/functions/useLeafletCustomControl/index.md",
       "/functions/useLeafletLayersControl/index.md",
+      "/functions/useLeafletRemoveControl/index.md",
       "/functions/useLeafletScaleControl/index.md",
       "/functions/useLeafletZoomControl/index.md"
     ]

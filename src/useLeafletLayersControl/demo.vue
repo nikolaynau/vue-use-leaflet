@@ -59,7 +59,7 @@ useLeafletDisplayControl(map, layersControl);
 </script>
 
 <template>
-  <div ref="el" style="height: 250px"></div>
+  <div ref="el" style="height: 230px"></div>
   <div class="section">
     Current Base Layer:
     <select v-model="currentBaseLayer">
@@ -82,7 +82,7 @@ useLeafletDisplayControl(map, layersControl);
 
 <style scoped>
 .section {
-  margin-bottom: 1rem;
+  margin-top: 1rem;
 }
 .section select {
   vertical-align: top;

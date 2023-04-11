@@ -1,3 +1,14 @@
+---
+category: Control
+---
+
+# useLeafletRemoveControl
+
+Remove control when component is unmounted, set ref to null or manually.
+
+## Usage
+
+```vue
 <script setup lang="ts">
 import { ref } from 'vue';
 import {
@@ -5,8 +16,8 @@ import {
   useLeafletTileLayer,
   useLeafletDisplayLayer,
   useLeafletRemoveControl,
-  useLeafletDisplayControl,
-  useLeafletScaleControl
+  useLeafletScaleControl,
+  useLeafletDisplayControl
 } from 'vue-use-leaflet';
 
 const el = ref<HTMLElement | null>(null);
@@ -20,10 +31,12 @@ const scaleControl = useLeafletScaleControl();
 useLeafletDisplayControl(map, scaleControl);
 
 const remove = useLeafletRemoveControl(scaleControl);
+// remove() // OR
+// scaleControl.value = null // OR
+// component is unmounted
 </script>
 
 <template>
-  <div ref="el" style="height: 21rem"></div>
-  <br />
-  <button @click="remove">Remove Scale Control</button>
+  <div ref="el" style="height: 250px"></div>
 </template>
+```
