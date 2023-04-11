@@ -15,11 +15,11 @@ export interface UseLeafletPaneOptions {
   dispose?: boolean;
 }
 
-export type LeafletPaneElements = Readonly<Ref<Record<string, HTMLElement>>>;
-
 export interface UseLeafletPaneReturn {
   paneElements: LeafletPaneElements;
 }
+
+export type LeafletPaneElements = Readonly<Ref<Record<string, HTMLElement>>>;
 
 export interface LeafletPaneProvider {
   createPane(name: string, container?: HTMLElement): HTMLElement;

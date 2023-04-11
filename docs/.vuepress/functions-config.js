@@ -2,14 +2,15 @@ export default [
   {
     "text": "Map",
     "children": [
-      "/functions/useLeafletMap/index.md"
+      "/functions/useLeafletMap/index.md",
+      "/functions/useLeafletPane/index.md"
     ]
   },
   {
     "text": "Control",
     "children": [
-      "/functions/useLeafletAttributionControl/index.md",
       "/functions/useLeafletCustomControl/index.md",
+      "/functions/useLeafletAttributionControl/index.md",
       "/functions/useLeafletDisplayControl/index.md",
       "/functions/useLeafletLayersControl/index.md",
       "/functions/useLeafletRemoveControl/index.md",
