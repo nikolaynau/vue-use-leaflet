@@ -1,3 +1,14 @@
+---
+category: Control
+---
+
+# useLeafletDisplayControl
+
+Show the control object on the map.
+
+## Usage
+
+```vue
 <script setup lang="ts">
 import { ref } from 'vue';
 import {
@@ -15,20 +26,26 @@ const tileLayer = useLeafletTileLayer(
 );
 useLeafletDisplayLayer(map, tileLayer);
 
+// initial value
 const visible = ref(true);
+
+// create layers control
 const layersControl = useLeafletLayersControl([
   { name: 'Open Street Map', layer: tileLayer }
 ]);
 
+// display layers control
 const { toggle } = useLeafletDisplayControl(map, layersControl, {
   controls: true,
   initialValue: visible
 });
+
+// toggle() // show / hide control
+// visible.value = false // hide control
+// visible.value = true // show control
 </script>
 
 <template>
-  <div ref="el" style="height: 21rem"></div>
-  <br />
-  <button @click="toggle()">Toggle Control</button>
-  <span> Visible: {{ visible }}</span>
+  <div ref="el" style="height: 250px"></div>
 </template>
+```
