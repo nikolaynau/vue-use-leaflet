@@ -16,5 +16,11 @@ export default [
       "/functions/useLeafletScaleControl/index.md",
       "/functions/useLeafletZoomControl/index.md"
     ]
+  },
+  {
+    "text": "Event",
+    "children": [
+      "/functions/useLeafletEvent/index.md"
+    ]
   }
 ]
