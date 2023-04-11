@@ -1,5 +1,5 @@
 import { isNumber, resolveUnref, type MaybeComputedRef } from '@vueuse/shared';
-import type { Layer } from 'leaflet';
+import { type Layer, Util } from 'leaflet';
 import { computed, toRaw, watch } from 'vue-demi';
 import type { LayerEntry, LayersItemConfig } from './types';
 
@@ -76,8 +76,8 @@ export function useOverlayLayers(
     watch(
       () => [..._current.value],
       (_new, old) => {
-        const toAdd = diff(_new, old);
-        const toRemove = diff(old, _new);
+        const toAdd = diff(_new, old, compare);
+        const toRemove = diff(old, _new, compare);
         remove && toRemove.forEach(entry => remove(entry));
         add && toAdd.forEach(entry => add(entry));
       },
@@ -85,8 +85,16 @@ export function useOverlayLayers(
     );
   }
 
-  function diff<T>(arrA: T[], arrB: T[]): T[] {
-    return arrA.filter(x => !arrB.includes(x));
+  function compare(a: LayerEntry, b: LayerEntry): boolean {
+    return Util.stamp(a.layer) === Util.stamp(b.layer);
+  }
+
+  function diff<T>(
+    arrA: T[],
+    arrB: T[],
+    compare: (a: T, b: T) => boolean
+  ): T[] {
+    return arrA.filter(a => !arrB.some(b => compare(a, b)));
   }
 
   return {
