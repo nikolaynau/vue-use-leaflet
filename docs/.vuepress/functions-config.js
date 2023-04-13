@@ -9,13 +9,19 @@ export default [
   {
     "text": "Control",
     "children": [
-      "/functions/useLeafletCustomControl/index.md",
       "/functions/useLeafletAttributionControl/index.md",
+      "/functions/useLeafletCustomControl/index.md",
       "/functions/useLeafletDisplayControl/index.md",
       "/functions/useLeafletLayersControl/index.md",
       "/functions/useLeafletRemoveControl/index.md",
       "/functions/useLeafletScaleControl/index.md",
       "/functions/useLeafletZoomControl/index.md"
+    ]
+  },
+  {
+    "text": "Layer",
+    "children": [
+      "/functions/useLeafletTileLayer/index.md"
     ]
   },
   {
