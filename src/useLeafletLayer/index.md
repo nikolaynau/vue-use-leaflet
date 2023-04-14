@@ -1,6 +1,17 @@
+---
+category: Layer
+---
+
+# useLeafletLayer
+
+Factory for creating map layers. Supports auto-remove.
+
+## Usage
+
+```vue
 <script setup lang="ts">
 import { ref } from 'vue';
-import { Marker, type LatLngExpression } from 'leaflet';
+import { Marker } from 'leaflet';
 import {
   useLeafletMap,
   useLeafletTileLayer,
@@ -15,15 +26,22 @@ const tileLayer = useLeafletTileLayer(
 );
 useLeafletDisplayLayer(map, tileLayer);
 
+// initial marker position
 const position = ref<LatLngExpression>([0, 0]);
+
+// create marker
 const marker = useLeafletLayer(() => new Marker(position.value), {
   update: instance => instance?.setLatLng(position.value)
 });
+
+// display marker
 useLeafletDisplayLayer(map, marker);
+
+// change marker position
+// position.value = [-10, -10];
 </script>
 
 <template>
-  <div ref="el" style="height: 21rem"></div>
-  <br />
-  <button @click="position = [-10, -10]">Change Marker Position</button>
+  <div ref="el" style="height: 250px"></div>
 </template>
+```

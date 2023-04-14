@@ -4,7 +4,7 @@
   "description": "Vue composition utilities for leaflet map",
   "author": "Nikolay Naumenkov <nikolas.it.web@gmail.com>",
   "license": "MIT",
-  "homepage": "https://github.com/nikolaynau/vue-use-leaflet#readme",
+  "homepage": "https://vueuseleaflet.org",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nikolaynau/vue-use-leaflet.git"
