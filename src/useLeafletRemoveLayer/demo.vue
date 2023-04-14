@@ -18,6 +18,7 @@ useLeafletDisplayLayer(map, tileLayer);
 
 const marker = useLeafletLayer(() => new Marker([0, 0]));
 useLeafletDisplayLayer(map, marker);
+
 const remove = useLeafletRemoveLayer(marker);
 // OR
 // marker.value = null;

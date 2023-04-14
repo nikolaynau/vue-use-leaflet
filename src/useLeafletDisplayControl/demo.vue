@@ -20,8 +20,7 @@ const layersControl = useLeafletLayersControl([
   { name: 'Open Street Map', layer: tileLayer }
 ]);
 
-const { toggle } = useLeafletDisplayControl(map, layersControl, {
-  controls: true,
+const toggle = useLeafletDisplayControl(map, layersControl, {
   initialValue: visible
 });
 </script>

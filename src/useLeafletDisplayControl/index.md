@@ -26,7 +26,7 @@ const tileLayer = useLeafletTileLayer(
 );
 useLeafletDisplayLayer(map, tileLayer);
 
-// initial value
+// initial visible value
 const visible = ref(true);
 
 // create layers control

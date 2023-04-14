@@ -1,3 +1,14 @@
+---
+category: Layer
+---
+
+# useLeafletDisplayLayer
+
+Show the layer object on the map.
+
+## Usage
+
+```vue
 <script setup lang="ts">
 import { ref } from 'vue';
 import { Marker } from 'leaflet';
@@ -15,17 +26,23 @@ const tileLayer = useLeafletTileLayer(
 );
 useLeafletDisplayLayer(map, tileLayer);
 
+// initial visible value
 const visible = ref(true);
+
+// create marker
 const marker = useLeafletLayer(() => new Marker([0, 0]));
 
+// display marker
 const toggle = useLeafletDisplayLayer(map, marker, {
   initialValue: visible
 });
+
+// toggle() // show / hide control
+// visible.value = false // hide control
+// visible.value = true // show control
 </script>
 
 <template>
-  <div ref="el" style="height: 21rem"></div>
-  <br />
-  <button @click="toggle()">Toggle Visible</button>
-  <span> Visible: {{ visible }}</span>
+  <div ref="el" style="height: 250px"></div>
 </template>
+```
