@@ -1,3 +1,14 @@
+---
+category: Other
+---
+
+# useLeafletDeps
+
+Returns undefined if any of the dependencies is falsy, otherwise returns the value from the source.
+
+## Usage
+
+```vue
 <script setup lang="ts">
 import { ref } from 'vue';
 import { Marker } from 'leaflet';
@@ -16,14 +27,17 @@ const tileLayer = useLeafletTileLayer(
 );
 useLeafletDisplayLayer(map, tileLayer);
 
+// init dependency
 const dep = ref(false);
+
+// create marker
 const marker = useLeafletLayer(() => new Marker([0, 0]));
 
+// display marker when dependency is truthy
 useLeafletDisplayLayer(map, useLeafletDeps(marker, dep));
 </script>
 
 <template>
-  <div ref="el" style="height: 21rem"></div>
-  <br />
-  <button @click="dep = !dep">Toggle Dep</button> Dep: {{ dep }}
+  <div ref="el" style="height: 250px"></div>
 </template>
+```

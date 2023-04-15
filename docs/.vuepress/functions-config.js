@@ -32,5 +32,11 @@ export default [
     "children": [
       "/functions/useLeafletEvent/index.md"
     ]
+  },
+  {
+    "text": "Other",
+    "children": [
+      "/functions/useLeafletDeps/index.md"
+    ]
   }
 ]
