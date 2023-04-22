@@ -1,3 +1,14 @@
+---
+category: Other
+---
+
+# useLeafletReady
+
+Returns computed `true` when all arguments are truthy.
+
+## Usage
+
+```vue
 <script setup lang="ts">
 import { ref } from 'vue';
 import {
@@ -7,7 +18,6 @@ import {
   useLeafletReady
 } from 'vue-use-leaflet';
 
-const created = ref(false);
 const el = ref<HTMLElement | null>(null);
 const map = useLeafletMap(el);
 const tileLayer = useLeafletTileLayer(
@@ -15,11 +25,13 @@ const tileLayer = useLeafletTileLayer(
 );
 useLeafletDisplayLayer(map, tileLayer);
 
+// create ready
 const ready = useLeafletReady(map, tileLayer);
+
+// ready.value // true when map and tileLayer are initialized
 </script>
 
 <template>
-  <div v-if="created" ref="el" style="height: 21rem"></div>
-  <button v-else @click="created = true">Create Map</button>
-  <div><br />Ready: {{ ready }}</div>
+  <div ref="el" style="height: 250px"></div>
 </template>
+```

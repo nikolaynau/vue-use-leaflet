@@ -1,7 +1,8 @@
+import type { ComputedRef } from 'vue-demi';
 import { logicAnd } from '@vueuse/math';
 
-export function useLeafletReady(...args: any[]) {
+export type UseLeafletReadyReturn = ComputedRef<boolean>;
+
+export function useLeafletReady(...args: any[]): UseLeafletReadyReturn {
   return logicAnd(...args);
 }
-
-export type UseLeafletReadyReturn = ReturnType<typeof useLeafletReady>;
