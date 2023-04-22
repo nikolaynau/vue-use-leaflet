@@ -1,3 +1,14 @@
+---
+category: Other
+---
+
+# useLeafletDisplayObject
+
+Manage the visibility of custom objects.
+
+## Usage
+
+```vue
 <script setup lang="ts">
 import { ref } from 'vue';
 import {
@@ -17,10 +28,12 @@ const toggle = useLeafletDisplayObject(map, tileLayer, {
   hide: (source, target) => source.removeLayer(target),
   shown: (source, target) => source.hasLayer(target)
 });
+
+// toggle() // hide tile layer
+// toggle() // show tile layer
 </script>
 
 <template>
-  <div ref="el" style="height: 21rem"></div>
-  <br />
-  <button @click="toggle()">Toggle</button>
+  <div ref="el" style="height: 250px"></div>
 </template>
+```
