@@ -1,3 +1,14 @@
+---
+category: Other
+---
+
+# useLeafletToggleObject
+
+Switch between two states `true` and `false`.
+
+## Usage
+
+```vue
 <script setup lang="ts">
 import { ref } from 'vue';
 import { Marker } from 'leaflet';
@@ -16,8 +27,10 @@ const tileLayer = useLeafletTileLayer(
 );
 useLeafletDisplayLayer(map, tileLayer);
 
+// create marker
 const marker = useLeafletLayer(() => new Marker([0, 0]));
 
+// create toggle object
 const toggle = useLeafletToggleObject(map, marker, {
   onToggle: (source, target, value) => {
     if (value) {
@@ -27,10 +40,12 @@ const toggle = useLeafletToggleObject(map, marker, {
     }
   }
 });
+
+// toggle() // hide marker
+// toggle() // show marker
 </script>
 
 <template>
-  <div ref="el" style="height: 21rem"></div>
-  <br />
-  <button @click="toggle()">Toggle</button>
+  <div ref="el" style="height: 250px"></div>
 </template>
+```

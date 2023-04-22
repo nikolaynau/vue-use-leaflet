@@ -36,7 +36,8 @@ export default [
   {
     "text": "Other",
     "children": [
-      "/functions/useLeafletDeps/index.md"
+      "/functions/useLeafletDeps/index.md",
+      "/functions/useLeafletToggleObject/index.md"
     ]
   }
 ]
