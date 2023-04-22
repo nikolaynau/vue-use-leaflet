@@ -4,7 +4,7 @@ category: Other
 
 # useLeafletDisplayObject
 
-Manage the visibility of custom objects.
+Manage the visibility of a custom object.
 
 ## Usage
 

@@ -39,6 +39,7 @@ export default [
       "/functions/useLeafletDeps/index.md",
       "/functions/useLeafletDisplayObject/index.md",
       "/functions/useLeafletReady/index.md",
+      "/functions/useLeafletRemoveObject/index.md",
       "/functions/useLeafletToggleObject/index.md"
     ]
   }

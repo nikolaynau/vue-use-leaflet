@@ -1,3 +1,14 @@
+---
+category: Other
+---
+
+# useLeafletRemoveObject
+
+Manage the removal of a custom object.
+
+## Usage
+
+```vue
 <script setup lang="ts">
 import { ref } from 'vue';
 import {
@@ -21,15 +32,14 @@ const remove = useLeafletRemoveObject(map, {
   cleanRef: true,
   watch: watchSource
 });
+
+// remove() // OR
+// map.value = null // OR
+// watchSource.value = true // OR
+// component is unmounted
 </script>
 
 <template>
-  <div ref="el" style="height: 19rem"></div>
-  <br />
-  <button @click="watchSource = true">Set WatchSource</button>
-  WatchSource: {{ watchSource }}
-  <br />
-  <button @click="remove">Manual Destroy Map</button>
-  <br />
-  <button @click="map = null">Clean Map Ref</button>
+  <div ref="el" style="height: 250px"></div>
 </template>
+```
