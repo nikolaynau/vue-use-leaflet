@@ -1,10 +1,10 @@
-import { isNumber, resolveUnref, type MaybeComputedRef } from '@vueuse/shared';
+import { toValue, type MaybeRefOrGetter } from '@vueuse/shared';
 import { type Layer, Util } from 'leaflet';
 import { computed, toRaw, watch } from 'vue-demi';
 import type { LayerEntry, LayersItemConfig } from './types';
 
 export interface UseOverlayLayersOptions {
-  current?: MaybeComputedRef<string[] | number[] | null | undefined>;
+  current?: MaybeRefOrGetter<string[] | number[] | null | undefined>;
   changed?: (layers: LayerEntry[]) => void;
   add?: (layer: LayerEntry) => void;
   remove?: (layer: LayerEntry) => void;
@@ -12,31 +12,31 @@ export interface UseOverlayLayersOptions {
 }
 
 export function useOverlayLayers(
-  layers: MaybeComputedRef<LayersItemConfig[] | null | undefined>,
+  layers: MaybeRefOrGetter<LayersItemConfig[] | null | undefined>,
   options: UseOverlayLayersOptions = {}
 ) {
   const { current, changed, add, remove, nameTemplate = i => `${i}` } = options;
 
   const _layers = computed(() => {
-    if (!Array.isArray(resolveUnref(layers))) {
+    if (!Array.isArray(toValue(layers))) {
       return [];
     }
 
-    return resolveUnref(layers)!
-      .filter(item => !!resolveUnref(item.layer))
+    return toValue(layers)!
+      .filter(item => !!toValue(item.layer))
       .map((item, i) => {
-        const layer = toRaw(resolveUnref(item.layer)!);
+        const layer = toRaw(toValue(item.layer)!);
 
         return {
           name: item.name ?? nameTemplate(i + 1, layer),
-          layer: toRaw(resolveUnref(item.layer)!),
+          layer: toRaw(toValue(item.layer)!),
           overlay: true
         };
       });
   });
 
   const _current = computed<LayerEntry[]>(() => {
-    const val = resolveUnref(current);
+    const val = toValue(current);
     if (!Array.isArray(val)) {
       return [];
     }
@@ -44,16 +44,16 @@ export function useOverlayLayers(
     const result: LayerEntry[] = [];
     for (const nameOrIndex of val) {
       let entry: LayersItemConfig | undefined = undefined;
-      if (isNumber(nameOrIndex) && _layers.value[nameOrIndex]) {
+      if (typeof nameOrIndex === 'number' && _layers.value[nameOrIndex]) {
         entry = _layers.value[nameOrIndex];
       } else {
         entry = _layers.value.find(item => item.name === nameOrIndex);
       }
 
-      if (entry && resolveUnref(entry.layer)) {
+      if (entry && toValue(entry.layer)) {
         result.push({
           name: entry.name!,
-          layer: toRaw(resolveUnref(entry.layer)!),
+          layer: toRaw(toValue(entry.layer)!),
           overlay: true
         });
       }

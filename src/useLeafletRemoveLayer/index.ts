@@ -1,4 +1,4 @@
-import type { MaybeComputedRef } from '@vueuse/shared';
+import type { MaybeRefOrGetter } from '@vueuse/shared';
 import {
   useLeafletRemoveObject,
   type UseLeafletRemoveObjectOptions,
@@ -13,7 +13,7 @@ export interface LeafletRemovableLayer {
 export function useLeafletRemoveLayer<
   T extends LeafletRemovableLayer = LeafletRemovableLayer
 >(
-  source: MaybeComputedRef<T | null | undefined>,
+  source: MaybeRefOrGetter<T | null | undefined>,
   options: UseLeafletRemoveObjectOptions<T> = {}
 ): UseLeafletRemoveObjectReturn {
   const {

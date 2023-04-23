@@ -1,10 +1,10 @@
-import { isFunction, resolveRef, type MaybeComputedRef } from '@vueuse/shared';
+import { toRef, type MaybeRefOrGetter } from '@vueuse/shared';
 import { markRaw, shallowRef, unref, watch, type Ref } from 'vue-demi';
 import { Control } from 'leaflet';
 import { useLeafletRemoveControl } from '../useLeafletRemoveControl';
 
 export interface UseLeafletZoomControlOptions extends Control.ZoomOptions {
-  disabled?: MaybeComputedRef<boolean>;
+  disabled?: MaybeRefOrGetter<boolean>;
   factory?: (...args: unknown[]) => Control.Zoom;
   dispose?: boolean;
 }
@@ -17,7 +17,7 @@ export function useLeafletZoomControl(
   const { disabled, factory, dispose = true, ...controlOptions } = options;
 
   const _instance = shallowRef<Control.Zoom | null>(null);
-  const _disabled = resolveRef(disabled);
+  const _disabled = toRef(disabled);
 
   function create() {
     const instance: Control.Zoom = factory
@@ -33,14 +33,14 @@ export function useLeafletZoomControl(
 
   function enable() {
     const instance = _instance.value as any;
-    if (isFunction(instance?.enable) && instance._map) {
+    if (instance && typeof instance.enable === 'function' && instance._map) {
       instance.enable();
     }
   }
 
   function disable() {
     const instance = _instance.value as any;
-    if (isFunction(instance?.disable) && instance._map) {
+    if (instance && typeof instance.disable === 'function' && instance._map) {
       instance.disable();
     }
   }

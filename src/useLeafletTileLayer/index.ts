@@ -1,5 +1,5 @@
 import type { Ref } from 'vue-demi';
-import { type MaybeComputedRef, resolveRef } from '@vueuse/shared';
+import { type MaybeRefOrGetter, toRef } from '@vueuse/shared';
 import { TileLayer, type TileLayerOptions } from 'leaflet';
 import { useLeafletLayer } from '../useLeafletLayer';
 
@@ -12,12 +12,12 @@ export interface UseLeafletTileLayerOptions extends TileLayerOptions {
 export type UseLeafletTileLayerReturn = Ref<TileLayer | null>;
 
 export function useLeafletTileLayer(
-  url: MaybeComputedRef<string | null | undefined>,
+  url: MaybeRefOrGetter<string | null | undefined>,
   options: UseLeafletTileLayerOptions = {}
 ): UseLeafletTileLayerReturn {
   const { factory, update, dispose, ...layerOptions } = options;
 
-  const _url = resolveRef(url);
+  const _url = toRef(url);
 
   return useLeafletLayer(
     () =>

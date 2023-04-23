@@ -1,7 +1,7 @@
 import { resolve, basename, dirname } from 'path';
 import { promises as fs, existsSync } from 'fs';
 import fg from 'fast-glob';
-import rimraf from 'rimraf';
+import { rimraf } from 'rimraf';
 import metadataParser from 'markdown-yaml-metadata-parser';
 import { parse } from '@babel/parser';
 import generator from '@babel/generator';

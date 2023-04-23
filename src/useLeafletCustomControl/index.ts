@@ -1,10 +1,10 @@
 import { markRaw, shallowRef, unref, watch, type Ref } from 'vue-demi';
-import { resolveRef, type MaybeComputedRef } from '@vueuse/shared';
+import { toRef, type MaybeRefOrGetter } from '@vueuse/shared';
 import { Control, type ControlOptions, type Map } from 'leaflet';
 import { useLeafletRemoveControl } from '../useLeafletRemoveControl';
 
 export interface UseLeafletCustomControlOptions extends ControlOptions {
-  disabled?: MaybeComputedRef<boolean>;
+  disabled?: MaybeRefOrGetter<boolean>;
   factory?: (...args: unknown[]) => Control;
   dispose?: boolean;
   onAdd?: (map: Map, control: Control) => HTMLElement;
@@ -30,7 +30,7 @@ export function useLeafletCustomControl(
   } = options;
 
   const _instance = shallowRef<Control | null>(null);
-  const _disabled = resolveRef(disabled);
+  const _disabled = toRef(disabled);
 
   function create() {
     const instance: Control = factory

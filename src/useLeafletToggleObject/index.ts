@@ -1,11 +1,11 @@
 import { unref, watch, type Ref } from 'vue-demi';
 import {
   type MaybeRef,
-  type MaybeComputedRef,
-  resolveUnref,
+  type MaybeRefOrGetter,
+  toValue,
   useToggle,
   whenever,
-  resolveRef
+  toRef
 } from '@vueuse/shared';
 import { logicAnd } from '@vueuse/math';
 import { tryOnUnmounted } from '@vueuse/core';
@@ -26,18 +26,18 @@ export interface UseLeafletToggleObjectReturnWithControls {
 }
 
 export function useLeafletToggleObject<S, T>(
-  source: MaybeComputedRef<S | null | undefined>,
-  target: MaybeComputedRef<T | null | undefined>,
+  source: MaybeRefOrGetter<S | null | undefined>,
+  target: MaybeRefOrGetter<T | null | undefined>,
   options?: UseLeafletToggleObjectOptions<false, S, T>
 ): UseLeafletToggleObjectReturn;
 export function useLeafletToggleObject<S, T>(
-  source: MaybeComputedRef<S | null | undefined>,
-  target: MaybeComputedRef<T | null | undefined>,
+  source: MaybeRefOrGetter<S | null | undefined>,
+  target: MaybeRefOrGetter<T | null | undefined>,
   options: UseLeafletToggleObjectOptions<true, S, T>
 ): UseLeafletToggleObjectReturnWithControls;
 export function useLeafletToggleObject<S, T>(
-  source: MaybeComputedRef<S | null | undefined>,
-  target: MaybeComputedRef<T | null | undefined>,
+  source: MaybeRefOrGetter<S | null | undefined>,
+  target: MaybeRefOrGetter<T | null | undefined>,
   options: UseLeafletToggleObjectOptions<boolean, S, T> = {}
 ): UseLeafletToggleObjectReturn | UseLeafletToggleObjectReturnWithControls {
   const {
@@ -48,13 +48,13 @@ export function useLeafletToggleObject<S, T>(
     onToggle
   } = options;
 
-  const value = resolveRef(initialValue);
+  const value = toRef(initialValue);
   const toggle = useToggle(value);
   const flush = flushSync ? 'sync' : undefined;
 
   function callback(value: boolean) {
-    const _source = resolveUnref(source);
-    const _target = resolveUnref(target);
+    const _source = toValue(source);
+    const _target = toValue(target);
 
     if (_source && _target) {
       onToggle?.(_source, _target, value);

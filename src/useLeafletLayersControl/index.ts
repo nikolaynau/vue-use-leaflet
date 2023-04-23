@@ -1,8 +1,8 @@
 import {
-  type MaybeComputedRef,
+  type MaybeRefOrGetter,
   type MaybeRef,
   isDefined,
-  resolveRef
+  toRef
 } from '@vueuse/shared';
 import { type Ref, shallowRef, ref, markRaw, computed } from 'vue-demi';
 import {
@@ -33,7 +33,7 @@ export type UseLeafletLayersControlReturn = Ref<Control.Layers | null>;
 export type { LayersItemConfig };
 
 export function useLeafletLayersControl(
-  layers: MaybeComputedRef<LayersItemConfig[] | null | undefined>,
+  layers: MaybeRefOrGetter<LayersItemConfig[] | null | undefined>,
   options: UseLeafletLayersControlOptions = {}
 ): UseLeafletLayersControlReturn {
   const {
@@ -48,7 +48,7 @@ export function useLeafletLayersControl(
   const _instance = shallowRef<Control.Layers | null>(null);
   const _currentBaseLayer = ref(currentBaseLayer);
   const _currentOverlays = ref(currentOverlays);
-  const _layers = resolveRef(layers);
+  const _layers = toRef(layers);
 
   const { layers: _baseLayers, currentLayer: _currentBaseEntry } =
     useBaseLayers(

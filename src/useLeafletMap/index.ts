@@ -1,11 +1,6 @@
 import { shallowRef, markRaw, watch, type Ref } from 'vue-demi';
 import { type MaybeComputedElementRef, unrefElement } from '@vueuse/core';
-import {
-  isDefined,
-  isFunction,
-  resolveUnref,
-  type MaybeComputedRef
-} from '@vueuse/shared';
+import { isDefined, toValue, type MaybeRefOrGetter } from '@vueuse/shared';
 import {
   Map,
   latLng,
@@ -22,10 +17,10 @@ import { useLeafletRemoveLayer } from '../useLeafletRemoveLayer';
 
 export interface UseLeafletMapOptions
   extends Omit<MapOptions, 'center' | 'zoom'> {
-  center?: MaybeComputedRef<LatLngExpression | undefined>;
-  zoom?: MaybeComputedRef<number | undefined>;
-  bounds?: MaybeComputedRef<LatLngBoundsExpression | undefined>;
-  useFly?: MaybeComputedRef<boolean | undefined>;
+  center?: MaybeRefOrGetter<LatLngExpression | undefined>;
+  zoom?: MaybeRefOrGetter<number | undefined>;
+  bounds?: MaybeRefOrGetter<LatLngBoundsExpression | undefined>;
+  useFly?: MaybeRefOrGetter<boolean | undefined>;
   flushSync?: boolean;
   factory?: (...args: unknown[]) => Map;
   dispose?: boolean;
@@ -61,15 +56,16 @@ export function useLeafletMap(
   function create(element: HTMLElement) {
     const mapOptions: MapOptions = { ...leafletOptions };
 
-    const needInitView = resolveUnref(bounds) || resolveUnref(useFly);
+    const needInitView = toValue(bounds) || toValue(useFly);
     if (!needInitView) {
-      mapOptions.center = resolveUnref(center) as LatLngExpression;
-      mapOptions.zoom = resolveUnref(zoom) as number;
+      mapOptions.center = toValue(center) as LatLngExpression;
+      mapOptions.zoom = toValue(zoom) as number;
     }
 
-    const map = isFunction(factory)
-      ? factory(element, mapOptions)
-      : new Map(element, mapOptions);
+    const map =
+      typeof factory === 'function'
+        ? factory(element, mapOptions)
+        : new Map(element, mapOptions);
 
     if (needInitView) {
       setInitialView(map);
@@ -83,19 +79,17 @@ export function useLeafletMap(
   }
 
   function setInitialView(map: Map) {
-    if (resolveUnref(bounds)) {
-      if (resolveUnref(useFly)) {
-        resetView(map).flyToBounds(
-          resolveUnref(bounds) as LatLngBoundsExpression
-        );
+    if (toValue(bounds)) {
+      if (toValue(useFly)) {
+        resetView(map).flyToBounds(toValue(bounds) as LatLngBoundsExpression);
       } else {
-        map.fitBounds(resolveUnref(bounds) as LatLngBoundsExpression);
+        map.fitBounds(toValue(bounds) as LatLngBoundsExpression);
       }
     } else {
-      if (resolveUnref(useFly)) {
+      if (toValue(useFly)) {
         resetView(map).flyTo(
-          resolveUnref(center) as LatLngExpression,
-          resolveUnref(zoom) as number
+          toValue(center) as LatLngExpression,
+          toValue(zoom) as number
         );
       }
     }
@@ -107,7 +101,7 @@ export function useLeafletMap(
       return;
     }
 
-    if (resolveUnref(useFly)) {
+    if (toValue(useFly)) {
       _instance.value?.flyToBounds(bounds);
     } else {
       _instance.value?.fitBounds(bounds);
@@ -115,7 +109,7 @@ export function useLeafletMap(
   }
 
   function setView(center: LatLngExpression, zoom?: number) {
-    if (resolveUnref(useFly)) {
+    if (toValue(useFly)) {
       _instance.value?.flyTo(center, zoom);
     } else {
       _instance.value?.setView(center, zoom);
@@ -123,7 +117,7 @@ export function useLeafletMap(
   }
 
   function setCenter(center: LatLngExpression) {
-    if (resolveUnref(useFly)) {
+    if (toValue(useFly)) {
       _instance.value?.flyTo(center);
     } else {
       _instance.value?.panTo(center);
@@ -131,7 +125,7 @@ export function useLeafletMap(
   }
 
   function setZoom(zoom: number) {
-    if (resolveUnref(useFly)) {
+    if (toValue(useFly)) {
       _instance.value?.flyTo(_instance.value?.getCenter(), zoom);
     } else {
       _instance.value?.setZoom(zoom);
@@ -157,7 +151,7 @@ export function useLeafletMap(
   });
 
   watch(
-    () => resolveUnref(bounds),
+    () => toValue(bounds),
     val => {
       if (val) {
         setBounds(val as LatLngBoundsExpression);
@@ -167,8 +161,8 @@ export function useLeafletMap(
 
   watch(
     () => ({
-      center: resolveUnref(center) as LatLngExpression,
-      zoom: resolveUnref(zoom) as number
+      center: toValue(center) as LatLngExpression,
+      zoom: toValue(zoom) as number
     }),
     (newValue, oldValue) => {
       if (

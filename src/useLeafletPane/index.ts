@@ -1,10 +1,10 @@
 import { ref, watch, type Ref, readonly } from 'vue-demi';
 import {
   isDefined,
-  resolveRef,
+  toRef,
   whenever,
   type Arrayable,
-  type MaybeComputedRef,
+  type MaybeRefOrGetter,
   tryOnUnmounted
 } from '@vueuse/shared';
 import { logicAnd } from '@vueuse/math';
@@ -28,14 +28,14 @@ export interface LeafletPaneProvider {
 }
 
 export function useLeafletPane(
-  source: MaybeComputedRef<LeafletPaneProvider | null | undefined>,
-  pane: MaybeComputedRef<Arrayable<string> | null | undefined>,
+  source: MaybeRefOrGetter<LeafletPaneProvider | null | undefined>,
+  pane: MaybeRefOrGetter<Arrayable<string> | null | undefined>,
   options: UseLeafletPaneOptions = {}
 ): UseLeafletPaneReturn {
   const { zIndex, flushSync, dispose } = options;
 
-  const _source = resolveRef(source);
-  const _panes = resolveRef(pane);
+  const _source = toRef(source);
+  const _panes = toRef(pane);
   const _paneElements = ref<Record<string, HTMLElement>>({});
   const _flush = flushSync ? 'sync' : undefined;
 

@@ -1,9 +1,9 @@
-import type { MaybeComputedRef } from '@vueuse/shared';
+import type { MaybeRefOrGetter } from '@vueuse/shared';
 import type { Control, Layer, Map } from 'leaflet';
 
 export interface LayersItemConfig {
   name?: string;
-  layer?: MaybeComputedRef<Layer | null | undefined>;
+  layer?: MaybeRefOrGetter<Layer | null | undefined>;
   overlay?: boolean;
 }
 

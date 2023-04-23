@@ -1,8 +1,8 @@
 import { isReadonly, watch, type WatchSource } from 'vue-demi';
 import {
   tryOnUnmounted,
-  type MaybeComputedRef,
-  resolveRef,
+  type MaybeRefOrGetter,
+  toRef,
   isDefined,
   whenever
 } from '@vueuse/shared';
@@ -20,7 +20,7 @@ export interface UseLeafletRemoveObjectOptions<T> {
 export type UseLeafletRemoveObjectReturn = () => void;
 
 export function useLeafletRemoveObject<T = any>(
-  source: MaybeComputedRef<T | null | undefined>,
+  source: MaybeRefOrGetter<T | null | undefined>,
   options: UseLeafletRemoveObjectOptions<T> = {}
 ): UseLeafletRemoveObjectReturn {
   const {
@@ -33,7 +33,7 @@ export function useLeafletRemoveObject<T = any>(
     dispose
   } = options;
 
-  const _source = resolveRef(source);
+  const _source = toRef(source);
   const _flush = flushSync ? 'sync' : undefined;
   let _locked = false;
 

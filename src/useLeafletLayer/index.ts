@@ -7,7 +7,7 @@ import {
   type WatchSource,
   nextTick
 } from 'vue-demi';
-import { resolveRef } from '@vueuse/shared';
+import { toRef } from '@vueuse/shared';
 import type { Layer } from 'leaflet';
 import { useLeafletRemoveLayer } from '../useLeafletRemoveLayer';
 
@@ -46,7 +46,7 @@ export function useLeafletLayer<T extends Layer = Layer>(
   });
 
   if (_watch) {
-    const _watchRef = resolveRef(_watch);
+    const _watchRef = toRef(_watch);
     if (_watchRef.value) {
       create();
     } else {

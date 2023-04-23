@@ -1,5 +1,5 @@
 import { watch } from 'vue-demi';
-import { type MaybeComputedRef, resolveRef } from '@vueuse/shared';
+import { type MaybeRefOrGetter, toRef } from '@vueuse/shared';
 import type { Fn } from '@vueuse/core';
 import {
   useLeafletToggleObject,
@@ -25,24 +25,24 @@ export interface UseLeafletDisplayObjectReturnWithControls
 }
 
 export function useLeafletDisplayObject<S, T>(
-  source: MaybeComputedRef<S | null | undefined>,
-  target: MaybeComputedRef<T | null | undefined>,
+  source: MaybeRefOrGetter<S | null | undefined>,
+  target: MaybeRefOrGetter<T | null | undefined>,
   options?: UseLeafletDisplayObjectOptions<false, S, T>
 ): UseLeafletDisplayObjectReturn;
 export function useLeafletDisplayObject<S, T>(
-  source: MaybeComputedRef<S | null | undefined>,
-  target: MaybeComputedRef<T | null | undefined>,
+  source: MaybeRefOrGetter<S | null | undefined>,
+  target: MaybeRefOrGetter<T | null | undefined>,
   options: UseLeafletDisplayObjectOptions<true, S, T>
 ): UseLeafletDisplayObjectReturnWithControls;
 export function useLeafletDisplayObject<S, T>(
-  source: MaybeComputedRef<S | null | undefined>,
-  target: MaybeComputedRef<T | null | undefined>,
+  source: MaybeRefOrGetter<S | null | undefined>,
+  target: MaybeRefOrGetter<T | null | undefined>,
   options: UseLeafletDisplayObjectOptions<boolean, S, T> = {}
 ): UseLeafletDisplayObjectReturn | UseLeafletDisplayObjectReturnWithControls {
   const { show, hide, shown, flushSync, ...toggleOptions } = options;
 
-  const _source = resolveRef(source);
-  const _target = resolveRef(target);
+  const _source = toRef(source);
+  const _target = toRef(target);
   const _flush = flushSync ? 'sync' : undefined;
 
   const toggle = useLeafletToggleObject(source, target, {

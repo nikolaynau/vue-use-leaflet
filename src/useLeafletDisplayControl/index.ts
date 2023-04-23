@@ -1,4 +1,4 @@
-import type { MaybeComputedRef } from '@vueuse/shared';
+import type { MaybeRefOrGetter } from '@vueuse/shared';
 import type { Control } from 'leaflet';
 import {
   type UseLeafletDisplayObjectOptions,
@@ -23,18 +23,18 @@ export type UseLeafletDisplayControlReturnWithControls =
   UseLeafletDisplayObjectReturnWithControls;
 
 export function useLeafletDisplayControl(
-  source: MaybeComputedRef<LeafletDisplayControl | null | undefined>,
-  target: MaybeComputedRef<Control | null | undefined>,
+  source: MaybeRefOrGetter<LeafletDisplayControl | null | undefined>,
+  target: MaybeRefOrGetter<Control | null | undefined>,
   options?: UseLeafletDisplayControlOptions<false>
 ): UseLeafletDisplayControlReturn;
 export function useLeafletDisplayControl(
-  source: MaybeComputedRef<LeafletDisplayControl | null | undefined>,
-  target: MaybeComputedRef<Control | null | undefined>,
+  source: MaybeRefOrGetter<LeafletDisplayControl | null | undefined>,
+  target: MaybeRefOrGetter<Control | null | undefined>,
   options: UseLeafletDisplayControlOptions<true>
 ): UseLeafletDisplayControlReturnWithControls;
 export function useLeafletDisplayControl(
-  source: MaybeComputedRef<LeafletDisplayControl | null | undefined>,
-  target: MaybeComputedRef<Control | null | undefined>,
+  source: MaybeRefOrGetter<LeafletDisplayControl | null | undefined>,
+  target: MaybeRefOrGetter<Control | null | undefined>,
   options: UseLeafletDisplayControlOptions<boolean> = {}
 ): UseLeafletDisplayControlReturn | UseLeafletDisplayControlReturnWithControls {
   return useLeafletDisplayObject(source, target, {
