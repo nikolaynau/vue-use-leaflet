@@ -1,10 +1,10 @@
-import type { Ref } from 'vue-demi';
+import { type Ref, watch } from 'vue-demi';
 import { type MaybeRefOrGetter, toRef } from '@vueuse/shared';
 import { TileLayer, type TileLayerOptions } from 'leaflet';
 import { useLeafletLayer } from '../useLeafletLayer';
 
 export interface UseLeafletTileLayerOptions extends TileLayerOptions {
-  update?: (insatnce: TileLayer | null) => void;
+  update?: (instance: TileLayer | null) => void;
   factory?: (...args: unknown[]) => TileLayer;
   dispose?: boolean;
 }
@@ -19,18 +19,23 @@ export function useLeafletTileLayer(
 
   const _url = toRef(url);
 
-  return useLeafletLayer(
-    () =>
-      factory
-        ? factory(_url.value, layerOptions)
-        : new TileLayer(_url.value!, layerOptions),
-    {
-      watch: _url,
-      update: instance => {
-        _url.value && instance?.setUrl(_url.value);
-        update?.(instance);
-      },
-      dispose
+  const _instance = useLeafletLayer(create, {
+    watch: _url,
+    update,
+    dispose
+  });
+
+  function create() {
+    return factory
+      ? factory(_url.value!, layerOptions)
+      : new TileLayer(_url.value!, layerOptions);
+  }
+
+  watch(_url, val => {
+    if (val != null) {
+      _instance.value?.setUrl(val);
     }
-  );
+  });
+
+  return _instance;
 }
