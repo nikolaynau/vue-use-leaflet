@@ -1,1 +1,0 @@
-import{j as m,c}from"./index-70374bbd.js";function i(t,s={}){const{remove:r=a=>a.remove(),isRemoved:o=a=>!a._map,cleanRef:e=!0,flushSync:n=!0,dispose:u=!0,...l}=s;return m(t,{remove:r,isRemoved:o,cleanRef:e,flushSync:n,dispose:u,...l})}function p(t,s,r={}){return c(t,s,{...r,show:(o,e)=>o.addControl(e),hide:(o,e)=>o.removeControl(e),shown:(o,e)=>!!e._map})}export{p as a,i as u};
