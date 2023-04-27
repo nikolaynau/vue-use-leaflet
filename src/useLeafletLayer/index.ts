@@ -3,9 +3,9 @@ import {
   shallowRef,
   watchEffect,
   watch,
+  nextTick,
   type Ref,
-  type WatchSource,
-  nextTick
+  type WatchSource
 } from 'vue-demi';
 import { toRef } from '@vueuse/shared';
 import type { Layer } from 'leaflet';
