@@ -1,5 +1,5 @@
 import { type Ref, watch, isReadonly } from 'vue-demi';
-import { toRef, isDefined, type MaybeRefOrGetter, isDef } from '@vueuse/shared';
+import { toRef, isDefined, type MaybeRefOrGetter } from '@vueuse/shared';
 import {
   Marker,
   Icon,
@@ -15,11 +15,11 @@ export interface UseLeafletMarkerOptions
     MarkerOptions,
     'icon' | 'opacity' | 'zIndexOffset' | 'draggable'
   > {
-  icon?: MaybeRefOrGetter<Icon | DivIcon | undefined>;
-  opacity?: MaybeRefOrGetter<number | undefined>;
-  zIndexOffset?: MaybeRefOrGetter<number | undefined>;
-  draggable?: MaybeRefOrGetter<boolean | undefined>;
-  defIcon?: Icon | DivIcon | undefined;
+  icon?: MaybeRefOrGetter<Icon | DivIcon | null | undefined>;
+  opacity?: MaybeRefOrGetter<number | null | undefined>;
+  zIndexOffset?: MaybeRefOrGetter<number | null | undefined>;
+  draggable?: MaybeRefOrGetter<boolean | null | undefined>;
+  defIcon?: Icon | DivIcon | null | undefined;
   update?: (instance: Marker | null) => void;
   factory?: (...args: unknown[]) => Marker;
   dispose?: boolean;
@@ -88,7 +88,7 @@ export function useLeafletMarker(
     }
   });
 
-  if (isDef(icon)) {
+  if (isDefined(icon)) {
     watch(_icon, val => {
       if (val) {
         _instance.value?.setIcon(val);
@@ -98,7 +98,7 @@ export function useLeafletMarker(
     });
   }
 
-  if (isDef(opacity)) {
+  if (isDefined(opacity)) {
     watch(_opacity, val => {
       if (val != null) {
         _instance.value?.setOpacity(val);
@@ -106,7 +106,7 @@ export function useLeafletMarker(
     });
   }
 
-  if (isDef(zIndexOffset)) {
+  if (isDefined(zIndexOffset)) {
     watch(_zIndexOffset, val => {
       if (val != null) {
         _instance.value?.setZIndexOffset(val);
@@ -114,7 +114,7 @@ export function useLeafletMarker(
     });
   }
 
-  if (isDef(draggable)) {
+  if (isDefined(draggable)) {
     watch(_draggable, val => {
       if (val) {
         _instance.value?.dragging?.enable();
