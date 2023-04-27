@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { Marker } from 'leaflet';
 import {
   useLeafletMap,
   useLeafletTileLayer,
   useLeafletToggleObject,
-  useLeafletLayer,
+  useLeafletMarker,
   useLeafletDisplayLayer
 } from 'vue-use-leaflet';
 
@@ -16,7 +15,7 @@ const tileLayer = useLeafletTileLayer(
 );
 useLeafletDisplayLayer(map, tileLayer);
 
-const marker = useLeafletLayer(() => new Marker([0, 0]));
+const marker = useLeafletMarker([0, 0]);
 
 const toggle = useLeafletToggleObject(map, marker, {
   onToggle: (source, target, value) => {

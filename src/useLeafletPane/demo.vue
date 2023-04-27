@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { CircleMarker, Marker } from 'leaflet';
+import { CircleMarker } from 'leaflet';
 import {
   useLeafletMap,
   useLeafletTileLayer,
   useLeafletDisplayLayer,
   useLeafletLayer,
+  useLeafletMarker,
   useLeafletDeps,
   useLeafletPane
 } from 'vue-use-leaflet';
@@ -20,7 +21,7 @@ useLeafletDisplayLayer(map, tileLayer);
 const { paneElements } = useLeafletPane(map, 'paneA', { zIndex: 800 });
 useLeafletPane(map, 'paneB', { zIndex: 900, flushSync: true });
 
-const marker = useLeafletLayer(() => new Marker([0, 0], { pane: 'paneA' }));
+const marker = useLeafletMarker([0, 0], { pane: 'paneA' });
 const circle = useLeafletLayer(
   () =>
     new CircleMarker([0, 0], { radius: 20, pane: 'paneB', fillColor: '#000' })

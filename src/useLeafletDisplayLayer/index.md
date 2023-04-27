@@ -11,12 +11,11 @@ Show the layer object on the map.
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue';
-import { Marker } from 'leaflet';
 import {
   useLeafletMap,
   useLeafletTileLayer,
   useLeafletDisplayLayer,
-  useLeafletLayer
+  useLeafletMarker
 } from 'vue-use-leaflet';
 
 const el = ref<HTMLElement | null>(null);
@@ -30,7 +29,7 @@ useLeafletDisplayLayer(map, tileLayer);
 const visible = ref(true);
 
 // create marker
-const marker = useLeafletLayer(() => new Marker([0, 0]));
+const marker = useLeafletMarker([0, 0]);
 
 // display marker
 const toggle = useLeafletDisplayLayer(map, marker, {

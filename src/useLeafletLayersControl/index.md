@@ -10,12 +10,11 @@ The layers control gives users the ability to switch between different base laye
 
 ```vue
 <script setup lang="ts">
-import { Marker } from 'leaflet';
 import { ref, reactive, computed } from 'vue';
 import {
   useLeafletMap,
   useLeafletTileLayer,
-  useLeafletLayer,
+  useLeafletMarker,
   useLeafletLayersControl,
   useLeafletDisplayControl
 } from 'vue-use-leaflet';
@@ -40,10 +39,10 @@ const arcGis = useLeafletTileLayer(
 );
 
 // create marker A
-const markerA = useLeafletLayer(() => new Marker([0, 0]));
+const markerA = useLeafletMarker([0, 0]);
 
 // create marter B
-const markerB = useLeafletLayer(() => new Marker([-10, -10]));
+const markerB = useLeafletMarker([-10, -10]);
 
 // list of layers
 const layers = reactive([

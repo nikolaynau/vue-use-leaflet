@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { Marker } from 'leaflet';
 import { ref, reactive, computed } from 'vue';
 import {
   useLeafletMap,
   useLeafletTileLayer,
-  useLeafletLayer,
+  useLeafletMarker,
   useLeafletLayersControl,
   useLeafletDisplayControl
 } from 'vue-use-leaflet';
@@ -28,8 +27,8 @@ const arcGis = useLeafletTileLayer(
   'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}'
 );
 
-const markerA = useLeafletLayer(() => new Marker([0, 0]));
-const markerB = useLeafletLayer(() => new Marker([-10, -10]));
+const markerA = useLeafletMarker([0, 0]);
+const markerB = useLeafletMarker([-10, -10]);
 
 const layers = reactive([
   { name: 'Open Street Map', layer: osm },

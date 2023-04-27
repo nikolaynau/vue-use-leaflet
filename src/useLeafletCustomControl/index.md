@@ -11,14 +11,14 @@ Create custom control. Your should implement the `onAdd` method.
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue';
-import { DomEvent, Marker } from 'leaflet';
+import { DomEvent } from 'leaflet';
 import {
   useLeafletMap,
   useLeafletTileLayer,
   useLeafletDisplayControl,
   useLeafletDisplayLayer,
   useLeafletCustomControl,
-  useLeafletLayer
+  useLeafletMarker
 } from 'vue-use-leaflet';
 
 const el = ref<HTMLElement | null>(null);
@@ -29,7 +29,7 @@ const tileLayer = useLeafletTileLayer(
 useLeafletDisplayLayer(map, tileLayer);
 
 // create marker
-const marker = useLeafletLayer(() => new Marker([0, 0]));
+const marker = useLeafletMarker([0, 0]);
 
 // display marker
 const { value: visible } = useLeafletDisplayLayer(map, marker, {

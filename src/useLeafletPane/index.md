@@ -17,6 +17,7 @@ import {
   useLeafletTileLayer,
   useLeafletDisplayLayer,
   useLeafletLayer,
+  useLeafletMarker,
   useLeafletDeps,
   useLeafletPane
 } from 'vue-use-leaflet';
@@ -35,7 +36,7 @@ const { paneElements } = useLeafletPane(map, 'paneA', { zIndex: 800 });
 useLeafletPane(map, 'paneB', { zIndex: 900, flushSync: true });
 
 // create a marker and place it on paneA
-const marker = useLeafletLayer(() => new Marker([0, 0], { pane: 'paneA' }));
+const marker = useLeafletMarker([0, 0], { pane: 'paneA' });
 
 // create a circle marker and place it on paneB
 const circle = useLeafletLayer(

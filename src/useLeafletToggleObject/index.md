@@ -11,12 +11,11 @@ Switch between two states `true` and `false`.
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue';
-import { Marker } from 'leaflet';
 import {
   useLeafletMap,
   useLeafletTileLayer,
   useLeafletToggleObject,
-  useLeafletLayer,
+  useLeafletMarker,
   useLeafletDisplayLayer
 } from 'vue-use-leaflet';
 
@@ -28,7 +27,7 @@ const tileLayer = useLeafletTileLayer(
 useLeafletDisplayLayer(map, tileLayer);
 
 // create marker
-const marker = useLeafletLayer(() => new Marker([0, 0]));
+const marker = useLeafletMarker([0, 0]);
 
 // create toggle object
 const toggle = useLeafletToggleObject(map, marker, {

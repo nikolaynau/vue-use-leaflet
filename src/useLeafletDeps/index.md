@@ -11,12 +11,11 @@ Returns undefined if any of the dependencies is falsy, otherwise returns the val
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue';
-import { Marker } from 'leaflet';
 import {
   useLeafletMap,
   useLeafletTileLayer,
   useLeafletDisplayLayer,
-  useLeafletLayer,
+  useLeafletMarker,
   useLeafletDeps
 } from 'vue-use-leaflet';
 
@@ -31,7 +30,7 @@ useLeafletDisplayLayer(map, tileLayer);
 const dep = ref(false);
 
 // create marker
-const marker = useLeafletLayer(() => new Marker([0, 0]));
+const marker = useLeafletMarker([0, 0]);
 
 // display marker when dependency is truthy
 useLeafletDisplayLayer(map, useLeafletDeps(marker, dep));

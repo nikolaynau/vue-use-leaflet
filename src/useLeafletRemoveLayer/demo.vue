@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { Marker } from 'leaflet';
 import {
   useLeafletMap,
   useLeafletTileLayer,
   useLeafletDisplayLayer,
   useLeafletRemoveLayer,
-  useLeafletLayer
+  useLeafletMarker
 } from 'vue-use-leaflet';
 
 const el = ref<HTMLElement | null>(null);
@@ -16,7 +15,7 @@ const tileLayer = useLeafletTileLayer(
 );
 useLeafletDisplayLayer(map, tileLayer);
 
-const marker = useLeafletLayer(() => new Marker([0, 0]));
+const marker = useLeafletMarker([0, 0]);
 useLeafletDisplayLayer(map, marker);
 
 const remove = useLeafletRemoveLayer(marker);
