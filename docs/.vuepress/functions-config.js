@@ -23,6 +23,7 @@ export default [
     "children": [
       "/functions/useLeafletDisplayLayer/index.md",
       "/functions/useLeafletLayer/index.md",
+      "/functions/useLeafletMarker/index.md",
       "/functions/useLeafletRemoveLayer/index.md",
       "/functions/useLeafletTileLayer/index.md"
     ]

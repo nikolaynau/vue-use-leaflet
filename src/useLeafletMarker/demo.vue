@@ -19,7 +19,7 @@ useLeafletDisplayLayer(map, tileLayer);
 const simpleMarker = useLeafletMarker([0, 0]);
 useLeafletDisplayLayer(map, simpleMarker);
 
-const latLng = ref<LatLngExpression>([-10, -10]);
+const latLng = ref<LatLngExpression>([-20, -20]);
 const draggable = ref(true);
 const opacity = ref(1);
 
@@ -35,7 +35,7 @@ useLeafletEvent(draggableMarker, 'click', e => {
 </script>
 
 <template>
-  <div ref="el" style="height: 21rem"></div>
+  <div ref="el" style="height: 19rem"></div>
   <br />
   <button @click="draggable = !draggable">Toggle Draggable Marker</button>
   Draggable: {{ draggable }}

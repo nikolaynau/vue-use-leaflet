@@ -19,6 +19,7 @@ export interface UseLeafletMarkerOptions
   opacity?: MaybeRefOrGetter<number | undefined>;
   zIndexOffset?: MaybeRefOrGetter<number | undefined>;
   draggable?: MaybeRefOrGetter<boolean | undefined>;
+  defIcon?: Icon | DivIcon | undefined;
   update?: (instance: Marker | null) => void;
   factory?: (...args: unknown[]) => Marker;
   dispose?: boolean;
@@ -38,6 +39,7 @@ export function useLeafletMarker(
     factory,
     update,
     dispose,
+    defIcon = new Icon.Default(),
     ...markerOptions
   } = options;
 
@@ -90,8 +92,8 @@ export function useLeafletMarker(
     watch(_icon, val => {
       if (val) {
         _instance.value?.setIcon(val);
-      } else {
-        _instance.value?.setIcon(new Icon.Default());
+      } else if (defIcon) {
+        _instance.value?.setIcon(defIcon);
       }
     });
   }

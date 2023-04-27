@@ -2,9 +2,9 @@
 category: Layer
 ---
 
-# useLeafletTileLayer
+# useLeafletMarker
 
-Used to load and display tile layers on the map.
+Marker is used to display clickable/draggable icons on the map.
 
 ## Usage
 
@@ -14,20 +14,22 @@ import { ref } from 'vue';
 import {
   useLeafletMap,
   useLeafletTileLayer,
-  useLeafletDisplayLayer
+  useLeafletDisplayLayer,
+  useLeafletMarker
 } from 'vue-use-leaflet';
 
 const el = ref<HTMLElement | null>(null);
 const map = useLeafletMap(el);
-
-// create tile layer
 const tileLayer = useLeafletTileLayer(
-  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-  { attribution: 'Open Street Map' }
+  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
 );
-
-// display tile layer
 useLeafletDisplayLayer(map, tileLayer);
+
+// create marker
+const marker = useLeafletMarker([0, 0]);
+
+// display marker
+useLeafletDisplayLayer(map, marker);
 </script>
 
 <template>
