@@ -1,4 +1,4 @@
-import { type Ref, watch, isReadonly } from 'vue-demi';
+import { type Ref, isReadonly } from 'vue-demi';
 import { toRef, isDefined, type MaybeRefOrGetter } from '@vueuse/shared';
 import {
   Marker,
@@ -51,7 +51,7 @@ export function useLeafletMarker(
 
   const _instance = useLeafletLayer(create, {
     watch: _latlng,
-    updateSources,
+    updateSources: addUpdate(updateSources),
     dispose
   });
 
@@ -82,47 +82,70 @@ export function useLeafletMarker(
     return opt;
   }
 
-  watch(_latlng, val => {
-    if (val != null) {
-      _instance.value?.setLatLng(val);
+  function addUpdate(
+    updateSources: UpdateWatchSource<Marker>[]
+  ): UpdateWatchSource<Marker>[] {
+    updateSources.push({
+      watch: _latlng,
+      handler: (instance, val) => {
+        if (val != null) {
+          instance.setLatLng(val);
+        }
+      }
+    });
+
+    if (isDefined(icon)) {
+      updateSources.push({
+        watch: _icon,
+        handler: (instance, val) => {
+          if (val) {
+            instance.setIcon(val);
+          } else if (defIcon) {
+            instance.setIcon(defIcon);
+          }
+        }
+      });
     }
-  });
 
-  if (isDefined(icon)) {
-    watch(_icon, val => {
-      if (val) {
-        _instance.value?.setIcon(val);
-      } else if (defIcon) {
-        _instance.value?.setIcon(defIcon);
-      }
-    });
-  }
+    if (isDefined(opacity)) {
+      updateSources.push({
+        watch: _opacity,
+        handler: (instance, val) => {
+          if (val != null) {
+            instance.setOpacity(val);
+          }
+        }
+      });
+    }
 
-  if (isDefined(opacity)) {
-    watch(_opacity, val => {
-      if (val != null) {
-        _instance.value?.setOpacity(val);
-      }
-    });
-  }
+    if (isDefined(zIndexOffset)) {
+      updateSources.push({
+        watch: _zIndexOffset,
+        handler: (instance, val) => {
+          if (val != null) {
+            instance.setZIndexOffset(val);
+          }
+        }
+      });
+    }
 
-  if (isDefined(zIndexOffset)) {
-    watch(_zIndexOffset, val => {
-      if (val != null) {
-        _instance.value?.setZIndexOffset(val);
-      }
-    });
+    if (isDefined(draggable)) {
+      updateSources.push({
+        watch: _draggable,
+        handler: (instance, val) => {
+          if (val) {
+            instance.dragging?.enable();
+          } else {
+            instance.dragging?.disable();
+          }
+        }
+      });
+    }
+
+    return updateSources;
   }
 
   if (isDefined(draggable)) {
-    watch(_draggable, val => {
-      if (val) {
-        _instance.value?.dragging?.enable();
-      } else {
-        _instance.value?.dragging?.disable();
-      }
-    });
-
     useLeafletEvent(_instance, 'moveend', () => {
       if (!isReadonly(_latlng) && isDefined(_instance)) {
         _latlng.value = _instance.value.getLatLng().clone();
