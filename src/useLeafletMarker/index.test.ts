@@ -31,7 +31,7 @@ describe('useLeafletMarker', () => {
     expect(marker.value?.getLatLng()).toEqual({ lat: 0, lng: 0 });
   });
 
-  it('should work change position', async () => {
+  it('should work when change position', async () => {
     const position = ref<LatLngExpression | null>([0, 0]);
     const marker = useLeafletMarker(position);
 
