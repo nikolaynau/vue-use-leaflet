@@ -5,7 +5,7 @@ import {
   useLeafletMap,
   useLeafletTileLayer,
   useLeafletDisplayLayer,
-  useLeafletLayer
+  useLeafletCreate
 } from 'vue-use-leaflet';
 
 const el = ref<HTMLElement | null>(null);
@@ -15,14 +15,9 @@ const tileLayer = useLeafletTileLayer(
 );
 useLeafletDisplayLayer(map, tileLayer);
 
-const position = ref<LatLngExpression>([0, 0]);
-const marker = useLeafletLayer(() => new Marker(position.value), {
-  updateSources: [
-    {
-      watch: position,
-      handler: instance => instance.setLatLng(position.value)
-    }
-  ]
+const position = ref<LatLngExpression | undefined>(undefined);
+const marker = useLeafletCreate(() => new Marker(position.value!), {
+  watch: position
 });
 useLeafletDisplayLayer(map, marker);
 </script>
@@ -30,5 +25,5 @@ useLeafletDisplayLayer(map, marker);
 <template>
   <div ref="el" style="height: 21rem"></div>
   <br />
-  <button @click="position = [-10, -10]">Change Marker Position</button>
+  <button @click="position = [0, 0]">Set Position</button>
 </template>

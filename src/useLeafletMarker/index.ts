@@ -7,7 +7,7 @@ import {
   type LatLngExpression,
   type MarkerOptions
 } from 'leaflet';
-import { useLeafletLayer } from '../useLeafletLayer';
+import { useLeafletLayer, type UpdateWatchSource } from '../useLeafletLayer';
 import { useLeafletEvent } from '../useLeafletEvent';
 
 export interface UseLeafletMarkerOptions
@@ -20,7 +20,7 @@ export interface UseLeafletMarkerOptions
   zIndexOffset?: MaybeRefOrGetter<number | null | undefined>;
   draggable?: MaybeRefOrGetter<boolean | null | undefined>;
   defIcon?: Icon | DivIcon | null | undefined;
-  update?: (instance: Marker | null) => void;
+  updateSources?: UpdateWatchSource<Marker>[];
   factory?: (...args: unknown[]) => Marker;
   dispose?: boolean;
 }
@@ -37,8 +37,8 @@ export function useLeafletMarker(
     zIndexOffset,
     draggable,
     factory,
-    update,
     dispose,
+    updateSources = [],
     defIcon = new Icon.Default(),
     ...markerOptions
   } = options;
@@ -51,7 +51,7 @@ export function useLeafletMarker(
 
   const _instance = useLeafletLayer(create, {
     watch: _latlng,
-    update,
+    updateSources,
     dispose
   });
 

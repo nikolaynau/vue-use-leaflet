@@ -15,6 +15,7 @@ export * from './useLeafletDisplayLayer';
 export * from './useLeafletDisplayControl';
 export * from './useLeafletPane';
 export * from './useLeafletDeps';
+export * from './useLeafletCreate';
 export * from './useLeafletRemoveObject';
 export * from './useLeafletRemoveControl';
 export * from './useLeafletRemoveLayer';

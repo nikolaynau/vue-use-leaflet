@@ -83,20 +83,22 @@ describe('useLeafletTileLayer', () => {
   it('should work with update', async () => {
     const opacity = ref<number | null>(null);
     const update = vi.fn(instance => {
-      opacity.value && instance?.setOpacity(opacity.value);
+      instance.setOpacity(opacity.value);
     });
 
-    const tileLayer = useLeafletTileLayer(url, { update });
+    const tileLayer = useLeafletTileLayer(url, {
+      updateSources: [{ watch: opacity, handler: update }]
+    });
+
     expectTileLayer(tileLayer, rawUrl);
-    expect(update).toBeCalledTimes(1);
-    expect(update).toBeCalledWith(null);
+    expect(update).toBeCalledTimes(0);
     const setOpacitySpy = vi.spyOn(tileLayer.value!, 'setOpacity');
 
     opacity.value = 1;
     await nextTick();
 
-    expect(update).toBeCalledTimes(2);
-    expect(update).toBeCalledWith(tileLayer.value);
+    expect(update).toBeCalledTimes(1);
+    expect(update).toBeCalledWith(tileLayer.value, 1, null);
     expect(setOpacitySpy).toBeCalledTimes(1);
     expect(setOpacitySpy).toBeCalledWith(1);
   });

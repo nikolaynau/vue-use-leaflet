@@ -11,7 +11,7 @@ Factory for creating map layers. Supports auto-remove.
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue';
-import { Marker } from 'leaflet';
+import { Marker, type LatLngExpression } from 'leaflet';
 import {
   useLeafletMap,
   useLeafletTileLayer,
@@ -31,7 +31,12 @@ const position = ref<LatLngExpression>([0, 0]);
 
 // create marker
 const marker = useLeafletLayer(() => new Marker(position.value), {
-  update: instance => instance?.setLatLng(position.value)
+  updateSources: [
+    {
+      watch: position,
+      handler: instance => instance.setLatLng(position.value)
+    }
+  ]
 });
 
 // display marker

@@ -77,24 +77,27 @@ describe('useLeafletLayer', () => {
   it('should work update', async () => {
     const a = ref<number>(1);
     update.mockImplementation(instance => {
-      const _a = a.value;
-      instance && (instance.a = _a);
+      instance.a = a.value;
     });
 
     const layer = useLeafletLayer(() => testLayer, {
-      update
+      updateSources: [
+        {
+          watch: a,
+          handler: update
+        }
+      ]
     });
 
     expect(layer.value).toBe(testLayer);
-    expect(update).toBeCalledTimes(1);
-    expect(update).toBeCalledWith(null);
+    expect(update).toBeCalledTimes(0);
 
     a.value++;
     await nextTick();
 
     expect(layer.value).toBe(testLayer);
-    expect(update).toBeCalledTimes(2);
-    expect(update).toBeCalledWith(testLayer);
+    expect(update).toBeCalledTimes(1);
+    expect(update).toBeCalledWith(testLayer, 2, 1);
     expect((testLayer as any).a).toBe(2);
   });
 

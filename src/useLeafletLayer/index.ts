@@ -1,20 +1,17 @@
-import {
-  markRaw,
-  shallowRef,
-  watchEffect,
-  watch,
-  nextTick,
-  type Ref,
-  type WatchSource
-} from 'vue-demi';
-import { toRef } from '@vueuse/shared';
+import { watch, type Ref, type WatchSource } from 'vue-demi';
 import type { Layer } from 'leaflet';
+import { useLeafletCreate } from '../useLeafletCreate';
 import { useLeafletRemoveLayer } from '../useLeafletRemoveLayer';
+
+export interface UpdateWatchSource<T> {
+  watch: WatchSource<any>;
+  handler: (instance: T, newVal: any, oldVal: any) => void;
+}
 
 export interface UseLeafletLayerOptions<T> {
   watch?: WatchSource<any>;
   flushSync?: boolean;
-  update?: (instance: T | null) => void;
+  updateSources?: UpdateWatchSource<T>[];
   remove?: (instance: T) => void;
   dispose?: boolean;
 }
@@ -25,45 +22,35 @@ export function useLeafletLayer<T extends Layer = Layer>(
   factory: () => T,
   options: UseLeafletLayerOptions<T> = {}
 ): UseLeafletLayerReturn<T> {
-  const { watch: _watch, flushSync, update, remove, dispose } = options;
+  const { watch: _watch, flushSync, updateSources, remove, dispose } = options;
 
-  const _instance = shallowRef<T | null>(null);
+  const _instance = useLeafletCreate(factory, {
+    watch: _watch,
+    flushSync
+  });
   const _flush = flushSync ? 'sync' : undefined;
 
-  function create() {
-    _instance.value = markRaw(factory());
+  if (Array.isArray(updateSources)) {
+    updateSources.forEach(watchUpdate);
   }
 
-  if (update) {
-    watchEffect(() => {
-      update(_instance.value);
-    });
+  function watchUpdate(watchSource: UpdateWatchSource<T>) {
+    const { handler } = watchSource;
+    watch(
+      watchSource.watch,
+      (newVal, oldVal) => {
+        if (_instance.value) {
+          handler(_instance.value, newVal, oldVal);
+        }
+      },
+      { flush: _flush }
+    );
   }
 
   useLeafletRemoveLayer(_instance, {
     remove,
     dispose
   });
-
-  if (_watch) {
-    const _watchRef = toRef(_watch);
-    if (_watchRef.value) {
-      create();
-    } else {
-      const stop = watch(
-        _watchRef,
-        val => {
-          if (val) {
-            nextTick(() => stop());
-            create();
-          }
-        },
-        { flush: _flush }
-      );
-    }
-  } else {
-    create();
-  }
 
   return _instance;
 }
