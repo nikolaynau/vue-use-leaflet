@@ -22,6 +22,7 @@ export default [
     "text": "Layer",
     "children": [
       "/functions/useLeafletDisplayLayer/index.md",
+      "/functions/useLeafletIcon/index.md",
       "/functions/useLeafletLayer/index.md",
       "/functions/useLeafletMarker/index.md",
       "/functions/useLeafletRemoveLayer/index.md",

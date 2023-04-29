@@ -25,5 +25,5 @@ useLeafletDisplayLayer(map, marker);
 <template>
   <div ref="el" style="height: 21rem"></div>
   <br />
-  <button @click="position = [0, 0]">Set Position</button>
+  <button @click="position = [0, 0]">Create Marker</button>
 </template>
