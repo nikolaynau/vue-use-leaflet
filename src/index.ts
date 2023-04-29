@@ -21,3 +21,4 @@ export * from './useLeafletRemoveControl';
 export * from './useLeafletRemoveLayer';
 export * from './useLeafletIcon';
 export * from './useLeafletDefaultIcon';
+export * from './useLeafletDivIcon';
