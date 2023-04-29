@@ -14,6 +14,7 @@ export interface UseLeafletIconOptions
     | 'shadowRetinaUrl'
     | 'shadowSize'
     | 'shadowAnchor'
+    | 'className'
   > {
   iconRetinaUrl?: MaybeRefOrGetter<string | null | undefined>;
   iconSize?: MaybeRefOrGetter<PointExpression | null | undefined>;
@@ -22,6 +23,7 @@ export interface UseLeafletIconOptions
   shadowRetinaUrl?: MaybeRefOrGetter<string | null | undefined>;
   shadowSize?: MaybeRefOrGetter<PointExpression | null | undefined>;
   shadowAnchor?: MaybeRefOrGetter<PointExpression | null | undefined>;
+  className?: MaybeRefOrGetter<string | null | undefined>;
   factory?: (...args: unknown[]) => Icon;
 }
 
@@ -39,6 +41,7 @@ export function useLeafletIcon(
     shadowRetinaUrl,
     shadowSize,
     shadowAnchor,
+    className,
     factory,
     ...iconOptions
   } = options;
@@ -51,6 +54,7 @@ export function useLeafletIcon(
   const _shadowRetinaUrl = toRef(shadowRetinaUrl);
   const _shadowSize = toRef(shadowSize);
   const _shadowAnchor = toRef(shadowAnchor);
+  const _className = toRef(className);
 
   const _instance = useLeafletCreate(create, {
     watch: _iconUrl
@@ -89,6 +93,9 @@ export function useLeafletIcon(
     if (isDefined(_shadowAnchor)) {
       opt.shadowAnchor = _shadowAnchor.value;
     }
+    if (isDefined(_className)) {
+      opt.className = _className.value;
+    }
 
     return opt;
   }
@@ -114,7 +121,7 @@ export function useLeafletIcon(
     }
   }
 
-  function updateSize(instance: Icon, name: 'icon' | 'shadow') {
+  function updateStyles(instance: Icon, name: 'icon' | 'shadow') {
     const el = (instance as any)[`_${name}Element`];
     if (el) {
       (instance as any)._setIconStyles(el, name);
@@ -145,7 +152,7 @@ export function useLeafletIcon(
         return;
       }
       _instance.value.options.iconSize = val as PointExpression;
-      updateSize(_instance.value, 'icon');
+      updateStyles(_instance.value, 'icon');
     });
   }
 
@@ -155,7 +162,7 @@ export function useLeafletIcon(
         return;
       }
       _instance.value.options.iconAnchor = val as PointExpression;
-      updateSize(_instance.value, 'icon');
+      updateStyles(_instance.value, 'icon');
     });
   }
 
@@ -185,7 +192,7 @@ export function useLeafletIcon(
         return;
       }
       _instance.value.options.shadowSize = val as PointExpression;
-      updateSize(_instance.value, 'shadow');
+      updateStyles(_instance.value, 'shadow');
     });
   }
 
@@ -195,7 +202,18 @@ export function useLeafletIcon(
         return;
       }
       _instance.value.options.shadowAnchor = val as PointExpression;
-      updateSize(_instance.value, 'shadow');
+      updateStyles(_instance.value, 'shadow');
+    });
+  }
+
+  if (isDefined(className)) {
+    watch(_className, val => {
+      if (!isDefined(_instance)) {
+        return;
+      }
+      _instance.value.options.className = val as string;
+      updateStyles(_instance.value, 'icon');
+      updateStyles(_instance.value, 'shadow');
     });
   }
 

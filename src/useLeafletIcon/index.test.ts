@@ -257,4 +257,32 @@ describe('useLeafletIcon', () => {
     expect(img.style.marginLeft).toBe('-3px');
     expect(img.style.marginTop).toBe('-4px');
   });
+
+  it('should work with class name', async () => {
+    const newClassName = 'bar';
+    const className = ref<string | null>('foo');
+    const icon = useLeafletIcon(imgUrl, { shadowUrl, className });
+
+    expect(icon.value).toBeInstanceOf(Icon);
+    expect(icon.value?.options.className).toContain('foo');
+
+    const img = icon.value!.createIcon();
+    const shadow = icon.value!.createShadow();
+    expect(img.className).toContain('foo');
+    expect(shadow.className).toContain('foo');
+
+    className.value = newClassName;
+    await nextTick();
+
+    expect(icon.value?.options.className).toEqual(newClassName);
+    expect(img.className).toContain(newClassName);
+    expect(shadow.className).toContain(newClassName);
+
+    className.value = null;
+    await nextTick();
+
+    expect(icon.value?.options.className).toBeNull();
+    expect(img.className).not.toContain(newClassName);
+    expect(shadow.className).not.toContain(newClassName);
+  });
 });
