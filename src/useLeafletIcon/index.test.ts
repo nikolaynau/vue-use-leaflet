@@ -70,28 +70,6 @@ describe('useLeafletIcon', () => {
     expect(icon.value?.options.iconUrl).toBe('');
   });
 
-  it('should work when change icon url', async () => {
-    const iconUrl = ref<string | null>(imgUrl);
-    const icon = useLeafletIcon(iconUrl);
-
-    expect(icon.value).toBeInstanceOf(Icon);
-    expect(icon.value?.options.iconUrl).toBe(imgUrl);
-
-    const img = icon.value!.createIcon() as HTMLImageElement;
-    expect(img.src).toBe(imgUrl);
-
-    iconUrl.value = newImgUrl;
-    await nextTick();
-
-    expect(icon.value?.options.iconUrl).toBe(newImgUrl);
-    expect(img.src).toBe(newImgUrl);
-
-    iconUrl.value = null;
-    await nextTick();
-
-    expect(icon.value?.options.iconUrl).toBe('');
-  });
-
   it('should work with icon retina url', async () => {
     const iconRetinaUrl = ref<string | null>(imgRetinaUrl);
     const icon = useLeafletIcon(imgUrl, { iconRetinaUrl });
