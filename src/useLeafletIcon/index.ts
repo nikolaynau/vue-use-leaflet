@@ -136,7 +136,7 @@ export function useLeafletIcon(
     updateUrl(_instance.value, 'icon');
   });
 
-  if (isDefined(iconRetinaUrl)) {
+  if (iconRetinaUrl != null) {
     watch(_iconRetinaUrl, val => {
       if (!isDefined(_instance)) {
         return;
@@ -146,7 +146,7 @@ export function useLeafletIcon(
     });
   }
 
-  if (isDefined(iconSize)) {
+  if (iconSize != null) {
     watch(_iconSize, val => {
       if (!isDefined(_instance)) {
         return;
@@ -156,7 +156,7 @@ export function useLeafletIcon(
     });
   }
 
-  if (isDefined(iconAnchor)) {
+  if (iconAnchor != null) {
     watch(_iconAnchor, val => {
       if (!isDefined(_instance)) {
         return;
@@ -166,7 +166,7 @@ export function useLeafletIcon(
     });
   }
 
-  if (isDefined(shadowUrl)) {
+  if (shadowUrl != null) {
     watch(_shadowUrl, val => {
       if (!isDefined(_instance)) {
         return;
@@ -176,7 +176,7 @@ export function useLeafletIcon(
     });
   }
 
-  if (isDefined(shadowRetinaUrl)) {
+  if (shadowRetinaUrl != null) {
     watch(_shadowRetinaUrl, val => {
       if (!isDefined(_instance)) {
         return;
@@ -186,7 +186,7 @@ export function useLeafletIcon(
     });
   }
 
-  if (isDefined(shadowSize)) {
+  if (shadowSize != null) {
     watch(_shadowSize, val => {
       if (!isDefined(_instance)) {
         return;
@@ -196,7 +196,7 @@ export function useLeafletIcon(
     });
   }
 
-  if (isDefined(shadowAnchor)) {
+  if (shadowAnchor != null) {
     watch(_shadowAnchor, val => {
       if (!isDefined(_instance)) {
         return;
@@ -206,7 +206,7 @@ export function useLeafletIcon(
     });
   }
 
-  if (isDefined(className)) {
+  if (className != null) {
     watch(_className, val => {
       if (!isDefined(_instance)) {
         return;

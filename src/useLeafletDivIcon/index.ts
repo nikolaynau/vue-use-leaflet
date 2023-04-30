@@ -88,7 +88,7 @@ export function useLeafletDivIcon(
     }
   }
 
-  if (isDefined(html)) {
+  if (html != null) {
     watch(_html, val => {
       if (!isDefined(_instance)) {
         return;
@@ -98,7 +98,7 @@ export function useLeafletDivIcon(
     });
   }
 
-  if (isDefined(bgPos)) {
+  if (bgPos != null) {
     watch(_bgPos, val => {
       if (!isDefined(_instance)) {
         return;
@@ -108,7 +108,7 @@ export function useLeafletDivIcon(
     });
   }
 
-  if (isDefined(iconSize)) {
+  if (iconSize != null) {
     watch(_iconSize, val => {
       if (!isDefined(_instance)) {
         return;
@@ -118,7 +118,7 @@ export function useLeafletDivIcon(
     });
   }
 
-  if (isDefined(iconAnchor)) {
+  if (iconAnchor != null) {
     watch(_iconAnchor, val => {
       if (!isDefined(_instance)) {
         return;
@@ -128,7 +128,7 @@ export function useLeafletDivIcon(
     });
   }
 
-  if (isDefined(className)) {
+  if (className != null) {
     watch(_className, val => {
       if (!isDefined(_instance)) {
         return;

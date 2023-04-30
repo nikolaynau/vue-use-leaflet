@@ -94,7 +94,7 @@ export function useLeafletMarker(
       }
     });
 
-    if (isDefined(icon)) {
+    if (icon != null) {
       updateSources.push({
         watch: _icon,
         handler: (instance, val) => {
@@ -107,7 +107,7 @@ export function useLeafletMarker(
       });
     }
 
-    if (isDefined(opacity)) {
+    if (opacity != null) {
       updateSources.push({
         watch: _opacity,
         handler: (instance, val) => {
@@ -118,7 +118,7 @@ export function useLeafletMarker(
       });
     }
 
-    if (isDefined(zIndexOffset)) {
+    if (zIndexOffset != null) {
       updateSources.push({
         watch: _zIndexOffset,
         handler: (instance, val) => {
@@ -129,7 +129,7 @@ export function useLeafletMarker(
       });
     }
 
-    if (isDefined(draggable)) {
+    if (draggable != null) {
       updateSources.push({
         watch: _draggable,
         handler: (instance, val) => {
@@ -145,7 +145,7 @@ export function useLeafletMarker(
     return updateSources;
   }
 
-  if (isDefined(draggable)) {
+  if (draggable != null) {
     useLeafletEvent(_instance, 'moveend', () => {
       if (!isReadonly(_latlng) && isDefined(_instance)) {
         _latlng.value = _instance.value.getLatLng().clone();

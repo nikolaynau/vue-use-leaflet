@@ -16,19 +16,29 @@ const tileLayer = useLeafletTileLayer(
 useLeafletDisplayLayer(map, tileLayer);
 
 const counter = ref(10);
+
 const html = computed(() => `<div>${counter.value}</div>`);
-const icon = useLeafletDivIcon(html, {
+const iconA = useLeafletDivIcon(html, {
   iconSize: [26, 26],
   iconAnchor: [13, 13],
   className: 'counter-marker'
 });
-const marker = useLeafletMarker([0, 0], { icon });
+const markerA = useLeafletMarker([0, 0], { icon: iconA });
+useLeafletDisplayLayer(map, markerA);
 
-useLeafletDisplayLayer(map, marker);
+const iconEl = ref<HTMLElement | null>(null);
+const iconB = useLeafletDivIcon(iconEl, {
+  iconSize: [20, 20],
+  iconAnchor: [10, 10],
+  className: 'counter-marker'
+});
+const markerB = useLeafletMarker([-25, -25], { icon: iconB });
+useLeafletDisplayLayer(map, markerB);
 </script>
 
 <template>
   <div ref="el" style="height: 21rem"></div>
+  <div ref="iconEl">{{ counter }}</div>
   <br />
   <button @click="counter++">Increment Counter</button> Counter: {{ counter }}
 </template>
