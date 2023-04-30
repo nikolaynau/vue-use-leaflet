@@ -2,6 +2,7 @@ export * from './useLeafletEvent';
 export * from './useLeafletMap';
 export * from './useLeafletLayer';
 export * from './useLeafletTileLayer';
+export * from './useLeafletWmsTileLayer';
 export * from './useLeafletMarker';
 export * from './useLeafletReady';
 export * from './useLeafletLayersControl';

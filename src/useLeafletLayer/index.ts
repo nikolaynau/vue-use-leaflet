@@ -1,10 +1,11 @@
-import { watch, type Ref, type WatchSource } from 'vue-demi';
+import { watch, type Ref, type WatchSource, type WatchOptions } from 'vue-demi';
 import type { Layer } from 'leaflet';
 import { useLeafletCreate } from '../useLeafletCreate';
 import { useLeafletRemoveLayer } from '../useLeafletRemoveLayer';
 
 export interface UpdateWatchSource<T> {
   watch: WatchSource<any>;
+  options?: WatchOptions;
   handler: (instance: T, newVal: any, oldVal: any) => void;
 }
 
@@ -35,7 +36,7 @@ export function useLeafletLayer<T extends Layer = Layer>(
   }
 
   function watchUpdate(watchSource: UpdateWatchSource<T>) {
-    const { handler } = watchSource;
+    const { handler, options } = watchSource;
     watch(
       watchSource.watch,
       (newVal, oldVal) => {
@@ -43,7 +44,7 @@ export function useLeafletLayer<T extends Layer = Layer>(
           handler(_instance.value, newVal, oldVal);
         }
       },
-      { flush: _flush }
+      { flush: _flush, ...options }
     );
   }
 

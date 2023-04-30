@@ -3,7 +3,7 @@ import { nextTick, ref } from 'vue-demi';
 import { DivIcon, type PointExpression } from 'leaflet';
 import { useLeafletDivIcon } from '.';
 
-describe('useLeafletIcon', () => {
+describe('useLeafletDivIcon', () => {
   let htmlA: string;
   let htmlB: string;
 
