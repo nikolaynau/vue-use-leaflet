@@ -33,22 +33,39 @@ const counter = ref(10);
 const html = computed(() => `<div>${counter.value}</div>`);
 
 // create div icon
-const icon = useLeafletDivIcon(html, {
+const iconA = useLeafletDivIcon(html, {
   iconSize: [26, 26],
   iconAnchor: [13, 13],
   className: 'custom-marker'
 });
 
 // create marker with icon
-const marker = useLeafletMarker([0, 0], { icon });
+const markerA = useLeafletMarker([0, 0], { icon: iconA });
 
 // display marker
-useLeafletDisplayLayer(map, marker);
+useLeafletDisplayLayer(map, markerA);
 
-// counter.value += 1; // update icon
+// icon dom element
+const iconEl = ref<HTMLElement | null>(null);
+
+// create icon with dom element
+const iconB = useLeafletDivIcon(iconEl, {
+  iconSize: [20, 20],
+  iconAnchor: [10, 10],
+  className: 'counter-marker'
+});
+
+// create marker
+const markerB = useLeafletMarker([-25, -25], { icon: iconB });
+
+// display marker
+useLeafletDisplayLayer(map, markerB);
+
+// counter.value += 1; // update icons
 </script>
 
 <template>
   <div ref="el" style="height: 250px"></div>
+  <div ref="iconEl">{{ counter }}</div>
 </template>
 ```
