@@ -79,6 +79,25 @@ describe('useLeafletPane', () => {
     expect(paneElements.value).toEqual({ a: element, b: element });
   });
 
+  it('should returns current panes', async () => {
+    const panes = ref<string[]>([]);
+    const { currentPanes } = useLeafletPane(source, panes, { zIndex: 1 });
+    expect(currentPanes.value).toEqual([]);
+
+    panes.value.push('a');
+    await nextTick();
+
+    expect(currentPanes.value).toHaveLength(1);
+    expect(currentPanes.value[0]).toEqual(element);
+
+    panes.value.push('b');
+    await nextTick();
+
+    expect(currentPanes.value).toHaveLength(2);
+    expect(currentPanes.value[0]).toEqual(element);
+    expect(currentPanes.value[1]).toEqual(element);
+  });
+
   it('should work when pane changed', async () => {
     const pane = ref<string | string[] | null | undefined>(undefined);
 
@@ -161,6 +180,28 @@ describe('useLeafletPane', () => {
     const { paneElements } = useLeafletPane(source, 'a', { zIndex: 1 });
     expect(paneElements.value).toEqual({ a: element });
     expect(element.style.zIndex).toBe('1');
+  });
+
+  it('should work when change zIndex', async () => {
+    const zIndex = ref<number | null>(null);
+    const { paneElements } = useLeafletPane(source, 'a', { zIndex });
+    expect(paneElements.value).toEqual({ a: element });
+    expect(element.style.zIndex).toBeUndefined();
+
+    zIndex.value = 1;
+    await nextTick();
+
+    expect(element.style.zIndex).toBe('1');
+
+    zIndex.value = 2;
+    await nextTick();
+
+    expect(element.style.zIndex).toBe('2');
+
+    zIndex.value = null;
+    await nextTick();
+
+    expect(element.style.zIndex).toBe('');
   });
 
   it('should work with flush sync', () => {

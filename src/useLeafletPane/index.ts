@@ -1,4 +1,11 @@
-import { ref, watch, type Ref, readonly } from 'vue-demi';
+import {
+  ref,
+  watch,
+  readonly,
+  computed,
+  type Ref,
+  type ComputedRef
+} from 'vue-demi';
 import {
   isDefined,
   toRef,
@@ -10,12 +17,13 @@ import {
 import { logicAnd } from '@vueuse/math';
 
 export interface UseLeafletPaneOptions {
-  zIndex?: number;
+  zIndex?: MaybeRefOrGetter<number | null | undefined>;
   flushSync?: boolean;
   dispose?: boolean;
 }
 
 export interface UseLeafletPaneReturn {
+  currentPanes: ComputedRef<HTMLElement[]>;
   paneElements: LeafletPaneElements;
 }
 
@@ -36,8 +44,15 @@ export function useLeafletPane(
 
   const _source = toRef(source);
   const _panes = toRef(pane);
+  const _zIndex = toRef(zIndex);
   const _paneElements = ref<Record<string, HTMLElement>>({});
   const _flush = flushSync ? 'sync' : undefined;
+
+  const _currentPanes = computed<HTMLElement[]>(() =>
+    toArray(isDefined(_panes) ? _panes.value : []).map(
+      pane => _paneElements.value[pane]
+    )
+  );
 
   function init() {
     if (isDefined(_source) && isDefined(_panes)) {
@@ -50,8 +65,8 @@ export function useLeafletPane(
     toArray(panes).forEach(pane => {
       if (!source.getPane(pane)) {
         const paneElement = source.createPane(pane);
-        if (isDefined(zIndex)) {
-          paneElement.style.zIndex = `${zIndex}`;
+        if (isDefined(_zIndex)) {
+          paneElement.style.zIndex = `${_zIndex.value}`;
         }
       }
     });
@@ -120,6 +135,14 @@ export function useLeafletPane(
     }
   );
 
+  if (zIndex != null) {
+    watch(_zIndex, val => {
+      _currentPanes.value.forEach(el => {
+        el.style.zIndex = `${val ?? ''}`;
+      });
+    });
+  }
+
   function clean() {
     if (isDefined(_source) && isDefined(_panes)) {
       remove(_source.value, _panes.value);
@@ -136,6 +159,7 @@ export function useLeafletPane(
   init();
 
   return {
+    currentPanes: _currentPanes,
     paneElements: readonly(_paneElements) as LeafletPaneElements
   };
 }
