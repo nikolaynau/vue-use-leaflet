@@ -24,11 +24,13 @@ export default [
       "/functions/useLeafletDefaultIcon/index.md",
       "/functions/useLeafletDisplayLayer/index.md",
       "/functions/useLeafletDivIcon/index.md",
+      "/functions/useLeafletGridLayer/index.md",
       "/functions/useLeafletIcon/index.md",
       "/functions/useLeafletLayer/index.md",
       "/functions/useLeafletMarker/index.md",
       "/functions/useLeafletRemoveLayer/index.md",
-      "/functions/useLeafletTileLayer/index.md"
+      "/functions/useLeafletTileLayer/index.md",
+      "/functions/useLeafletWmsTileLayer/index.md"
     ]
   },
   {
