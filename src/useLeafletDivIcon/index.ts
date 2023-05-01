@@ -1,9 +1,9 @@
 import { watch, type Ref, type WatchSource } from 'vue-demi';
 import {
   toRef,
-  type MaybeRefOrGetter,
   isDefined,
-  notNullish
+  notNullish,
+  type MaybeRefOrGetter
 } from '@vueuse/shared';
 import { DivIcon, type DivIconOptions, type PointExpression } from 'leaflet';
 import { useLeafletCreate } from '../useLeafletCreate';
