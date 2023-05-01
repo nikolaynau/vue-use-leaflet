@@ -49,9 +49,7 @@ export function useLeafletPane(
   const _flush = flushSync ? 'sync' : undefined;
 
   const _currentPanes = computed<HTMLElement[]>(() =>
-    toArray(isDefined(_panes) ? _panes.value : []).map(
-      pane => _paneElements.value[pane]
-    )
+    toArray(_panes.value ?? []).map(pane => _paneElements.value[pane])
   );
 
   function init() {
@@ -82,10 +80,6 @@ export function useLeafletPane(
     });
   }
 
-  function toArray<T>(value: Arrayable<T>): T[] {
-    return Array.isArray(value) ? value : [value];
-  }
-
   function update() {
     if (isDefined(_source)) {
       _paneElements.value = { ..._source.value.getPanes() };
@@ -94,6 +88,10 @@ export function useLeafletPane(
 
   function diff<T>(arrA: T[], arrB: T[]): T[] {
     return arrA.filter(x => !arrB.includes(x));
+  }
+
+  function toArray<T>(value: Arrayable<T>): T[] {
+    return Array.isArray(value) ? value : [value];
   }
 
   watch(

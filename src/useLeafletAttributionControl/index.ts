@@ -1,4 +1,4 @@
-import { markRaw, shallowRef, unref, watch, type Ref } from 'vue-demi';
+import { markRaw, shallowRef, watch, type Ref } from 'vue-demi';
 import { isDefined, toRef, type MaybeRefOrGetter } from '@vueuse/shared';
 import { Control } from 'leaflet';
 import { useLeafletRemoveControl } from '../useLeafletRemoveControl';
@@ -38,8 +38,8 @@ export function useLeafletAttributionControl(
   }
 
   function init() {
-    if (unref(_prefix) !== undefined) {
-      _instance.value?.setPrefix(unref(_prefix)!);
+    if (_prefix.value !== undefined) {
+      _instance.value?.setPrefix(_prefix.value!);
     }
     if (isDefined(_attributions)) {
       add(_attributions.value);
@@ -65,7 +65,7 @@ export function useLeafletAttributionControl(
   });
 
   watch(
-    () => (isDefined(_attributions) ? [...unref(_attributions)!] : []),
+    () => (isDefined(_attributions) ? [..._attributions.value] : []),
     (_new, old) => {
       if (old && _new) {
         remove(diff(old, _new));
