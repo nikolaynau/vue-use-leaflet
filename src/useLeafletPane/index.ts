@@ -10,9 +10,10 @@ import {
   isDefined,
   toRef,
   whenever,
+  tryOnUnmounted,
+  notNullish,
   type Arrayable,
-  type MaybeRefOrGetter,
-  tryOnUnmounted
+  type MaybeRefOrGetter
 } from '@vueuse/shared';
 import { logicAnd } from '@vueuse/math';
 
@@ -133,7 +134,7 @@ export function useLeafletPane(
     }
   );
 
-  if (zIndex != null) {
+  if (notNullish(zIndex)) {
     watch(_zIndex, val => {
       _currentPanes.value.forEach(el => {
         el.style.zIndex = `${val ?? ''}`;

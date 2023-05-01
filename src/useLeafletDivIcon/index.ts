@@ -1,5 +1,10 @@
 import { watch, type Ref, type WatchSource } from 'vue-demi';
-import { toRef, type MaybeRefOrGetter, isDefined } from '@vueuse/shared';
+import {
+  toRef,
+  type MaybeRefOrGetter,
+  isDefined,
+  notNullish
+} from '@vueuse/shared';
 import { DivIcon, type DivIconOptions, type PointExpression } from 'leaflet';
 import { useLeafletCreate } from '../useLeafletCreate';
 
@@ -88,7 +93,7 @@ export function useLeafletDivIcon(
     }
   }
 
-  if (html != null) {
+  if (notNullish(html)) {
     watch(_html, val => {
       if (!isDefined(_instance)) {
         return;
@@ -98,7 +103,7 @@ export function useLeafletDivIcon(
     });
   }
 
-  if (bgPos != null) {
+  if (notNullish(bgPos)) {
     watch(_bgPos, val => {
       if (!isDefined(_instance)) {
         return;
@@ -108,7 +113,7 @@ export function useLeafletDivIcon(
     });
   }
 
-  if (iconSize != null) {
+  if (notNullish(iconSize)) {
     watch(_iconSize, val => {
       if (!isDefined(_instance)) {
         return;
@@ -118,7 +123,7 @@ export function useLeafletDivIcon(
     });
   }
 
-  if (iconAnchor != null) {
+  if (notNullish(iconAnchor)) {
     watch(_iconAnchor, val => {
       if (!isDefined(_instance)) {
         return;
@@ -128,7 +133,7 @@ export function useLeafletDivIcon(
     });
   }
 
-  if (className != null) {
+  if (notNullish(className)) {
     watch(_className, val => {
       if (!isDefined(_instance)) {
         return;

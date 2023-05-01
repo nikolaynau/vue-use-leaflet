@@ -1,5 +1,5 @@
 import { type Ref } from 'vue-demi';
-import { type MaybeRefOrGetter, toRef } from '@vueuse/shared';
+import { type MaybeRefOrGetter, toRef, notNullish } from '@vueuse/shared';
 import { TileLayer, type WMSOptions, type WMSParams } from 'leaflet';
 import type { UpdateWatchSource } from '../useLeafletLayer';
 import { useLeafletTileLayer } from '../useLeafletTileLayer';
@@ -28,7 +28,7 @@ export function useLeafletWmsTileLayer(
 
   const _params = toRef(params);
 
-  if (params != null) {
+  if (notNullish(params)) {
     updateSources.push({
       watch: _params,
       options: { deep: true },

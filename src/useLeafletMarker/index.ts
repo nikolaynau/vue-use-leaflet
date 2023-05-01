@@ -1,5 +1,10 @@
 import { type Ref, isReadonly } from 'vue-demi';
-import { toRef, isDefined, type MaybeRefOrGetter } from '@vueuse/shared';
+import {
+  toRef,
+  isDefined,
+  notNullish,
+  type MaybeRefOrGetter
+} from '@vueuse/shared';
 import {
   Marker,
   Icon,
@@ -88,13 +93,13 @@ export function useLeafletMarker(
     updateSources.push({
       watch: _latlng,
       handler: (instance, val) => {
-        if (val != null) {
+        if (notNullish(val)) {
           instance.setLatLng(val);
         }
       }
     });
 
-    if (icon != null) {
+    if (notNullish(icon)) {
       updateSources.push({
         watch: _icon,
         handler: (instance, val) => {
@@ -107,29 +112,29 @@ export function useLeafletMarker(
       });
     }
 
-    if (opacity != null) {
+    if (notNullish(opacity)) {
       updateSources.push({
         watch: _opacity,
         handler: (instance, val) => {
-          if (val != null) {
+          if (notNullish(val)) {
             instance.setOpacity(val);
           }
         }
       });
     }
 
-    if (zIndexOffset != null) {
+    if (notNullish(zIndexOffset)) {
       updateSources.push({
         watch: _zIndexOffset,
         handler: (instance, val) => {
-          if (val != null) {
+          if (notNullish(val)) {
             instance.setZIndexOffset(val);
           }
         }
       });
     }
 
-    if (draggable != null) {
+    if (notNullish(draggable)) {
       updateSources.push({
         watch: _draggable,
         handler: (instance, val) => {
@@ -145,7 +150,7 @@ export function useLeafletMarker(
     return updateSources;
   }
 
-  if (draggable != null) {
+  if (notNullish(draggable)) {
     useLeafletEvent(_instance, 'moveend', () => {
       if (!isReadonly(_latlng) && isDefined(_instance)) {
         _latlng.value = _instance.value.getLatLng().clone();

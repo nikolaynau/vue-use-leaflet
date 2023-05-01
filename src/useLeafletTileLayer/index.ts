@@ -1,5 +1,5 @@
 import { type Ref } from 'vue-demi';
-import { type MaybeRefOrGetter, toRef } from '@vueuse/shared';
+import { type MaybeRefOrGetter, toRef, notNullish } from '@vueuse/shared';
 import { TileLayer, type TileLayerOptions } from 'leaflet';
 import { useLeafletLayer, type UpdateWatchSource } from '../useLeafletLayer';
 
@@ -22,7 +22,7 @@ export function useLeafletTileLayer(
   updateSources.push({
     watch: _url,
     handler: (instance, val) => {
-      if (val != null) {
+      if (notNullish(val)) {
         instance.setUrl(val);
       }
     }

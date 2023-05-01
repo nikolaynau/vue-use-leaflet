@@ -1,5 +1,10 @@
 import { watch, type Ref } from 'vue-demi';
-import { type MaybeRefOrGetter, toRef, isDefined } from '@vueuse/shared';
+import {
+  type MaybeRefOrGetter,
+  toRef,
+  isDefined,
+  notNullish
+} from '@vueuse/shared';
 import { Icon, type IconOptions, type PointExpression } from 'leaflet';
 import { useLeafletCreate } from '../useLeafletCreate';
 
@@ -136,7 +141,7 @@ export function useLeafletIcon(
     updateUrl(_instance.value, 'icon');
   });
 
-  if (iconRetinaUrl != null) {
+  if (notNullish(iconRetinaUrl)) {
     watch(_iconRetinaUrl, val => {
       if (!isDefined(_instance)) {
         return;
@@ -146,7 +151,7 @@ export function useLeafletIcon(
     });
   }
 
-  if (iconSize != null) {
+  if (notNullish(iconSize)) {
     watch(_iconSize, val => {
       if (!isDefined(_instance)) {
         return;
@@ -156,7 +161,7 @@ export function useLeafletIcon(
     });
   }
 
-  if (iconAnchor != null) {
+  if (notNullish(iconAnchor)) {
     watch(_iconAnchor, val => {
       if (!isDefined(_instance)) {
         return;
@@ -166,7 +171,7 @@ export function useLeafletIcon(
     });
   }
 
-  if (shadowUrl != null) {
+  if (notNullish(shadowUrl)) {
     watch(_shadowUrl, val => {
       if (!isDefined(_instance)) {
         return;
@@ -176,7 +181,7 @@ export function useLeafletIcon(
     });
   }
 
-  if (shadowRetinaUrl != null) {
+  if (notNullish(shadowRetinaUrl)) {
     watch(_shadowRetinaUrl, val => {
       if (!isDefined(_instance)) {
         return;
@@ -186,7 +191,7 @@ export function useLeafletIcon(
     });
   }
 
-  if (shadowSize != null) {
+  if (notNullish(shadowSize)) {
     watch(_shadowSize, val => {
       if (!isDefined(_instance)) {
         return;
@@ -196,7 +201,7 @@ export function useLeafletIcon(
     });
   }
 
-  if (shadowAnchor != null) {
+  if (notNullish(shadowAnchor)) {
     watch(_shadowAnchor, val => {
       if (!isDefined(_instance)) {
         return;
@@ -206,7 +211,7 @@ export function useLeafletIcon(
     });
   }
 
-  if (className != null) {
+  if (notNullish(className)) {
     watch(_className, val => {
       if (!isDefined(_instance)) {
         return;
