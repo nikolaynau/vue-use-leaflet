@@ -45,6 +45,7 @@ export default [
     "children": [
       "/functions/useLeafletCreate/index.md",
       "/functions/useLeafletDeps/index.md",
+      "/functions/useLeafletDiff/index.md",
       "/functions/useLeafletDisplayObject/index.md",
       "/functions/useLeafletReady/index.md",
       "/functions/useLeafletRemoveObject/index.md",
