@@ -18,7 +18,7 @@ export interface UseLeafletDivIconOptions
   iconAnchor?: MaybeRefOrGetter<PointExpression | null | undefined>;
   className?: MaybeRefOrGetter<string | null | undefined>;
   watch?: WatchSource<any>;
-  factory?: (...args: unknown[]) => DivIcon;
+  factory?: (...args: any[]) => DivIcon;
 }
 
 export type UseLeafletDivIconReturn = Ref<DivIcon | null>;

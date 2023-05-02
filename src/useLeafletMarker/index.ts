@@ -26,7 +26,7 @@ export interface UseLeafletMarkerOptions
   draggable?: MaybeRefOrGetter<boolean | null | undefined>;
   defIcon?: Icon | DivIcon | null | undefined;
   updateSources?: UpdateWatchSource<Marker>[];
-  factory?: (...args: unknown[]) => Marker;
+  factory?: (...args: any[]) => Marker;
   dispose?: boolean;
 }
 

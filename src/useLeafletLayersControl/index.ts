@@ -24,7 +24,7 @@ export interface UseLeafletLayersControlOptions extends Control.LayersOptions {
   currentBaseLayer?: MaybeRef<string | number | null | undefined>;
   currentOverlays?: MaybeRef<string[] | number[] | null | undefined>;
   indexes?: boolean;
-  factory?: (...args: unknown[]) => Control.Layers;
+  factory?: (...args: any[]) => Control.Layers;
   dispose?: boolean;
 }
 

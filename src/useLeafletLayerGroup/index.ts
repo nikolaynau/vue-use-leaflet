@@ -13,7 +13,7 @@ export interface UseLeafletLayerGroupOptions extends LayerOptions {
   diff?: ArrayDiffFunction<Layer> | boolean;
   compareFn?: (value: Layer, othVal: Layer) => boolean;
   updateSources?: UpdateWatchSource<LayerGroup>[];
-  factory?: (...args: unknown[]) => LayerGroup;
+  factory?: (...args: any[]) => LayerGroup;
   dispose?: boolean;
 }
 

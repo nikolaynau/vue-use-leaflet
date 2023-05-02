@@ -29,7 +29,7 @@ export interface UseLeafletIconOptions
   shadowSize?: MaybeRefOrGetter<PointExpression | null | undefined>;
   shadowAnchor?: MaybeRefOrGetter<PointExpression | null | undefined>;
   className?: MaybeRefOrGetter<string | null | undefined>;
-  factory?: (...args: unknown[]) => Icon;
+  factory?: (...args: any[]) => Icon;
 }
 
 export type UseLeafletIconReturn = Ref<Icon | null>;

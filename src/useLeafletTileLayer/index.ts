@@ -5,7 +5,7 @@ import { useLeafletLayer, type UpdateWatchSource } from '../useLeafletLayer';
 
 export interface UseLeafletTileLayerOptions extends TileLayerOptions {
   updateSources?: UpdateWatchSource<TileLayer>[];
-  factory?: (...args: unknown[]) => TileLayer;
+  factory?: (...args: any[]) => TileLayer;
   dispose?: boolean;
 }
 

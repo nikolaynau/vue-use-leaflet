@@ -6,7 +6,7 @@ import { useLeafletTileLayer } from '../useLeafletTileLayer';
 
 export interface UseLeafletWmsTileLayerOptions extends WMSOptions {
   updateSources?: UpdateWatchSource<TileLayer.WMS>[];
-  factory?: (...args: unknown[]) => TileLayer.WMS;
+  factory?: (...args: any[]) => TileLayer.WMS;
   defParams?: WMSParams;
   dispose?: boolean;
 }

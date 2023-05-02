@@ -7,7 +7,7 @@ export interface UseLeafletAttributionControlOptions
   extends Omit<Control.AttributionOptions, 'prefix'> {
   attributions?: MaybeRefOrGetter<string[] | null | undefined>;
   prefix?: MaybeRefOrGetter<string | null | undefined>;
-  factory?: (...args: unknown[]) => Control.Attribution;
+  factory?: (...args: any[]) => Control.Attribution;
   dispose?: boolean;
 }
 

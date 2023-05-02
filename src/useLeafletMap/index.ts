@@ -22,7 +22,7 @@ export interface UseLeafletMapOptions
   bounds?: MaybeRefOrGetter<LatLngBoundsExpression | undefined>;
   useFly?: MaybeRefOrGetter<boolean | undefined>;
   flushSync?: boolean;
-  factory?: (...args: unknown[]) => Map;
+  factory?: (...args: any[]) => Map;
   dispose?: boolean;
   onViewChanged?: (event: ViewChangedEvent) => void;
 }

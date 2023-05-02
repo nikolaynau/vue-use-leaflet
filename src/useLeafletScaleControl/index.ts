@@ -3,7 +3,7 @@ import { Control } from 'leaflet';
 import { useLeafletRemoveControl } from '../useLeafletRemoveControl';
 
 export interface UseLeafletScaleControlOptions extends Control.ScaleOptions {
-  factory?: (...args: unknown[]) => Control.Attribution;
+  factory?: (...args: any[]) => Control.Attribution;
   dispose?: boolean;
 }
 

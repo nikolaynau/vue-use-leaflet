@@ -5,7 +5,7 @@ import { useLeafletRemoveControl } from '../useLeafletRemoveControl';
 
 export interface UseLeafletZoomControlOptions extends Control.ZoomOptions {
   disabled?: MaybeRefOrGetter<boolean>;
-  factory?: (...args: unknown[]) => Control.Zoom;
+  factory?: (...args: any[]) => Control.Zoom;
   dispose?: boolean;
 }
 

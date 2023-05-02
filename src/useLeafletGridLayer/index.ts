@@ -10,7 +10,7 @@ import { type UpdateWatchSource, useLeafletLayer } from '../useLeafletLayer';
 export interface UseLeafletGridLayerOptions<T extends GridLayer = GridLayer>
   extends GridLayerOptions {
   updateSources?: UpdateWatchSource<T>[];
-  factory?: (...args: unknown[]) => T;
+  factory?: (...args: any[]) => T;
   dispose?: boolean;
 }
 

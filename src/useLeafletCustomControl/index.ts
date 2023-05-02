@@ -5,7 +5,7 @@ import { useLeafletRemoveControl } from '../useLeafletRemoveControl';
 
 export interface UseLeafletCustomControlOptions extends ControlOptions {
   disabled?: MaybeRefOrGetter<boolean>;
-  factory?: (...args: unknown[]) => Control;
+  factory?: (...args: any[]) => Control;
   dispose?: boolean;
   onAdd?: (map: Map, control: Control) => HTMLElement;
   onRemove?: (map: Map, control: Control) => void;
