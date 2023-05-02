@@ -27,6 +27,7 @@ export default [
       "/functions/useLeafletGridLayer/index.md",
       "/functions/useLeafletIcon/index.md",
       "/functions/useLeafletLayer/index.md",
+      "/functions/useLeafletLayerGroup/index.md",
       "/functions/useLeafletMarker/index.md",
       "/functions/useLeafletRemoveLayer/index.md",
       "/functions/useLeafletTileLayer/index.md",

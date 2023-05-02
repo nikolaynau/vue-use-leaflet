@@ -34,7 +34,7 @@ export function useLeafletLayerGroup(
       return [];
     }
     const valArr = toArray(val);
-    const newArr = new Array(valArr.length);
+    const newArr = [];
     for (let i = 0, len = valArr.length; i < len; i++) {
       const item = toValue(valArr[i]);
       if (notNullish(item)) {
