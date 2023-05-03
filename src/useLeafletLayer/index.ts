@@ -5,8 +5,8 @@ import { useLeafletRemoveLayer } from '../useLeafletRemoveLayer';
 
 export interface UpdateWatchSource<T> {
   watch: WatchSource<any>;
-  options?: WatchOptions;
   handler: (instance: T, newVal: any, oldVal: any) => void;
+  options?: WatchOptions;
 }
 
 export interface UseLeafletLayerOptions<T> {

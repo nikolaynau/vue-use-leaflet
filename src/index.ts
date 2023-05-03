@@ -6,6 +6,7 @@ export * from './useLeafletWmsTileLayer';
 export * from './useLeafletGridLayer';
 export * from './useLeafletLayerGroup';
 export * from './useLeafletMarker';
+export * from './useLeafletGeoJson';
 export * from './useLeafletReady';
 export * from './useLeafletLayersControl';
 export * from './useLeafletAttributionControl';
