@@ -27,6 +27,7 @@ export default [
       "/functions/useLeafletGeoJson/index.md",
       "/functions/useLeafletGridLayer/index.md",
       "/functions/useLeafletIcon/index.md",
+      "/functions/useLeafletImageOverlay/index.md",
       "/functions/useLeafletLayer/index.md",
       "/functions/useLeafletLayerGroup/index.md",
       "/functions/useLeafletMarker/index.md",
