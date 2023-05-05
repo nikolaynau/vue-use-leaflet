@@ -82,13 +82,9 @@ export function useLeafletVideoOverlay(
       if (typeof val === 'string') {
         instance.setUrl(val);
       } else if (Array.isArray(val)) {
-        (instance as any)._url = val;
-        const el = instance.getElement();
-        el && updateUrls(el, val);
+        setUrl(instance, val);
       } else if (val instanceof HTMLVideoElement) {
-        (instance as any)._url = getUrls(val);
-        const el = instance.getElement();
-        el && updateUrls(el, (instance as any)._url);
+        setUrl(instance, getUrls(val));
       }
     }
   });
@@ -276,6 +272,12 @@ export function useLeafletVideoOverlay(
       sources.push(sourceElements[i].src);
     }
     return sourceElements.length > 0 ? sources : [el.src];
+  }
+
+  function setUrl(instance: VideoOverlay, urls: string[]) {
+    (instance as any)._url = urls;
+    const el = instance.getElement();
+    el && updateUrls(el, urls);
   }
 
   return _instance;
