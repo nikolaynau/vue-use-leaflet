@@ -82,10 +82,13 @@ export function useLeafletVideoOverlay(
       if (typeof val === 'string') {
         instance.setUrl(val);
       } else if (Array.isArray(val)) {
+        (instance as any)._url = val;
         const el = instance.getElement();
         el && updateUrls(el, val);
       } else if (val instanceof HTMLVideoElement) {
         (instance as any)._url = getUrls(val);
+        const el = instance.getElement();
+        el && updateUrls(el, (instance as any)._url);
       }
     }
   });
@@ -254,10 +257,7 @@ export function useLeafletVideoOverlay(
   }
 
   function updateUrls(el: HTMLVideoElement, urls: string[]): void {
-    const sourceElements = el.getElementsByTagName('source');
-    for (let i = 0; i < sourceElements.length; i++) {
-      el.removeChild(sourceElements[i]);
-    }
+    el.replaceChildren();
 
     for (let j = 0; j < urls.length; j++) {
       const url = urls[j];
