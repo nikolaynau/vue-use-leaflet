@@ -8,6 +8,7 @@ export * from './useLeafletLayerGroup';
 export * from './useLeafletMarker';
 export * from './useLeafletGeoJson';
 export * from './useLeafletImageOverlay';
+export * from './useLeafletVideoOverlay';
 export * from './useLeafletReady';
 export * from './useLeafletLayersControl';
 export * from './useLeafletAttributionControl';

@@ -24,7 +24,6 @@ export interface UseLeafletMarkerOptions
   opacity?: MaybeRefOrGetter<number | null | undefined>;
   zIndexOffset?: MaybeRefOrGetter<number | null | undefined>;
   draggable?: MaybeRefOrGetter<boolean | null | undefined>;
-  defIcon?: Icon | DivIcon | null | undefined;
   updateSources?: UpdateWatchSource<Marker>[];
   factory?: (...args: any[]) => Marker;
   dispose?: boolean;
@@ -44,7 +43,6 @@ export function useLeafletMarker(
     factory,
     dispose,
     updateSources = [],
-    defIcon = new Icon.Default(),
     ...markerOptions
   } = options;
 
@@ -53,10 +51,66 @@ export function useLeafletMarker(
   const _opacity = toRef(opacity);
   const _zIndexOffset = toRef(zIndexOffset);
   const _draggable = toRef(draggable);
+  const _defOptions = Marker.prototype.options;
+
+  updateSources.push({
+    watch: _latlng,
+    handler: (instance, val) => {
+      if (notNullish(val)) {
+        instance.setLatLng(val);
+      }
+    }
+  });
+
+  if (notNullish(icon)) {
+    updateSources.push({
+      watch: _icon,
+      handler: (instance, val) => {
+        instance.setIcon(val ?? _defOptions.icon);
+      }
+    });
+  }
+
+  if (notNullish(opacity)) {
+    updateSources.push({
+      watch: _opacity,
+      handler: (instance, val) => {
+        instance.setOpacity(val ?? _defOptions.opacity);
+      }
+    });
+  }
+
+  if (notNullish(zIndexOffset)) {
+    updateSources.push({
+      watch: _zIndexOffset,
+      handler: (instance, val) => {
+        instance.setZIndexOffset(val ?? _defOptions.zIndexOffset);
+      }
+    });
+  }
+
+  if (notNullish(draggable)) {
+    updateSources.push({
+      watch: _draggable,
+      handler: (instance, val) => {
+        const { dragging, options } = instance;
+        options.draggable = val ?? _defOptions.draggable;
+        if (options.draggable) {
+          if (dragging && !dragging.enabled()) {
+            dragging.enable();
+          }
+        } else {
+          if (dragging && dragging.enabled()) {
+            dragging.disable();
+          }
+        }
+      }
+    });
+  }
 
   const _instance = useLeafletLayer(create, {
     watch: _latlng,
-    updateSources: addUpdate(updateSources),
+    updateSources,
     dispose
   });
 
@@ -85,69 +139,6 @@ export function useLeafletMarker(
     }
 
     return opt;
-  }
-
-  function addUpdate(
-    updateSources: UpdateWatchSource<Marker>[]
-  ): UpdateWatchSource<Marker>[] {
-    updateSources.push({
-      watch: _latlng,
-      handler: (instance, val) => {
-        if (notNullish(val)) {
-          instance.setLatLng(val);
-        }
-      }
-    });
-
-    if (notNullish(icon)) {
-      updateSources.push({
-        watch: _icon,
-        handler: (instance, val) => {
-          if (val) {
-            instance.setIcon(val);
-          } else if (defIcon) {
-            instance.setIcon(defIcon);
-          }
-        }
-      });
-    }
-
-    if (notNullish(opacity)) {
-      updateSources.push({
-        watch: _opacity,
-        handler: (instance, val) => {
-          if (notNullish(val)) {
-            instance.setOpacity(val);
-          }
-        }
-      });
-    }
-
-    if (notNullish(zIndexOffset)) {
-      updateSources.push({
-        watch: _zIndexOffset,
-        handler: (instance, val) => {
-          if (notNullish(val)) {
-            instance.setZIndexOffset(val);
-          }
-        }
-      });
-    }
-
-    if (notNullish(draggable)) {
-      updateSources.push({
-        watch: _draggable,
-        handler: (instance, val) => {
-          if (val) {
-            instance.dragging?.enable();
-          } else {
-            instance.dragging?.disable();
-          }
-        }
-      });
-    }
-
-    return updateSources;
   }
 
   if (notNullish(draggable)) {

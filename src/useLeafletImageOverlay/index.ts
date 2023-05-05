@@ -129,7 +129,7 @@ export function useLeafletImageOverlay(
     dispose
   });
 
-  function create() {
+  function create(): ImageOverlay {
     return factory
       ? factory(_imageUrl.value, toRaw(_bounds.value), makeOptions())
       : new ImageOverlay(
