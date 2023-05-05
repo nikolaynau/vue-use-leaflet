@@ -1,12 +1,13 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { nextTick, ref } from 'vue-demi';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { nextTick, ref, defineComponent, onUnmounted, h } from 'vue-demi';
 import {
   ImageOverlay,
   latLngBounds,
-  type LatLngBoundsExpression
+  type LatLngBoundsExpression,
+  type LatLngExpression
 } from 'leaflet';
+import { mount } from '../../.test';
 import { useLeafletImageOverlay } from '.';
-import { LatLngExpression } from 'leaflet';
 
 describe('useLeafletImageOverlay', () => {
   let imgUrl: string;
@@ -97,5 +98,129 @@ describe('useLeafletImageOverlay', () => {
     await nextTick();
 
     expect(instance.value?.getBounds()).toEqual(newBounds);
+  });
+
+  it('should work with opacity', async () => {
+    const opacity = ref<number | null>(null);
+    const instance = useLeafletImageOverlay(imgUrl, bounds, { opacity });
+    expect(instance.value).toBeInstanceOf(ImageOverlay);
+    expect(instance.value?.options.opacity).toBe(
+      ImageOverlay.prototype.options.opacity
+    );
+
+    opacity.value = 0.5;
+    await nextTick();
+
+    expect(instance.value?.options.opacity).toBe(0.5);
+
+    opacity.value = null;
+    await nextTick();
+
+    expect(instance.value?.options.opacity).toBe(
+      ImageOverlay.prototype.options.opacity
+    );
+  });
+
+  it('should work with alt', async () => {
+    const alt = ref<string | null>(null);
+    const instance = useLeafletImageOverlay(imgUrl, bounds, { alt });
+    expect(instance.value).toBeInstanceOf(ImageOverlay);
+    expect(instance.value?.options.alt).toBe(
+      ImageOverlay.prototype.options.alt
+    );
+
+    alt.value = 'text';
+    await nextTick();
+
+    expect(instance.value?.options.alt).toBe('text');
+
+    alt.value = null;
+    await nextTick();
+
+    expect(instance.value?.options.alt).toBe(
+      ImageOverlay.prototype.options.alt
+    );
+  });
+
+  it('should work with z-index', async () => {
+    const zIndex = ref<number | null>(null);
+    const instance = useLeafletImageOverlay(imgUrl, bounds, { zIndex });
+    expect(instance.value).toBeInstanceOf(ImageOverlay);
+    expect(instance.value?.options.zIndex).toBe(
+      ImageOverlay.prototype.options.zIndex
+    );
+
+    zIndex.value = 2;
+    await nextTick();
+
+    expect(instance.value?.options.zIndex).toBe(2);
+
+    zIndex.value = null;
+    await nextTick();
+
+    expect(instance.value?.options.zIndex).toBe(
+      ImageOverlay.prototype.options.zIndex
+    );
+  });
+
+  it('should work with class name', async () => {
+    const className = ref<string | null>(null);
+    const instance = useLeafletImageOverlay(imgUrl, bounds, { className });
+    expect(instance.value).toBeInstanceOf(ImageOverlay);
+    expect(instance.value?.options.className).toBe(
+      ImageOverlay.prototype.options.className
+    );
+
+    (instance.value as any)._initImage();
+    const classList = instance.value!.getElement()!.classList;
+
+    className.value = 'classA classB';
+    await nextTick();
+
+    expect(instance.value?.options.className).toBe('classA classB');
+    expect(classList.contains('classA')).toBeTruthy();
+    expect(classList.contains('classB')).toBeTruthy();
+
+    className.value = 'classB';
+    await nextTick();
+
+    expect(instance.value?.options.className).toBe('classB');
+    expect(classList.contains('classA')).toBeFalsy();
+    expect(classList.contains('classB')).toBeTruthy();
+
+    className.value = null;
+    await nextTick();
+
+    expect(instance.value?.options.className).toBe(
+      ImageOverlay.prototype.options.className
+    );
+    expect(classList.contains('classA')).toBeFalsy();
+    expect(classList.contains('classB')).toBeFalsy();
+  });
+
+  it('should destroy when component is unmounted', () => {
+    expect.assertions(3);
+
+    const vm = mount(
+      defineComponent({
+        setup() {
+          const instance = useLeafletImageOverlay(imgUrl, bounds);
+          expect(instance.value).toBeInstanceOf(ImageOverlay);
+          const remove = vi.fn();
+          instance.value!.remove = remove;
+          (instance.value as any)._map = {};
+
+          onUnmounted(() => {
+            expect(instance.value).toBeNull();
+            expect(remove).toBeCalledTimes(1);
+          });
+        },
+        render() {
+          return h('div');
+        }
+      })
+    );
+
+    vm.unmount();
   });
 });

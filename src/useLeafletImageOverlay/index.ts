@@ -85,9 +85,9 @@ export function useLeafletImageOverlay(
     updateSources.push({
       watch: _alt,
       handler: (instance, val) => {
+        instance.options.alt = val ?? _defOptions.alt;
         const el = instance.getElement();
         if (el) {
-          instance.options.alt = val ?? _defOptions.alt;
           el.alt = instance.options.alt!;
         }
       }
@@ -107,15 +107,15 @@ export function useLeafletImageOverlay(
     updateSources.push({
       watch: _className,
       handler: (instance, newVal, oldVal) => {
+        instance.options.className = newVal ?? _defOptions.className;
         const el = instance.getElement();
         if (!el) {
           return;
         }
+
         if (oldVal) {
           el.classList.remove(...Util.splitWords(oldVal));
         }
-
-        instance.options.className = newVal ?? _defOptions.className;
         if (instance.options.className) {
           el.classList.add(...Util.splitWords(instance.options.className));
         }
