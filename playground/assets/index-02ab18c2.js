@@ -1,1 +1,0 @@
-import{l}from"./index-a93e3548.js";import{u as c}from"./index-8685f62c.js";import{s as f,m as u}from"./index-84a01c72.js";function w(n={}){const{factory:t,dispose:r=!0,...e}=n,o=f(null);function a(){const s=t?t(e):new l.Control.Scale(e);o.value=u(s)}return c(o,{dispose:r}),a(),o}export{w as u};
