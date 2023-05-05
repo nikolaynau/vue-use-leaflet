@@ -8,7 +8,7 @@ import {
   onUnmounted,
   ref
 } from 'vue-demi';
-import { DivIcon, Icon, LatLngExpression, Marker } from 'leaflet';
+import { DivIcon, LatLngExpression, Marker } from 'leaflet';
 import { mount } from '../../.test';
 import { useLeafletMarker } from '.';
 
@@ -52,13 +52,19 @@ describe('useLeafletMarker', () => {
   it('should work with icon', async () => {
     const divIconA = new DivIcon();
     const divIconB = new DivIcon();
-    const defIcon = new Icon.Default();
-    const icon = ref<DivIcon | undefined>(markRaw(divIconA)) as Ref<
+    const defIcon = Marker.prototype.options.icon;
+
+    const icon = ref<DivIcon | undefined>(undefined) as Ref<
       DivIcon | undefined
     >;
-    const marker = useLeafletMarker([0, 0], { icon, defIcon });
+    const marker = useLeafletMarker([0, 0], { icon });
 
     expect(marker.value).toBeInstanceOf(Marker);
+    expect(marker.value?.getIcon()).toBe(Marker.prototype.options.icon);
+
+    icon.value = markRaw(divIconA);
+    await nextTick();
+
     expect(marker.value?.getIcon()).toBe(divIconA);
 
     icon.value = markRaw(divIconB);
@@ -73,29 +79,31 @@ describe('useLeafletMarker', () => {
   });
 
   it('should work with opacity', async () => {
-    const opacity = ref<number | undefined>(1);
+    const defOpacity = Marker.prototype.options.opacity;
+    const opacity = ref<number | undefined>(undefined);
     const marker = useLeafletMarker([0, 0], { opacity });
 
     expect(marker.value).toBeInstanceOf(Marker);
-    expect(marker.value?.options.opacity).toBe(1);
+    expect(marker.value?.options.opacity).toBe(defOpacity);
 
-    opacity.value = 0;
+    opacity.value = 0.5;
     await nextTick();
 
-    expect(marker.value?.options.opacity).toBe(0);
+    expect(marker.value?.options.opacity).toBe(0.5);
 
     opacity.value = undefined;
     await nextTick();
 
-    expect(marker.value?.options.opacity).toBe(0);
+    expect(marker.value?.options.opacity).toBe(defOpacity);
   });
 
   it('should work with zIndexOffset', async () => {
-    const zIndexOffset = ref<number | undefined>(10);
+    const defZIndexOffset = Marker.prototype.options.zIndexOffset;
+    const zIndexOffset = ref<number | undefined>(undefined);
     const marker = useLeafletMarker([0, 0], { zIndexOffset });
 
     expect(marker.value).toBeInstanceOf(Marker);
-    expect(marker.value?.options.zIndexOffset).toBe(10);
+    expect(marker.value?.options.zIndexOffset).toBe(defZIndexOffset);
 
     zIndexOffset.value = 15;
     await nextTick();
@@ -105,19 +113,27 @@ describe('useLeafletMarker', () => {
     zIndexOffset.value = undefined;
     await nextTick();
 
-    expect(marker.value?.options.zIndexOffset).toBe(15);
+    expect(marker.value?.options.zIndexOffset).toBe(defZIndexOffset);
   });
 
   it('enable/disable dragging', async () => {
+    let draggingEnabled = false;
     const dragging = {
-      enable: vi.fn(),
-      disable: vi.fn()
+      enabled: vi.fn().mockImplementation(() => draggingEnabled),
+      enable: vi.fn().mockImplementation(() => {
+        draggingEnabled = true;
+      }),
+      disable: vi.fn().mockImplementation(() => {
+        draggingEnabled = false;
+      })
     };
 
-    const draggable = ref(false);
+    const defDraggable = Marker.prototype.options.draggable;
+    const draggable = ref<boolean | undefined>(undefined);
     const marker = useLeafletMarker([0, 0], { draggable });
 
     expect(marker.value).toBeInstanceOf(Marker);
+    expect(marker.value?.options.draggable).toBe(defDraggable);
     (marker.value as any).dragging = dragging;
 
     draggable.value = true;
@@ -126,6 +142,7 @@ describe('useLeafletMarker', () => {
     draggable.value = false;
     await nextTick();
 
+    expect(dragging.enabled).toBeCalledTimes(2);
     expect(dragging.enable).toBeCalledTimes(1);
     expect(dragging.disable).toBeCalledTimes(1);
   });
