@@ -130,10 +130,8 @@ export function useLeafletVideoOverlay(
       handler: (instance, val) => {
         instance.options.keepAspectRatio = val ?? _defOptions.keepAspectRatio;
         const el = instance.getElement();
-        if (el && el.style['objectFit'] !== undefined) {
-          el.style['objectFit'] = !instance.options.keepAspectRatio
-            ? 'fill'
-            : '';
+        if (el && el.style.objectFit !== undefined) {
+          el.style.objectFit = !instance.options.keepAspectRatio ? 'fill' : '';
         }
       }
     });
