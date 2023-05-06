@@ -32,7 +32,9 @@ export default [
       "/functions/useLeafletLayerGroup/index.md",
       "/functions/useLeafletMarker/index.md",
       "/functions/useLeafletRemoveLayer/index.md",
+      "/functions/useLeafletSvgOverlay/index.md",
       "/functions/useLeafletTileLayer/index.md",
+      "/functions/useLeafletVideoOverlay/index.md",
       "/functions/useLeafletWmsTileLayer/index.md"
     ]
   },
