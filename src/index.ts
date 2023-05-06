@@ -10,6 +10,8 @@ export * from './useLeafletGeoJson';
 export * from './useLeafletImageOverlay';
 export * from './useLeafletVideoOverlay';
 export * from './useLeafletSvgOverlay';
+export * from './useLeafletPath';
+export * from './useLeafletPolyline';
 export * from './useLeafletReady';
 export * from './useLeafletLayersControl';
 export * from './useLeafletAttributionControl';
