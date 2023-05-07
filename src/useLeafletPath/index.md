@@ -65,7 +65,7 @@ useLeafletDisplayLayer(map, polyline);
 // display polygon
 useLeafletDisplayLayer(map, polygon);
 
-// color.value = 'black'; // change path style
+// color.value = 'black'; // redraw path
 </script>
 
 <template>
