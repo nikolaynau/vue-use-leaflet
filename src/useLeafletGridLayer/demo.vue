@@ -38,6 +38,7 @@ useLeafletDisplayLayer(map, gridLayer);
 }
 .custom-tile > div {
   text-align: center;
+  color: black;
   padding: 1rem;
 }
 </style>
