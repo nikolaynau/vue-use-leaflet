@@ -50,9 +50,7 @@ const polyline = useLeafletPath(
     new Polyline(
       [
         [0, 0],
-        [-10, -5],
-        [-5, -10],
-        [-20, -15]
+        [-20, -20]
       ],
       opt
     ),

@@ -32,8 +32,6 @@ const color = ref<string>('green');
 const polyline = useLeafletPolyline(
   [
     [0, 0],
-    [-10, -5],
-    [-5, -10],
     [-20, -20]
   ],
   { color }
