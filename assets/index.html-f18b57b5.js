@@ -54,7 +54,7 @@ import{_ as l,M as t,p as c,q as r,N as a,V as i,R as n,t as s,a1 as u}from"./fr
 <span class="token comment">// display polygon</span>
 <span class="token function">useLeafletDisplayLayer</span><span class="token punctuation">(</span>map<span class="token punctuation">,</span> polygon<span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-<span class="token comment">// color.value = &#39;black&#39;; // change path style</span>
+<span class="token comment">// color.value = &#39;black&#39;; // redraw path</span>
 </span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">&gt;</span></span>
 
 <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>template</span><span class="token punctuation">&gt;</span></span>
