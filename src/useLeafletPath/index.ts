@@ -45,6 +45,7 @@ export interface UseLeafletPathOptions<T extends Path = Path>
   fillOpacity?: MaybeRefOrGetter<number | null | undefined>;
   fillRule?: MaybeRefOrGetter<FillRule | null | undefined>;
   className?: MaybeRefOrGetter<string | null | undefined>;
+  defOptions?: PathOptions;
   updateSources?: UpdateWatchSource<T>[];
   watch?: WatchSource<any>;
   dispose?: boolean;
@@ -70,9 +71,10 @@ export function useLeafletPath<T extends Path = Path>(
     fillOpacity,
     fillRule,
     className,
-    updateSources = [],
     watch: _watch,
     dispose,
+    defOptions,
+    updateSources = [],
     ...pathOptions
   } = options ?? {};
 
@@ -89,7 +91,7 @@ export function useLeafletPath<T extends Path = Path>(
   const _fillOpacity = toRef(fillOpacity);
   const _fillRule = toRef(fillRule);
   const _className = toRef(className);
-  const _defOptions = Path.prototype.options;
+  const _defOptions = defOptions ?? Path.prototype.options;
 
   if (notNullish(stroke)) {
     watchStyle('stroke', _stroke);

@@ -21,6 +21,7 @@ export interface UseLeafletPolylineOptions
     UseLeafletPathOptions<Polyline> {
   smoothFactor?: MaybeRefOrGetter<number | null | undefined>;
   noClip?: MaybeRefOrGetter<boolean | null | undefined>;
+  defOptions?: PolylineOptions;
   watchDeep?: boolean;
   factory?: (...args: any[]) => Polyline;
 }
@@ -29,11 +30,7 @@ export type UseLeafletPolylineReturn = Ref<Polyline | null>;
 
 export function useLeafletPolyline(
   latlngs: MaybeRefOrGetter<
-    | LatLngExpression[]
-    | LatLngExpression[][]
-    | LatLngExpression[][][]
-    | null
-    | undefined
+    LatLngExpression[] | LatLngExpression[][] | null | undefined
   >,
   options: UseLeafletPolylineOptions = {}
 ): UseLeafletPolylineReturn {
@@ -42,6 +39,7 @@ export function useLeafletPolyline(
     noClip,
     watchDeep,
     factory,
+    defOptions,
     updateSources = [],
     ...pathOptions
   } = options;
@@ -49,7 +47,7 @@ export function useLeafletPolyline(
   const _latlngs = toRef(latlngs);
   const _smoothFactor = toRef(smoothFactor);
   const _noClip = toRef(noClip);
-  const _defOptions = Polyline.prototype.options;
+  const _defOptions = defOptions ?? Polyline.prototype.options;
 
   updateSources.push({
     watch: _latlngs,

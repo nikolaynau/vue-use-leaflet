@@ -24,6 +24,7 @@ export interface UseLeafletMarkerOptions
   opacity?: MaybeRefOrGetter<number | null | undefined>;
   zIndexOffset?: MaybeRefOrGetter<number | null | undefined>;
   draggable?: MaybeRefOrGetter<boolean | null | undefined>;
+  defOptions?: MarkerOptions;
   updateSources?: UpdateWatchSource<Marker>[];
   factory?: (...args: any[]) => Marker;
   dispose?: boolean;
@@ -42,6 +43,7 @@ export function useLeafletMarker(
     draggable,
     factory,
     dispose,
+    defOptions,
     updateSources = [],
     ...markerOptions
   } = options;
@@ -51,7 +53,7 @@ export function useLeafletMarker(
   const _opacity = toRef(opacity);
   const _zIndexOffset = toRef(zIndexOffset);
   const _draggable = toRef(draggable);
-  const _defOptions = Marker.prototype.options;
+  const _defOptions = defOptions ?? Marker.prototype.options;
 
   updateSources.push({
     watch: _latlng,

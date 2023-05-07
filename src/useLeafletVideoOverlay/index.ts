@@ -35,6 +35,7 @@ export interface UseLeafletVideoOverlayOptions
   opacity?: MaybeRefOrGetter<number | null | undefined>;
   zIndex?: MaybeRefOrGetter<number | null | undefined>;
   className?: MaybeRefOrGetter<string | null | undefined>;
+  defOptions?: VideoOverlayOptions;
   updateSources?: UpdateWatchSource<VideoOverlay>[];
   factory?: (...args: any[]) => VideoOverlay;
   dispose?: boolean;
@@ -58,9 +59,10 @@ export function useLeafletVideoOverlay(
     opacity,
     zIndex,
     className,
-    updateSources = [],
     factory,
     dispose,
+    defOptions,
+    updateSources = [],
     ...overlayOptions
   } = options;
 
@@ -74,7 +76,7 @@ export function useLeafletVideoOverlay(
   const _opacity = toRef(opacity);
   const _zIndex = toRef(zIndex);
   const _className = toRef(className);
-  const _defOptions = VideoOverlay.prototype.options;
+  const _defOptions = defOptions ?? VideoOverlay.prototype.options;
 
   updateSources.push({
     watch: _video,

@@ -23,6 +23,7 @@ export interface UseLeafletImageOverlayOptions
   alt?: MaybeRefOrGetter<string | null | undefined>;
   zIndex?: MaybeRefOrGetter<number | null | undefined>;
   className?: MaybeRefOrGetter<string | null | undefined>;
+  defOptions?: ImageOverlayOptions;
   updateSources?: UpdateWatchSource<ImageOverlay>[];
   factory?: (...args: any[]) => ImageOverlay;
   dispose?: boolean;
@@ -40,9 +41,10 @@ export function useLeafletImageOverlay(
     alt,
     zIndex,
     className,
-    updateSources = [],
     factory,
     dispose,
+    defOptions,
+    updateSources = [],
     ...overlayOptions
   } = options;
 
@@ -52,7 +54,7 @@ export function useLeafletImageOverlay(
   const _alt = toRef(alt);
   const _zIndex = toRef(zIndex);
   const _className = toRef(className);
-  const _defOptions = ImageOverlay.prototype.options;
+  const _defOptions = defOptions ?? ImageOverlay.prototype.options;
 
   updateSources.push({
     watch: _imageUrl,
