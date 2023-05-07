@@ -12,6 +12,7 @@ export * from './useLeafletVideoOverlay';
 export * from './useLeafletSvgOverlay';
 export * from './useLeafletPath';
 export * from './useLeafletPolyline';
+export * from './useLeafletPolygon';
 export * from './useLeafletReady';
 export * from './useLeafletLayersControl';
 export * from './useLeafletAttributionControl';

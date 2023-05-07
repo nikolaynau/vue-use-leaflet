@@ -83,6 +83,7 @@ export function useLeafletPolyline(
 
   const _instance = useLeafletPath(create, {
     ...pathOptions,
+    defOptions: _defOptions,
     updateSources,
     watch: _latlngs
   });
