@@ -15,7 +15,7 @@ import {
 } from 'leaflet';
 import { useLeafletLayer, type UpdateWatchSource } from '../useLeafletLayer';
 
-type ReactiveProperty =
+export type PathReactiveProperty =
   | 'stroke'
   | 'color'
   | 'weight'
@@ -31,7 +31,7 @@ type ReactiveProperty =
   | 'className';
 
 export interface UseLeafletPathOptions<T extends Path = Path>
-  extends Omit<PathOptions, ReactiveProperty> {
+  extends Omit<PathOptions, PathReactiveProperty> {
   stroke?: MaybeRefOrGetter<boolean | null | undefined>;
   color?: MaybeRefOrGetter<string | null | undefined>;
   weight?: MaybeRefOrGetter<number | null | undefined>;
@@ -52,10 +52,10 @@ export interface UseLeafletPathOptions<T extends Path = Path>
 
 export type UseLeafletPathReturn<T extends Path = Path> = Ref<T | null>;
 
-export function useLeafletPath<
-  T extends Path = Path,
-  S extends UseLeafletPathOptions<T> = UseLeafletPathOptions<T>
->(factory: (opt: PathOptions) => T, options?: S): UseLeafletPathReturn<T> {
+export function useLeafletPath<T extends Path = Path>(
+  factory: (opt: PathOptions) => T,
+  options: UseLeafletPathOptions<T> = {}
+): UseLeafletPathReturn<T> {
   const {
     stroke,
     color,
@@ -166,8 +166,7 @@ export function useLeafletPath<
   });
 
   function create(): T {
-    const opt = makeOptions();
-    return factory(opt);
+    return factory(makeOptions());
   }
 
   function makeOptions(): PathOptions {
@@ -180,9 +179,6 @@ export function useLeafletPath<
     }
     if (isDefined(_color)) {
       opt.color = _color.value;
-    }
-    if (isDefined(_weight)) {
-      opt.weight = _weight.value;
     }
     if (isDefined(_weight)) {
       opt.weight = _weight.value;
@@ -221,7 +217,7 @@ export function useLeafletPath<
     return opt;
   }
 
-  function watchStyle<T = any>(name: ReactiveProperty, property: Ref<T>) {
+  function watchStyle<T = any>(name: PathReactiveProperty, property: Ref<T>) {
     updateSources.push({
       watch: property,
       handler: (instance, val) => {
