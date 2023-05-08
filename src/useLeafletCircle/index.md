@@ -2,9 +2,9 @@
 category: Layer
 ---
 
-# useLeafletCircleMarker
+# useLeafletCircle
 
-A circle of a fixed size with radius specified in pixels.
+A create object for drawing circle overlays on a map.
 
 ## Usage
 
@@ -15,7 +15,7 @@ import {
   useLeafletMap,
   useLeafletTileLayer,
   useLeafletDisplayLayer,
-  useLeafletCircleMarker
+  useLeafletCircle
 } from 'vue-use-leaflet';
 
 const el = ref<HTMLElement | null>(null);
@@ -28,17 +28,17 @@ useLeafletDisplayLayer(map, tileLayer);
 // path color
 const color = ref<string>('green');
 
-// radius of the circle, in pixels
-const radius = ref<number>(10);
+// radius of the circle, in meters
+const radius = ref<number>(100000); // 100km
 
-// create circle marker
-const circleMarker = useLeafletCircleMarker([0, 0], { radius, color });
+// create circle
+const circle = useLeafletCircle([0, 0], { radius, color });
 
-// display circle marker
-useLeafletDisplayLayer(map, circleMarker);
+// display circle
+useLeafletDisplayLayer(map, circle);
 
 // color.value = 'black'; // redraw path
-// radius.value = 20; // change radius and redraw path
+// radius.value = 200000; // change radius and redraw path
 </script>
 
 <template>
