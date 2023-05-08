@@ -13,6 +13,7 @@ export * from './useLeafletSvgOverlay';
 export * from './useLeafletPath';
 export * from './useLeafletPolyline';
 export * from './useLeafletPolygon';
+export * from './useLeafletRectangle';
 export * from './useLeafletReady';
 export * from './useLeafletLayersControl';
 export * from './useLeafletAttributionControl';

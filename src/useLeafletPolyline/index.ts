@@ -23,6 +23,7 @@ export interface UseLeafletPolylineOptions
   noClip?: MaybeRefOrGetter<boolean | null | undefined>;
   defOptions?: PolylineOptions;
   watchDeep?: boolean;
+  updatePoints?: (instance: Polyline, val: any) => void;
   factory?: (...args: any[]) => Polyline;
 }
 
@@ -40,6 +41,7 @@ export function useLeafletPolyline(
     watchDeep,
     factory,
     defOptions,
+    updatePoints,
     updateSources = [],
     ...pathOptions
   } = options;
@@ -51,11 +53,13 @@ export function useLeafletPolyline(
 
   updateSources.push({
     watch: _latlngs,
-    handler: (instance, val) => {
-      if (val) {
-        instance.setLatLngs(toRaw(val));
-      }
-    },
+    handler:
+      updatePoints ??
+      ((instance, val) => {
+        if (val) {
+          instance.setLatLngs(toRaw(val));
+        }
+      }),
     options: {
       deep: watchDeep
     }

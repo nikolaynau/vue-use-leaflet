@@ -27,7 +27,7 @@ const tileLayer = useLeafletTileLayer(
 );
 useLeafletDisplayLayer(map, tileLayer);
 
-// polyline color
+// path color
 const color = ref<string>('green');
 
 // create simple polyline
@@ -42,7 +42,7 @@ const polyline = useLeafletPolyline(
 // display simple polyline
 useLeafletDisplayLayer(map, polyline);
 
-// color.value = 'black'; // redraw polyline
+// color.value = 'black'; // redraw path
 </script>
 
 <template>

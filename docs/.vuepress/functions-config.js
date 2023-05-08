@@ -34,6 +34,7 @@ export default [
       "/functions/useLeafletPath/index.md",
       "/functions/useLeafletPolygon/index.md",
       "/functions/useLeafletPolyline/index.md",
+      "/functions/useLeafletRectangle/index.md",
       "/functions/useLeafletRemoveLayer/index.md",
       "/functions/useLeafletSvgOverlay/index.md",
       "/functions/useLeafletTileLayer/index.md",
