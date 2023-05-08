@@ -21,6 +21,7 @@ export default [
   {
     "text": "Layer",
     "children": [
+      "/functions/useLeafletCircleMarker/index.md",
       "/functions/useLeafletDefaultIcon/index.md",
       "/functions/useLeafletDisplayLayer/index.md",
       "/functions/useLeafletDivIcon/index.md",
