@@ -32,6 +32,7 @@ export default [
       "/functions/useLeafletLayerGroup/index.md",
       "/functions/useLeafletMarker/index.md",
       "/functions/useLeafletPath/index.md",
+      "/functions/useLeafletPolygon/index.md",
       "/functions/useLeafletPolyline/index.md",
       "/functions/useLeafletRemoveLayer/index.md",
       "/functions/useLeafletSvgOverlay/index.md",

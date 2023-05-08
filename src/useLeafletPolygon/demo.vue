@@ -4,7 +4,7 @@ import {
   useLeafletMap,
   useLeafletTileLayer,
   useLeafletDisplayLayer,
-  useLeafletPolyline
+  useLeafletPolygon
 } from 'vue-use-leaflet';
 
 const el = ref<HTMLElement | null>(null);
@@ -16,37 +16,63 @@ useLeafletDisplayLayer(map, tileLayer);
 
 const color = ref<string>('green');
 
-const polyline = useLeafletPolyline(
+const polygon = useLeafletPolygon(
   [
-    [0, 0],
-    [-20, -20]
+    [0, -15],
+    [-5, -25],
+    [-15, -25],
+    [-10, -15]
   ],
   { color }
 );
 
-const multiPolyline = useLeafletPolyline(
+const polygonWithHoles = useLeafletPolygon(
   [
-    // create line1
+    // outer ring
     [
-      [-10, 0],
-      [-15, -5]
+      [-15, -15],
+      [-17, -25],
+      [-27, -25],
+      [-27, -15]
     ],
-    // create line2
+    // hole
     [
-      [-16, -6],
-      [-21, -11]
-    ],
-    // create line3
-    [
-      [-22, -12],
-      [-26, -16]
+      [-18, -20],
+      [-18, -20],
+      [-23, -23],
+      [-24, -17]
     ]
   ],
   { color }
 );
 
-useLeafletDisplayLayer(map, polyline);
-useLeafletDisplayLayer(map, multiPolyline);
+const multiPolygon = useLeafletPolygon(
+  [
+    [
+      // first polygon
+      [
+        [0, -2],
+        [-5, -10],
+        [-10, -10],
+        [-8, -2]
+      ]
+    ],
+    [
+      // second polygon
+      [
+        [-10, -2],
+        [-15, -10],
+        [-20, -10],
+        [-15, -2]
+      ]
+    ]
+  ],
+  { color }
+);
+
+useLeafletDisplayLayer(map, polygon);
+useLeafletDisplayLayer(map, polygonWithHoles);
+useLeafletDisplayLayer(map, multiPolygon);
 </script>
 
 <template>
