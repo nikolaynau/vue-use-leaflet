@@ -16,6 +16,7 @@ export * from './useLeafletPolygon';
 export * from './useLeafletRectangle';
 export * from './useLeafletCircleMarker';
 export * from './useLeafletCircle';
+export * from './useLeafletTooltip';
 export * from './useLeafletReady';
 export * from './useLeafletLayersControl';
 export * from './useLeafletAttributionControl';

@@ -34,7 +34,7 @@ export interface UseLeafletTooltipOptions
     | null
     | undefined
   >;
-  source?: Layer | null | undefined;
+  source?: MaybeRefOrGetter<Layer | null | undefined>;
   defOptions?: TooltipOptions;
   updateSources?: UpdateWatchSource<Tooltip>[];
   factory?: (...args: any[]) => Tooltip;
@@ -67,6 +67,7 @@ export function useLeafletTooltip(
   const _opacity = toRef(opacity);
   const _className = toRef(className);
   const _content = ref(content);
+  const _source = toRef(source);
   const _defOptions = defOptions ?? Tooltip.prototype.options;
 
   if (notNullish(latlng)) {
@@ -145,10 +146,10 @@ export function useLeafletTooltip(
   });
 
   function create(): Tooltip {
-    if (notNullish(source)) {
+    if (isDefined(_source)) {
       return factory
-        ? factory(makeOptions(), source)
-        : new Tooltip(makeOptions(), source);
+        ? factory(makeOptions(), toRaw(_source.value))
+        : new Tooltip(makeOptions(), toRaw(_source.value));
     } else {
       return factory
         ? factory(toRaw(_latlng.value), makeOptions())
