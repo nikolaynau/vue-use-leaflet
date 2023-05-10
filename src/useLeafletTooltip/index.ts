@@ -85,7 +85,7 @@ export function useLeafletTooltip(
     updateSources.push({
       watch: _offset,
       handler: (instance, val) => {
-        instance.options.offset = val ?? _defOptions.offset;
+        instance.options.offset = toRaw(val) ?? _defOptions.offset;
         instance.update();
       }
     });
