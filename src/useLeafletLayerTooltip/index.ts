@@ -1,12 +1,4 @@
-import {
-  markRaw,
-  ref,
-  shallowRef,
-  watch,
-  toRaw,
-  computed,
-  type Ref
-} from 'vue-demi';
+import { markRaw, ref, shallowRef, watch, toRaw, type Ref } from 'vue-demi';
 import {
   toRef,
   isDefined,
@@ -38,13 +30,14 @@ export interface UseLeafletLayerTooltipOptions
   opacity?: MaybeRefOrGetter<number | null | undefined>;
   className?: MaybeRefOrGetter<string | null | undefined>;
   defOptions?: TooltipOptions;
+  autoBind?: boolean;
   updateSources?: UpdateWatchSource<Layer>[];
   dispose?: boolean;
 }
 
 export interface UseLeafletLayerTooltipReturn {
   visible: Ref<boolean>;
-  tooltip: Ref<Tooltip | null>;
+  tooltip: { value: Tooltip | null };
   bind: () => void;
   unbind: () => void;
   open: (latlng?: LatLngExpression) => void;
@@ -55,7 +48,7 @@ export interface UseLeafletLayerTooltipReturn {
 
 export function useLeafletLayerTooltip(
   source: MaybeRefOrGetter<Layer | null | undefined>,
-  content: MaybeRef<
+  content?: MaybeRef<
     ((layer: Layer) => Content) | Tooltip | Content | null | undefined
   >,
   options: UseLeafletLayerTooltipOptions = {}
@@ -68,6 +61,7 @@ export function useLeafletLayerTooltip(
     defOptions,
     visible = false,
     updateSources = [],
+    autoBind = true,
     dispose = true,
     ...tooltipOptions
   } = options;
@@ -82,14 +76,16 @@ export function useLeafletLayerTooltip(
   const _className = toRef(className);
   const _defOptions = defOptions ?? Tooltip.prototype.options;
 
-  const _publicTooltip = computed<Tooltip | null>({
-    get: () => _tooltip.value,
-    set: val => {
-      if (!val) {
+  const _publicTooltip = {
+    get value() {
+      return _tooltip.value;
+    },
+    set value(newVal) {
+      if (!newVal) {
         unbind();
       }
     }
-  });
+  };
 
   updateSources.push({
     watch: _visible,
@@ -271,18 +267,20 @@ export function useLeafletLayerTooltip(
     );
   }
 
-  watch(
-    _source,
-    (newVal, oldVal) => {
-      if (oldVal) {
-        _unbind(oldVal);
-      }
-      if (newVal) {
-        bind();
-      }
-    },
-    { immediate: true }
-  );
+  if (autoBind) {
+    watch(
+      _source,
+      (newVal, oldVal) => {
+        if (oldVal) {
+          _unbind(oldVal);
+        }
+        if (newVal) {
+          bind();
+        }
+      },
+      { immediate: true }
+    );
+  }
 
   updateSources.forEach(watchUpdate);
 
