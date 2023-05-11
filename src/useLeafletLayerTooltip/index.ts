@@ -207,8 +207,8 @@ export function useLeafletLayerTooltip(
   }
 
   function toggle() {
-    if ((_source.value as any)._map) {
-      _source.value?.toggleTooltip();
+    if ((_source.value as any)?._map) {
+      _source.value!.toggleTooltip();
     }
   }
 
