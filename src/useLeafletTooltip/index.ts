@@ -163,7 +163,7 @@ export function useLeafletTooltip(
     } as TooltipOptions;
 
     if (isDefined(_offset)) {
-      opt.offset = _offset.value;
+      opt.offset = toRaw(_offset.value);
     }
     if (isDefined(_direction)) {
       opt.direction = _direction.value;
