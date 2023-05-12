@@ -1,3 +1,14 @@
+---
+category: Layer
+---
+
+# useLeafletLayerTooltip
+
+Used to bind a tooltip to layer (marker, path, etc).
+
+## Usage
+
+```vue
 <script setup lang="ts">
 import { ref } from 'vue';
 import {
@@ -15,21 +26,22 @@ const tileLayer = useLeafletTileLayer(
 );
 useLeafletDisplayLayer(map, tileLayer);
 
+// create marker
 const marker = useLeafletMarker([0, 0]);
 
+// bind tooltip to marker
 const { visible, toggle } = useLeafletLayerTooltip(marker, 'Text', {
   visible: true
 });
 
-const toggleMarker = useLeafletDisplayLayer(map, marker);
+// display marker and tooltip
+useLeafletDisplayLayer(map, marker);
+
+// visible.value = false; // hide tooltip
+// toggle(); // show/hide tooltip
 </script>
 
 <template>
-  <div ref="el" style="height: 19rem"></div>
-  <br />
-  <button @click="toggle">Toggle Tooltip</button> Visible: {{ visible }}
-  <br />
-  <button @click="toggleMarker()">Toggle Marker</button>
-  <br />
-  <button @click="visible = true">Set Visible</button>
+  <div ref="el" style="height: 250px"></div>
 </template>
+```
