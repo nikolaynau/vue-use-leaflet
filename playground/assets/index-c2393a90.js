@@ -1,1 +1,0 @@
-import{l as o}from"./index-2fa56bed.js";import{u as p}from"./index-45ed865b.js";function y(t,e={}){const{factory:n=a,defOptions:r=o.Polygon.prototype.options,...s}=e,l=p(t,{factory:n,defOptions:r,...s});function a(f,i){return new o.Polygon(f,i)}return l}export{y as u};
