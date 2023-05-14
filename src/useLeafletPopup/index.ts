@@ -17,8 +17,14 @@ import {
 import { useLeafletLayer, type UpdateWatchSource } from '../useLeafletLayer';
 
 export interface UseLeafletPopupOptions
-  extends Omit<PopupOptions, 'offset' | 'className' | 'content'> {
+  extends Omit<
+    PopupOptions,
+    'offset' | 'maxWidth' | 'minWidth' | 'maxHeight' | 'className' | 'content'
+  > {
   offset?: MaybeRefOrGetter<PointExpression | null | undefined>;
+  maxWidth?: MaybeRefOrGetter<number | null | undefined>;
+  minWidth?: MaybeRefOrGetter<number | null | undefined>;
+  maxHeight?: MaybeRefOrGetter<number | null | undefined>;
   className?: MaybeRefOrGetter<string | null | undefined>;
   content?: MaybeRef<
     | string
@@ -43,6 +49,9 @@ export function useLeafletPopup(
 ): UseLeafletPopupReturn {
   const {
     offset,
+    maxWidth,
+    minWidth,
+    maxHeight,
     content,
     className,
     source,
@@ -54,6 +63,9 @@ export function useLeafletPopup(
   } = options;
 
   const _latlng = toRef(latlng);
+  const _maxWidth = toRef(maxWidth);
+  const _minWidth = toRef(minWidth);
+  const _maxHeight = toRef(maxHeight);
   const _offset = toRef(offset);
   const _className = toRef(className);
   const _content = ref(content);
@@ -76,6 +88,36 @@ export function useLeafletPopup(
       watch: _offset,
       handler: (instance, val) => {
         instance.options.offset = toRaw(val) ?? _defOptions.offset;
+        instance.update();
+      }
+    });
+  }
+
+  if (notNullish(maxWidth)) {
+    updateSources.push({
+      watch: _maxWidth,
+      handler: (instance, val) => {
+        instance.options.maxWidth = val ?? _defOptions.maxWidth;
+        instance.update();
+      }
+    });
+  }
+
+  if (notNullish(minWidth)) {
+    updateSources.push({
+      watch: _minWidth,
+      handler: (instance, val) => {
+        instance.options.minWidth = val ?? _defOptions.minWidth;
+        instance.update();
+      }
+    });
+  }
+
+  if (notNullish(maxHeight)) {
+    updateSources.push({
+      watch: _maxHeight,
+      handler: (instance, val) => {
+        instance.options.maxHeight = val ?? _defOptions.maxHeight;
         instance.update();
       }
     });
@@ -135,6 +177,15 @@ export function useLeafletPopup(
 
     if (isDefined(_offset)) {
       opt.offset = toRaw(_offset.value);
+    }
+    if (isDefined(_maxWidth)) {
+      opt.maxWidth = toRaw(_maxWidth.value);
+    }
+    if (isDefined(_minWidth)) {
+      opt.minWidth = toRaw(_minWidth.value);
+    }
+    if (isDefined(_maxHeight)) {
+      opt.maxHeight = toRaw(_maxHeight.value);
     }
     if (isDefined(_className)) {
       opt.className = _className.value;
