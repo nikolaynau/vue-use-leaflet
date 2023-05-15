@@ -6,10 +6,11 @@ import {
   type PointExpression,
   Layer,
   latLng,
-  Popup
+  Popup,
+  PopupOptions
 } from 'leaflet';
 import { mount } from '../../.test';
-import { useLeafletPopup } from '.';
+import { type PopupReactiveProperty, useLeafletPopup } from '.';
 
 describe('useLeafletPopup', () => {
   let point: LatLngExpression;
@@ -34,6 +35,29 @@ describe('useLeafletPopup', () => {
 
     expect(instance.value).toBeInstanceOf(Popup);
     expect(instance.value?.getLatLng()).toEqual(latLng(point));
+  });
+
+  it('should work init reactive options', () => {
+    const options = {
+      offset: [1, 2],
+      maxWidth: 10,
+      minWidth: 1,
+      maxHeight: 20,
+      keepInView: true,
+      autoPan: false,
+      autoPanPaddingTopLeft: [1, 2],
+      autoPanPaddingBottomRight: [3, 4],
+      autoPanPadding: [8, 9],
+      className: 'a b',
+      content: 'text'
+    } as PopupOptions;
+
+    const instance = useLeafletPopup(point, options);
+    expect(instance.value).toBeInstanceOf(Popup);
+
+    for (const key in options) {
+      expect(instance.value?.options[key]).toEqual(options[key]);
+    }
   });
 
   it('should work with source', () => {
@@ -257,6 +281,80 @@ describe('useLeafletPopup', () => {
     expect(instance.value?.options.maxHeight).toBe(defOptions.maxHeight);
 
     expect(spy).toBeCalledTimes(2);
+  });
+
+  it.each([
+    ['autoPan', false],
+    ['autoPanPaddingTopLeft', [1, 2]],
+    ['autoPanPaddingBottomRight', [3, 4]],
+    ['autoPanPadding', [5, 6]]
+  ] as [PopupReactiveProperty, any][])(
+    'should work with %s',
+    async (propertyName, propertyValue) => {
+      const property = ref<any>(null);
+      const defOptions = Popup.prototype.options;
+      const instance = useLeafletPopup(point, { [propertyName]: property });
+
+      expect(instance.value).toBeInstanceOf(Popup);
+      expect(instance.value?.options[propertyName]).toBe(
+        defOptions[propertyName]
+      );
+
+      property.value = propertyValue;
+      await nextTick();
+
+      expect(instance.value?.options[propertyName]).toBe(propertyValue);
+
+      property.value = null;
+      await nextTick();
+
+      expect(instance.value?.options[propertyName]).toBe(
+        defOptions[propertyName]
+      );
+    }
+  );
+
+  it('should work with keep in view', async () => {
+    const obj = {
+      on: vi.fn(),
+      off: vi.fn()
+    };
+
+    const defOptions = Popup.prototype.options;
+    const property = ref<boolean | null>(null);
+    const instance = useLeafletPopup(point, { keepInView: property });
+
+    expect(instance.value).toBeInstanceOf(Popup);
+    expect(instance.value?.options.keepInView).toBe(defOptions.keepInView);
+
+    (instance.value as any)._map = obj;
+
+    property.value = true;
+    await nextTick();
+
+    expect(instance.value?.options.keepInView).toBe(true);
+
+    property.value = false;
+    await nextTick();
+
+    expect(instance.value?.options.keepInView).toBe(false);
+
+    property.value = null;
+    await nextTick();
+
+    expect(instance.value?.options.keepInView).toBe(defOptions.keepInView);
+
+    expect(obj.on).toBeCalledTimes(1);
+    expect(obj.off).toBeCalledTimes(3);
+
+    expect(obj.on).toBeCalledWith(
+      'moveend',
+      (instance.value as any)._adjustPan
+    );
+    expect(obj.off).toBeCalledWith(
+      'moveend',
+      (instance.value as any)._adjustPan
+    );
   });
 
   it('should work with factory', () => {

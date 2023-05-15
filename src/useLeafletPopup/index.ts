@@ -16,15 +16,32 @@ import {
 } from 'leaflet';
 import { useLeafletLayer, type UpdateWatchSource } from '../useLeafletLayer';
 
+export type PopupReactiveProperty =
+  | 'offset'
+  | 'maxWidth'
+  | 'minWidth'
+  | 'maxHeight'
+  | 'className'
+  | 'content'
+  | 'keepInView'
+  | 'autoPan'
+  | 'autoPanPaddingTopLeft'
+  | 'autoPanPaddingBottomRight'
+  | 'autoPanPadding';
+
 export interface UseLeafletPopupOptions
-  extends Omit<
-    PopupOptions,
-    'offset' | 'maxWidth' | 'minWidth' | 'maxHeight' | 'className' | 'content'
-  > {
+  extends Omit<PopupOptions, PopupReactiveProperty> {
   offset?: MaybeRefOrGetter<PointExpression | null | undefined>;
   maxWidth?: MaybeRefOrGetter<number | null | undefined>;
   minWidth?: MaybeRefOrGetter<number | null | undefined>;
   maxHeight?: MaybeRefOrGetter<number | null | undefined>;
+  keepInView?: MaybeRefOrGetter<boolean | null | undefined>;
+  autoPan?: MaybeRefOrGetter<boolean | null | undefined>;
+  autoPanPaddingTopLeft?: MaybeRefOrGetter<PointExpression | null | undefined>;
+  autoPanPaddingBottomRight?: MaybeRefOrGetter<
+    PointExpression | null | undefined
+  >;
+  autoPanPadding?: MaybeRefOrGetter<PointExpression | null | undefined>;
   className?: MaybeRefOrGetter<string | null | undefined>;
   content?: MaybeRef<
     | string
@@ -52,6 +69,11 @@ export function useLeafletPopup(
     maxWidth,
     minWidth,
     maxHeight,
+    keepInView,
+    autoPan,
+    autoPanPaddingTopLeft,
+    autoPanPaddingBottomRight,
+    autoPanPadding,
     content,
     className,
     source,
@@ -63,10 +85,15 @@ export function useLeafletPopup(
   } = options;
 
   const _latlng = toRef(latlng);
+  const _offset = toRef(offset);
   const _maxWidth = toRef(maxWidth);
   const _minWidth = toRef(minWidth);
   const _maxHeight = toRef(maxHeight);
-  const _offset = toRef(offset);
+  const _keepInView = toRef(keepInView);
+  const _autoPan = toRef(autoPan);
+  const _autoPanPaddingTopLeft = toRef(autoPanPaddingTopLeft);
+  const _autoPanPaddingBottomRight = toRef(autoPanPaddingBottomRight);
+  const _autoPanPadding = toRef(autoPanPadding);
   const _className = toRef(className);
   const _content = ref(content);
   const _source = toRef(source);
@@ -123,6 +150,45 @@ export function useLeafletPopup(
     });
   }
 
+  if (notNullish(autoPan)) {
+    updateSources.push({
+      watch: _autoPan,
+      handler: (instance, val) => {
+        instance.options.autoPan = val ?? _defOptions.autoPan;
+      }
+    });
+  }
+
+  if (notNullish(autoPanPaddingTopLeft)) {
+    updateSources.push({
+      watch: _autoPanPaddingTopLeft,
+      handler: (instance, val) => {
+        instance.options.autoPanPaddingTopLeft =
+          toRaw(val) ?? _defOptions.autoPanPaddingTopLeft;
+      }
+    });
+  }
+
+  if (notNullish(autoPanPaddingBottomRight)) {
+    updateSources.push({
+      watch: _autoPanPaddingBottomRight,
+      handler: (instance, val) => {
+        instance.options.autoPanPaddingBottomRight =
+          toRaw(val) ?? _defOptions.autoPanPaddingBottomRight;
+      }
+    });
+  }
+
+  if (notNullish(autoPanPadding)) {
+    updateSources.push({
+      watch: _autoPanPadding,
+      handler: (instance, val) => {
+        instance.options.autoPanPadding =
+          toRaw(val) ?? _defOptions.autoPanPadding;
+      }
+    });
+  }
+
   if (notNullish(content)) {
     updateSources.push({
       watch: _content,
@@ -147,6 +213,22 @@ export function useLeafletPopup(
         }
         if (instance.options.className) {
           el.classList.add(...Util.splitWords(instance.options.className));
+        }
+      }
+    });
+  }
+
+  if (notNullish(keepInView)) {
+    updateSources.push({
+      watch: _keepInView,
+      handler: (instance, val) => {
+        instance.options.keepInView = val ?? _defOptions.keepInView;
+        const map = (instance as any)._map;
+        if (map) {
+          map.off('moveend', (instance as any)._adjustPan);
+          if (instance.options.keepInView) {
+            map.on('moveend', (instance as any)._adjustPan);
+          }
         }
       }
     });
@@ -179,13 +261,28 @@ export function useLeafletPopup(
       opt.offset = toRaw(_offset.value);
     }
     if (isDefined(_maxWidth)) {
-      opt.maxWidth = toRaw(_maxWidth.value);
+      opt.maxWidth = _maxWidth.value;
     }
     if (isDefined(_minWidth)) {
-      opt.minWidth = toRaw(_minWidth.value);
+      opt.minWidth = _minWidth.value;
     }
     if (isDefined(_maxHeight)) {
-      opt.maxHeight = toRaw(_maxHeight.value);
+      opt.maxHeight = _maxHeight.value;
+    }
+    if (isDefined(_keepInView)) {
+      opt.keepInView = _keepInView.value;
+    }
+    if (isDefined(_autoPan)) {
+      opt.autoPan = _autoPan.value;
+    }
+    if (isDefined(_autoPanPaddingTopLeft)) {
+      opt.autoPanPaddingTopLeft = _autoPanPaddingTopLeft.value;
+    }
+    if (isDefined(_autoPanPaddingBottomRight)) {
+      opt.autoPanPaddingBottomRight = _autoPanPaddingBottomRight.value;
+    }
+    if (isDefined(_autoPanPadding)) {
+      opt.autoPanPadding = _autoPanPadding.value;
     }
     if (isDefined(_className)) {
       opt.className = _className.value;
