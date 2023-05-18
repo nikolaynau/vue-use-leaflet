@@ -29,8 +29,8 @@ export interface UseLeafletLayerTooltipOptions
   direction?: MaybeRefOrGetter<Direction | null | undefined>;
   opacity?: MaybeRefOrGetter<number | null | undefined>;
   className?: MaybeRefOrGetter<string | null | undefined>;
-  defOptions?: TooltipOptions;
   autoBind?: boolean;
+  defOptions?: TooltipOptions;
   updateSources?: UpdateWatchSource<Layer>[];
   dispose?: boolean;
 }
