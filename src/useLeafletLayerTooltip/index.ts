@@ -25,11 +25,11 @@ export interface UseLeafletLayerTooltipOptions
     'offset' | 'direction' | 'opacity' | 'className'
   > {
   visible?: MaybeRef<boolean>;
+  autoBind?: boolean;
   offset?: MaybeRefOrGetter<PointExpression | null | undefined>;
   direction?: MaybeRefOrGetter<Direction | null | undefined>;
   opacity?: MaybeRefOrGetter<number | null | undefined>;
   className?: MaybeRefOrGetter<string | null | undefined>;
-  autoBind?: boolean;
   defOptions?: TooltipOptions;
   updateSources?: UpdateWatchSource<Layer>[];
   dispose?: boolean;
@@ -58,10 +58,10 @@ export function useLeafletLayerTooltip(
     direction,
     opacity,
     className,
-    defOptions,
     visible = false,
-    updateSources = [],
     autoBind = true,
+    defOptions,
+    updateSources = [],
     dispose = true,
     ...tooltipOptions
   } = options;
@@ -166,20 +166,22 @@ export function useLeafletLayerTooltip(
   }
 
   function bind() {
-    if (isDefined(_source)) {
-      _source.value
-        .bindTooltip(
-          (_content.value as any) ?? _defOptions.content,
-          makeOptions()
-        )
-        .on('add', onAdd)
-        .on('tooltipopen', onOpen)
-        .on('tooltipclose', onClose);
+    if (!isDefined(_source)) {
+      return;
+    }
 
-      const tooltip = _source.value.getTooltip();
-      if (tooltip) {
-        _tooltip.value = markRaw(tooltip);
-      }
+    _source.value
+      .bindTooltip(
+        (_content.value as any) ?? _defOptions.content,
+        makeOptions()
+      )
+      .on('add', onAdd)
+      .on('tooltipopen', onOpen)
+      .on('tooltipclose', onClose);
+
+    const tooltip = _source.value.getTooltip();
+    if (tooltip) {
+      _tooltip.value = markRaw(tooltip);
     }
   }
 

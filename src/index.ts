@@ -19,6 +19,7 @@ export * from './useLeafletCircle';
 export * from './useLeafletTooltip';
 export * from './useLeafletPopup';
 export * from './useLeafletLayerTooltip';
+export * from './useLeafletLayerPopup';
 export * from './useLeafletReady';
 export * from './useLeafletLayersControl';
 export * from './useLeafletAttributionControl';
