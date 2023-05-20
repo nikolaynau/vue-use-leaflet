@@ -1,19 +1,20 @@
 import { shallowRef, type Ref, ref, markRaw, toRaw, watch } from 'vue-demi';
 import {
   toRef,
-  type MaybeRef,
-  type MaybeRefOrGetter,
   isDefined,
   notNullish,
-  tryOnUnmounted
+  tryOnUnmounted,
+  type MaybeRef,
+  type MaybeRefOrGetter
 } from '@vueuse/shared';
 import {
+  Popup,
+  Util,
   type Content,
   type LatLngExpression,
   type Layer,
   type PointExpression,
-  type PopupOptions,
-  Popup
+  type PopupOptions
 } from 'leaflet';
 import type { UpdateWatchSource } from '../useLeafletLayer';
 
@@ -93,6 +94,14 @@ export function useLeafletLayerPopup(
   const _content = ref(content);
   const _visible = toRef(visible);
   const _offset = toRef(offset);
+  const _maxWidth = toRef(maxWidth);
+  const _minWidth = toRef(minWidth);
+  const _maxHeight = toRef(maxHeight);
+  const _keepInView = toRef(keepInView);
+  const _autoPan = toRef(autoPan);
+  const _autoPanPaddingTopLeft = toRef(autoPanPaddingTopLeft);
+  const _autoPanPaddingBottomRight = toRef(autoPanPaddingBottomRight);
+  const _autoPanPadding = toRef(autoPanPadding);
   const _className = toRef(className);
   const _defOptions = defOptions ?? Popup.prototype.options;
 
@@ -106,6 +115,172 @@ export function useLeafletLayerPopup(
       }
     }
   };
+
+  updateSources.push({
+    watch: _visible,
+    handler: (_, val) => {
+      val ? open() : close();
+    }
+  });
+
+  if (notNullish(offset)) {
+    updateSources.push({
+      watch: _offset,
+      handler: (instance, val) => {
+        const popup = instance.getPopup();
+        if (popup) {
+          popup.options.offset = toRaw(val) ?? _defOptions.offset;
+          popup.update();
+        }
+      }
+    });
+  }
+
+  if (notNullish(maxWidth)) {
+    updateSources.push({
+      watch: _maxWidth,
+      handler: (instance, val) => {
+        const popup = instance.getPopup();
+        if (popup) {
+          popup.options.maxWidth = val ?? _defOptions.maxWidth;
+          popup.update();
+        }
+      }
+    });
+  }
+
+  if (notNullish(minWidth)) {
+    updateSources.push({
+      watch: _minWidth,
+      handler: (instance, val) => {
+        const popup = instance.getPopup();
+        if (popup) {
+          popup.options.minWidth = val ?? _defOptions.minWidth;
+          popup.update();
+        }
+      }
+    });
+  }
+
+  if (notNullish(maxHeight)) {
+    updateSources.push({
+      watch: _maxHeight,
+      handler: (instance, val) => {
+        const popup = instance.getPopup();
+        if (popup) {
+          popup.options.maxHeight = val ?? _defOptions.maxHeight;
+          popup.update();
+        }
+      }
+    });
+  }
+
+  if (notNullish(autoPan)) {
+    updateSources.push({
+      watch: _autoPan,
+      handler: (instance, val) => {
+        const popup = instance.getPopup();
+        if (popup) {
+          popup.options.autoPan = val ?? _defOptions.autoPan;
+        }
+      }
+    });
+  }
+
+  if (notNullish(autoPanPaddingTopLeft)) {
+    updateSources.push({
+      watch: _autoPanPaddingTopLeft,
+      handler: (instance, val) => {
+        const popup = instance.getPopup();
+        if (popup) {
+          popup.options.autoPanPaddingTopLeft =
+            toRaw(val) ?? _defOptions.autoPanPaddingTopLeft;
+        }
+      }
+    });
+  }
+
+  if (notNullish(autoPanPaddingBottomRight)) {
+    updateSources.push({
+      watch: _autoPanPaddingBottomRight,
+      handler: (instance, val) => {
+        const popup = instance.getPopup();
+        if (popup) {
+          popup.options.autoPanPaddingBottomRight =
+            toRaw(val) ?? _defOptions.autoPanPaddingBottomRight;
+        }
+      }
+    });
+  }
+
+  if (notNullish(autoPanPadding)) {
+    updateSources.push({
+      watch: _autoPanPadding,
+      handler: (instance, val) => {
+        const popup = instance.getPopup();
+        if (popup) {
+          popup.options.autoPanPadding =
+            toRaw(val) ?? _defOptions.autoPanPadding;
+        }
+      }
+    });
+  }
+
+  if (notNullish(content)) {
+    updateSources.push({
+      watch: _content,
+      handler: (instance, val) => {
+        instance.setPopupContent(val ?? _defOptions.content);
+      }
+    });
+  }
+
+  if (notNullish(className)) {
+    updateSources.push({
+      watch: _className,
+      handler: (instance, newVal, oldVal) => {
+        const popup = instance.getPopup();
+        if (!popup) {
+          return;
+        }
+        popup.options.className = newVal ?? _defOptions.className;
+        const el = popup.getElement();
+        if (!el) {
+          return;
+        }
+
+        if (oldVal) {
+          el.classList.remove(...Util.splitWords(oldVal));
+        }
+        if (popup.options.className) {
+          el.classList.add(...Util.splitWords(popup.options.className));
+        }
+      }
+    });
+  }
+
+  if (notNullish(keepInView)) {
+    updateSources.push({
+      watch: _keepInView,
+      handler: (instance, val) => {
+        const popup = instance.getPopup();
+        if (!popup) {
+          return;
+        }
+
+        popup.options.keepInView = val ?? _defOptions.keepInView;
+        const map = (instance as any)._map;
+        if (!map) {
+          return;
+        }
+
+        map.off('moveend', (instance as any)._adjustPan);
+        if (popup.options.keepInView) {
+          map.on('moveend', (instance as any)._adjustPan);
+        }
+      }
+    });
+  }
 
   function bind() {
     if (!isDefined(_source)) {
@@ -178,6 +353,30 @@ export function useLeafletLayerPopup(
 
     if (isDefined(_offset)) {
       opt.offset = toRaw(_offset.value);
+    }
+    if (isDefined(_maxWidth)) {
+      opt.maxWidth = _maxWidth.value;
+    }
+    if (isDefined(_minWidth)) {
+      opt.minWidth = _minWidth.value;
+    }
+    if (isDefined(_maxHeight)) {
+      opt.maxHeight = _maxHeight.value;
+    }
+    if (isDefined(_keepInView)) {
+      opt.keepInView = _keepInView.value;
+    }
+    if (isDefined(_autoPan)) {
+      opt.autoPan = _autoPan.value;
+    }
+    if (isDefined(_autoPanPaddingTopLeft)) {
+      opt.autoPanPaddingTopLeft = _autoPanPaddingTopLeft.value;
+    }
+    if (isDefined(_autoPanPaddingBottomRight)) {
+      opt.autoPanPaddingBottomRight = _autoPanPaddingBottomRight.value;
+    }
+    if (isDefined(_autoPanPadding)) {
+      opt.autoPanPadding = _autoPanPadding.value;
     }
     if (isDefined(_className)) {
       opt.className = _className.value;

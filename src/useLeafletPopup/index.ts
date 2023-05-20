@@ -224,11 +224,13 @@ export function useLeafletPopup(
       handler: (instance, val) => {
         instance.options.keepInView = val ?? _defOptions.keepInView;
         const map = (instance as any)._map;
-        if (map) {
-          map.off('moveend', (instance as any)._adjustPan);
-          if (instance.options.keepInView) {
-            map.on('moveend', (instance as any)._adjustPan);
-          }
+        if (!map) {
+          return;
+        }
+
+        map.off('moveend', (instance as any)._adjustPan);
+        if (instance.options.keepInView) {
+          map.on('moveend', (instance as any)._adjustPan);
         }
       }
     });
