@@ -32,6 +32,7 @@ export default [
       "/functions/useLeafletImageOverlay/index.md",
       "/functions/useLeafletLayer/index.md",
       "/functions/useLeafletLayerGroup/index.md",
+      "/functions/useLeafletLayerPopup/index.md",
       "/functions/useLeafletLayerTooltip/index.md",
       "/functions/useLeafletMarker/index.md",
       "/functions/useLeafletPath/index.md",
