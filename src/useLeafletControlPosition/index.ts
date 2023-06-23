@@ -4,7 +4,6 @@ import {
   toRef,
   toValue,
   whenever,
-  notNullish,
   tryOnUnmounted,
   type Arrayable,
   type MaybeRefOrGetter
@@ -28,7 +27,7 @@ export type LeafletControlPositionElements = Readonly<
 
 export function useLeafletControlPosition(
   source: MaybeRefOrGetter<Map | null | undefined>,
-  positions: MaybeRefOrGetter<Arrayable<[string, string]> | null | undefined>,
+  position: MaybeRefOrGetter<Arrayable<[string, string]> | null | undefined>,
   options: UseLeafletControlPositionOptions = {}
 ): UseLeafletControlPositionReturn {
   const { flushSync, dispose } = options;
@@ -37,10 +36,9 @@ export function useLeafletControlPosition(
   const _positionElements = ref<Record<string, HTMLElement>>({});
   const _flush = flushSync ? 'sync' : undefined;
 
-  const _positions = computed<Array<[string, string]>>(() => {
-    const val = toValue(positions);
-    return notNullish(val) ? toArray(val) : [];
-  });
+  const _positions = computed<Array<[string, string]>>(() =>
+    toArray(toValue(position))
+  );
 
   function init() {
     if (isDefined(_source) && isDefined(_positions)) {
@@ -106,8 +104,17 @@ export function useLeafletControlPosition(
     return (source as any)._controlCorners ?? {};
   }
 
-  function toArray<T>(value: Arrayable<T>): T[] {
-    return Array.isArray(value) ? value : [value];
+  function toArray(value: any): [string, string][] {
+    if (!Array.isArray(value)) {
+      return [];
+    }
+    if (value.length === 0) {
+      return value;
+    }
+    if (!Array.isArray(value[0])) {
+      return [value as [string, string]];
+    }
+    return value;
   }
 
   function compare(a: [string, string], b: [string, string]) {
@@ -115,8 +122,18 @@ export function useLeafletControlPosition(
   }
 
   const stop = useLeafletDiff(_positions, compare, {
-    add: val => isDefined(_source) && add(_source.value, val),
-    remove: val => isDefined(_source) && remove(_source.value, val),
+    add: val => {
+      if (isDefined(_source)) {
+        add(_source.value, val);
+        update();
+      }
+    },
+    remove: val => {
+      if (isDefined(_source)) {
+        remove(_source.value, val);
+        update();
+      }
+    },
     watchOptions: { flush: _flush }
   });
 

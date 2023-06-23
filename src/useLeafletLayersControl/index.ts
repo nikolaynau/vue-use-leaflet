@@ -7,6 +7,7 @@ import {
 import { type Ref, shallowRef, ref, markRaw, computed } from 'vue-demi';
 import {
   Control,
+  type ControlPosition,
   type Layer,
   type LayersControlEvent,
   type Map
@@ -20,10 +21,12 @@ import { useBaseLayers } from './baseLayers';
 import { useOverlayLayers } from './overlays';
 import { useLeafletRemoveControl } from '../useLeafletRemoveControl';
 
-export interface UseLeafletLayersControlOptions extends Control.LayersOptions {
+export interface UseLeafletLayersControlOptions
+  extends Omit<Control.LayersOptions, 'position'> {
   currentBaseLayer?: MaybeRef<string | number | null | undefined>;
   currentOverlays?: MaybeRef<string[] | number[] | null | undefined>;
   indexes?: boolean;
+  position?: ControlPosition | string | undefined;
   factory?: (...args: any[]) => Control.Layers;
   dispose?: boolean;
 }
@@ -75,7 +78,11 @@ export function useLeafletLayersControl(
   function create() {
     const instance: Control.Layers = factory
       ? factory(controlOptions)
-      : new Control.Layers(undefined, undefined, controlOptions);
+      : new Control.Layers(
+          undefined,
+          undefined,
+          controlOptions as Control.LayersOptions
+        );
 
     _instance.value = markRaw(addHooks(instance));
   }

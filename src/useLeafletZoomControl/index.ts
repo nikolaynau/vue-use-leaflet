@@ -1,9 +1,11 @@
 import { toRef, type MaybeRefOrGetter } from '@vueuse/shared';
 import { markRaw, shallowRef, unref, watch, type Ref } from 'vue-demi';
-import { Control } from 'leaflet';
+import { Control, type ControlPosition } from 'leaflet';
 import { useLeafletRemoveControl } from '../useLeafletRemoveControl';
 
-export interface UseLeafletZoomControlOptions extends Control.ZoomOptions {
+export interface UseLeafletZoomControlOptions
+  extends Omit<Control.ZoomOptions, 'position'> {
+  position?: ControlPosition | string | undefined;
   disabled?: MaybeRefOrGetter<boolean>;
   factory?: (...args: any[]) => Control.Zoom;
   dispose?: boolean;
@@ -22,7 +24,7 @@ export function useLeafletZoomControl(
   function create() {
     const instance: Control.Zoom = factory
       ? factory(controlOptions)
-      : new Control.Zoom(controlOptions);
+      : new Control.Zoom(controlOptions as Control.ZoomOptions);
 
     _instance.value = markRaw(instance);
   }

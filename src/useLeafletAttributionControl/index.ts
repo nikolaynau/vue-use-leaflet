@@ -1,12 +1,13 @@
 import { markRaw, shallowRef, watch, type Ref } from 'vue-demi';
 import { isDefined, toRef, type MaybeRefOrGetter } from '@vueuse/shared';
-import { Control } from 'leaflet';
+import { Control, type ControlPosition } from 'leaflet';
 import { useLeafletRemoveControl } from '../useLeafletRemoveControl';
 
 export interface UseLeafletAttributionControlOptions
-  extends Omit<Control.AttributionOptions, 'prefix'> {
+  extends Omit<Control.AttributionOptions, 'prefix' | 'position'> {
   attributions?: MaybeRefOrGetter<string[] | null | undefined>;
   prefix?: MaybeRefOrGetter<string | null | undefined>;
+  position?: ControlPosition | string | undefined;
   factory?: (...args: any[]) => Control.Attribution;
   dispose?: boolean;
 }
@@ -32,7 +33,7 @@ export function useLeafletAttributionControl(
   function create() {
     const instance: Control.Attribution = factory
       ? factory(controlOptions)
-      : new Control.Attribution(controlOptions);
+      : new Control.Attribution(controlOptions as Control.AttributionOptions);
 
     _instance.value = markRaw(instance);
   }

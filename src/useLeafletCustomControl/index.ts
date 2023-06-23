@@ -1,9 +1,16 @@
 import { markRaw, shallowRef, unref, watch, type Ref } from 'vue-demi';
 import { toRef, type MaybeRefOrGetter } from '@vueuse/shared';
-import { Control, type ControlOptions, type Map } from 'leaflet';
+import {
+  Control,
+  type ControlOptions,
+  type ControlPosition,
+  type Map
+} from 'leaflet';
 import { useLeafletRemoveControl } from '../useLeafletRemoveControl';
 
-export interface UseLeafletCustomControlOptions extends ControlOptions {
+export interface UseLeafletCustomControlOptions
+  extends Omit<ControlOptions, 'position'> {
+  position?: ControlPosition | string | undefined;
   disabled?: MaybeRefOrGetter<boolean>;
   factory?: (...args: any[]) => Control;
   dispose?: boolean;
@@ -35,7 +42,7 @@ export function useLeafletCustomControl(
   function create() {
     const instance: Control = factory
       ? factory(controlOptions)
-      : new Control(controlOptions);
+      : new Control(controlOptions as ControlOptions);
 
     _instance.value = markRaw(wrap(instance));
   }

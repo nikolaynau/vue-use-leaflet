@@ -30,6 +30,7 @@ export * from './useLeafletToggleObject';
 export * from './useLeafletDisplayObject';
 export * from './useLeafletDisplayLayer';
 export * from './useLeafletDisplayControl';
+export * from './useLeafletControlPosition';
 export * from './useLeafletPane';
 export * from './useLeafletDeps';
 export * from './useLeafletCreate';

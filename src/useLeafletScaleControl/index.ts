@@ -1,8 +1,10 @@
 import { markRaw, shallowRef, type Ref } from 'vue-demi';
-import { Control } from 'leaflet';
+import { Control, type ControlPosition } from 'leaflet';
 import { useLeafletRemoveControl } from '../useLeafletRemoveControl';
 
-export interface UseLeafletScaleControlOptions extends Control.ScaleOptions {
+export interface UseLeafletScaleControlOptions
+  extends Omit<Control.ScaleOptions, 'position'> {
+  position?: ControlPosition | string | undefined;
   factory?: (...args: any[]) => Control.Attribution;
   dispose?: boolean;
 }
@@ -19,7 +21,7 @@ export function useLeafletScaleControl(
   function create() {
     const instance: Control.Scale = factory
       ? factory(controlOptions)
-      : new Control.Scale(controlOptions);
+      : new Control.Scale(controlOptions as Control.ScaleOptions);
 
     _instance.value = markRaw(instance);
   }

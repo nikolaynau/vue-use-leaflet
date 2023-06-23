@@ -10,6 +10,7 @@ export default [
     "text": "Control",
     "children": [
       "/functions/useLeafletAttributionControl/index.md",
+      "/functions/useLeafletControlPosition/index.md",
       "/functions/useLeafletCustomControl/index.md",
       "/functions/useLeafletDisplayControl/index.md",
       "/functions/useLeafletLayersControl/index.md",
