@@ -3,7 +3,8 @@ import {
   type MaybeRefOrGetter,
   toRef,
   isDefined,
-  notNullish
+  notNullish,
+  toValue
 } from '@vueuse/shared';
 import { Icon, type IconOptions, type PointExpression } from 'leaflet';
 import { useLeafletCreate } from '../useLeafletCreate';
@@ -29,6 +30,7 @@ export interface UseLeafletIconOptions
   shadowSize?: MaybeRefOrGetter<PointExpression | null | undefined>;
   shadowAnchor?: MaybeRefOrGetter<PointExpression | null | undefined>;
   className?: MaybeRefOrGetter<string | null | undefined>;
+  knownClasses?: MaybeRefOrGetter<string[] | null | undefined>;
   factory?: (...args: any[]) => Icon;
 }
 
@@ -47,6 +49,7 @@ export function useLeafletIcon(
     shadowSize,
     shadowAnchor,
     className,
+    knownClasses,
     factory,
     ...iconOptions
   } = options;
@@ -60,6 +63,13 @@ export function useLeafletIcon(
   const _shadowSize = toRef(shadowSize);
   const _shadowAnchor = toRef(shadowAnchor);
   const _className = toRef(className);
+
+  const _knownClasses = toRef(() => [
+    ...(toValue(knownClasses) ?? []),
+    'leaflet-zoom-animated',
+    'leaflet-zoom-hide',
+    'leaflet-interactive'
+  ]);
 
   const _instance = useLeafletCreate(create, {
     watch: _iconUrl
@@ -127,9 +137,12 @@ export function useLeafletIcon(
   }
 
   function updateStyles(instance: Icon, name: 'icon' | 'shadow') {
-    const el = (instance as any)[`_${name}Element`];
+    const el = (instance as any)[`_${name}Element`] as HTMLElement;
     if (el) {
+      const kClasses = _knownClasses.value;
+      const classes = [...el.classList].filter(c => kClasses.includes(c));
       (instance as any)._setIconStyles(el, name);
+      classes.forEach(c => el.classList.add(c));
     }
   }
 
@@ -221,6 +234,14 @@ export function useLeafletIcon(
       updateStyles(_instance.value, 'shadow');
     });
   }
+
+  watch(_knownClasses, () => {
+    if (!isDefined(_instance)) {
+      return;
+    }
+    updateStyles(_instance.value, 'icon');
+    updateStyles(_instance.value, 'shadow');
+  });
 
   return _instance;
 }

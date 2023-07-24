@@ -263,4 +263,73 @@ describe('useLeafletIcon', () => {
     expect(img.className).not.toContain(newClassName);
     expect(shadow.className).not.toContain(newClassName);
   });
+
+  it('should work with class name', async () => {
+    const newClassName = 'bar';
+    const className = ref<string | null>('foo');
+    const icon = useLeafletIcon(imgUrl, { shadowUrl, className });
+
+    expect(icon.value).toBeInstanceOf(Icon);
+    expect(icon.value?.options.className).toContain('foo');
+
+    const img = icon.value!.createIcon();
+    const shadow = icon.value!.createShadow();
+    expect(img.className).toContain('foo');
+    expect(shadow.className).toContain('foo');
+
+    className.value = newClassName;
+    await nextTick();
+
+    expect(icon.value?.options.className).toEqual(newClassName);
+    expect(img.className).toContain(newClassName);
+    expect(shadow.className).toContain(newClassName);
+
+    className.value = null;
+    await nextTick();
+
+    expect(icon.value?.options.className).toBeNull();
+    expect(img.className).not.toContain(newClassName);
+    expect(shadow.className).not.toContain(newClassName);
+  });
+
+  it('should preserve known css classes when class name changed', async () => {
+    const className = ref<string | null>('foo');
+    const icon = useLeafletIcon(imgUrl, {
+      shadowUrl,
+      className,
+      knownClasses: ['a', 'b', 'c']
+    });
+
+    expect(icon.value).toBeInstanceOf(Icon);
+    expect(icon.value?.options.className).toContain('foo');
+
+    const img = icon.value!.createIcon();
+    const shadow = icon.value!.createShadow();
+    expect(img.className).toContain('foo');
+    expect(shadow.className).toContain('foo');
+
+    const preservedClasses = [
+      'a',
+      'b',
+      'leaflet-zoom-animated',
+      'leaflet-zoom-hide',
+      'leaflet-interactive'
+    ];
+
+    preservedClasses.forEach(c => {
+      img.classList.add(c);
+      shadow.classList.add(c);
+    });
+
+    className.value = 'bar';
+    await nextTick();
+
+    expect(img.classList.contains('c')).toBeFalsy();
+    expect(shadow.classList.contains('c')).toBeFalsy();
+
+    [...preservedClasses, 'bar'].forEach(c => {
+      expect(img.classList.contains(c)).toBeTruthy();
+      expect(shadow.classList.contains(c)).toBeTruthy();
+    });
+  });
 });
