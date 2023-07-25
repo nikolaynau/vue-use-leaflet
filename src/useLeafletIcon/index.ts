@@ -235,13 +235,17 @@ export function useLeafletIcon(
     });
   }
 
-  watch(_knownClasses, () => {
-    if (!isDefined(_instance)) {
-      return;
-    }
-    updateStyles(_instance.value, 'icon');
-    updateStyles(_instance.value, 'shadow');
-  });
+  watch(
+    _knownClasses,
+    () => {
+      if (!isDefined(_instance)) {
+        return;
+      }
+      updateStyles(_instance.value, 'icon');
+      updateStyles(_instance.value, 'shadow');
+    },
+    { deep: true }
+  );
 
   return _instance;
 }

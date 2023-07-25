@@ -168,4 +168,68 @@ describe('useLeafletDivIcon', () => {
     expect(icon.value?.options.className).toBeNull();
     expect(div.className).not.toContain(newClassName);
   });
+
+  it('should preserve known css classes when class name changed', async () => {
+    const className = ref<string | null>('foo');
+    const icon = useLeafletDivIcon(undefined, {
+      className,
+      knownClasses: ['a', 'b', 'c']
+    });
+
+    expect(icon.value).toBeInstanceOf(DivIcon);
+    expect(icon.value?.options.className).toContain('foo');
+
+    const div = icon.value!.createIcon();
+    expect(div.className).toContain('foo');
+
+    const preservedClasses = [
+      'a',
+      'b',
+      'leaflet-zoom-animated',
+      'leaflet-zoom-hide',
+      'leaflet-interactive'
+    ];
+
+    preservedClasses.forEach(c => {
+      div.classList.add(c);
+    });
+
+    className.value = 'bar';
+    await nextTick();
+
+    expect(div.classList.contains('c')).toBeFalsy();
+
+    [...preservedClasses, 'bar'].forEach(c => {
+      expect(div.classList.contains(c)).toBeTruthy();
+    });
+  });
+
+  it('should work when change known classes', async () => {
+    const className = ref<string | null>('foo');
+    const knownClasses = ref<string[]>(['a', 'b']);
+    const icon = useLeafletDivIcon(undefined, { className, knownClasses });
+    expect(icon.value).toBeInstanceOf(DivIcon);
+
+    const div = icon.value!.createIcon();
+    expect(div.className).toContain('foo');
+
+    ['a', 'b'].forEach(c => {
+      div.classList.add(c);
+    });
+
+    className.value = 'bar';
+    await nextTick();
+
+    ['a', 'b', 'bar'].forEach(c => {
+      expect(div.classList.contains(c)).toBeTruthy();
+    });
+
+    div.classList.add('c');
+    knownClasses.value.push('c');
+    await nextTick();
+
+    ['a', 'b', 'c', 'bar'].forEach(c => {
+      expect(div.classList.contains(c)).toBeTruthy();
+    });
+  });
 });

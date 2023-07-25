@@ -332,4 +332,33 @@ describe('useLeafletIcon', () => {
       expect(shadow.classList.contains(c)).toBeTruthy();
     });
   });
+
+  it('should work when change known classes', async () => {
+    const className = ref<string | null>('foo');
+    const knownClasses = ref<string[]>(['a', 'b']);
+    const icon = useLeafletIcon(imgUrl, { className, knownClasses });
+    expect(icon.value).toBeInstanceOf(Icon);
+
+    const img = icon.value!.createIcon();
+    expect(img.className).toContain('foo');
+
+    ['a', 'b'].forEach(c => {
+      img.classList.add(c);
+    });
+
+    className.value = 'bar';
+    await nextTick();
+
+    ['a', 'b', 'bar'].forEach(c => {
+      expect(img.classList.contains(c)).toBeTruthy();
+    });
+
+    img.classList.add('c');
+    knownClasses.value.push('c');
+    await nextTick();
+
+    ['a', 'b', 'c', 'bar'].forEach(c => {
+      expect(img.classList.contains(c)).toBeTruthy();
+    });
+  });
 });

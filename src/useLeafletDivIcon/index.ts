@@ -3,6 +3,7 @@ import {
   toRef,
   isDefined,
   notNullish,
+  toValue,
   type MaybeRefOrGetter
 } from '@vueuse/shared';
 import { DivIcon, type DivIconOptions, type PointExpression } from 'leaflet';
@@ -17,6 +18,7 @@ export interface UseLeafletDivIconOptions
   iconSize?: MaybeRefOrGetter<PointExpression | null | undefined>;
   iconAnchor?: MaybeRefOrGetter<PointExpression | null | undefined>;
   className?: MaybeRefOrGetter<string | null | undefined>;
+  knownClasses?: MaybeRefOrGetter<string[] | null | undefined>;
   watch?: WatchSource<any>;
   factory?: (...args: any[]) => DivIcon;
 }
@@ -32,6 +34,7 @@ export function useLeafletDivIcon(
     iconAnchor,
     iconSize,
     className,
+    knownClasses,
     watch: _watch,
     factory,
     ...iconOptions
@@ -42,6 +45,13 @@ export function useLeafletDivIcon(
   const _iconAnchor = toRef(iconAnchor);
   const _iconSize = toRef(iconSize);
   const _className = toRef(className);
+
+  const _knownClasses = toRef(() => [
+    ...(toValue(knownClasses) ?? []),
+    'leaflet-zoom-animated',
+    'leaflet-zoom-hide',
+    'leaflet-interactive'
+  ]);
 
   const _instance = useLeafletCreate(create, {
     watch: _watch
@@ -89,7 +99,10 @@ export function useLeafletDivIcon(
   function update(instance: DivIcon) {
     const el = (instance as any)._iconElement;
     if (el) {
+      const kClasses = _knownClasses.value;
+      const classes = [...el.classList].filter(c => kClasses.includes(c));
       instance.createIcon(el);
+      classes.forEach(c => el.classList.add(c));
     }
   }
 
@@ -142,6 +155,17 @@ export function useLeafletDivIcon(
       update(_instance.value);
     });
   }
+
+  watch(
+    _knownClasses,
+    () => {
+      if (!isDefined(_instance)) {
+        return;
+      }
+      update(_instance.value);
+    },
+    { deep: true }
+  );
 
   return _instance;
 }
