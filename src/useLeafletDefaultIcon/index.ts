@@ -1,5 +1,5 @@
 import { Icon, type IconOptions } from 'leaflet';
-import type { MaybeRefOrGetter } from '@vueuse/shared';
+import { toRef, toValue, type MaybeRefOrGetter } from '@vueuse/shared';
 import {
   useLeafletIcon,
   type UseLeafletIconOptions,
@@ -16,11 +16,11 @@ export type UseLeafletDefaultIconReturn = UseLeafletIconReturn;
 export function useLeafletDefaultIcon(
   options: UseLeafletDefaultIconOptions = {}
 ): UseLeafletDefaultIconReturn {
-  const {
-    iconUrl = Icon.Default.prototype.options.iconUrl,
-    factory = create,
-    ...iconOptions
-  } = options;
+  const { iconUrl, factory = create, ...iconOptions } = options;
+
+  const _iconUrl = toRef(
+    () => toValue(iconUrl) ?? Icon.Default.prototype.options.iconUrl
+  );
 
   function create(options: any): Icon {
     return new Icon.Default(
@@ -28,7 +28,7 @@ export function useLeafletDefaultIcon(
     ) as Icon<IconOptions>;
   }
 
-  return useLeafletIcon(iconUrl, {
+  return useLeafletIcon(_iconUrl, {
     ...iconOptions,
     factory
   });
