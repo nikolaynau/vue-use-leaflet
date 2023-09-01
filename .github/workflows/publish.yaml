@@ -15,8 +15,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16.x
-      - name: Install latest npm
-        run: npm install -g npm@latest
       - name: Check npm version
         run: npm -v
       - name: Install project dependencies
@@ -37,8 +35,6 @@ jobs:
         with:
           node-version: 16.x
           registry-url: 'https://registry.npmjs.org'
-      - name: Install latest npm
-        run: npm install -g npm@latest
       - name: Check npm version
         run: npm -v
       - name: Install project dependencies
