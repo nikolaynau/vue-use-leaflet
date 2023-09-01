@@ -1,0 +1,1 @@
+import{t as f,n as p,g as h,l as y}from"./index-79c7f9fe.js";function d(n,o={}){const{factory:t,updateSources:a=[],dispose:l,...r}=o,e=f(n);a.push({watch:e,handler:(i,s)=>{p(s)&&i.setUrl(s)}});const u=h(c,{watch:e,updateSources:a,dispose:l});function c(){return t?t(e.value,r):new y.TileLayer(e.value,r)}return u}export{d as u};
