@@ -1,0 +1,45 @@
+:root {
+  --vp-c-accent: #35495e;
+  --vp-c-brand: #44bd87;
+  --vp-c-brand-light: #55da9e;
+  --vp-c-brand-dark: #2e8f5c;
+  --vp-c-brand-active: #3ecf7a;
+  --vp-c-brand-lighter: #69e8af;
+
+  --vp-c-brand-1: var(--vp-c-brand);
+  --vp-c-brand-2: var(--vp-c-brand-active);
+  --vp-c-brand-3: var(--vp-c-brand-dark);
+
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-image-filter: blur(72px);
+  --vp-home-hero-image-background-image: linear-gradient(
+    -45deg,
+    #41b88380 30%,
+    #35495e80
+  );
+  --vp-home-hero-name-background: -webkit-linear-gradient(
+    120deg,
+    #35495e -80%,
+    #41b883
+  );
+}
+
+:root {
+  --vp-button-brand-border: var(--vp-c-brand-light);
+  --vp-button-brand-bg: var(--vp-c-brand);
+  --vp-button-brand-hover-border: var(--vp-c-brand-light);
+  --vp-button-brand-hover-bg: var(--vp-c-brand-light);
+  --vp-button-brand-active-border: var(--vp-c-brand-light);
+  --vp-button-brand-active-bg: var(--vp-button-brand-bg);
+}
+
+.vp-doc a {
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.vp-doc a:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  color: var(--vp-c-brand);
+}

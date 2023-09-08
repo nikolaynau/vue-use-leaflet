@@ -1,0 +1,70 @@
+.demo {
+  border: 1px solid var(--vp-c-divider);
+}
+
+.demo-display {
+  position: relative;
+  padding: 1.5rem;
+}
+
+.demo-frame-container {
+  height: 100%;
+}
+
+.demo-frame {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background-color: transparent;
+}
+
+.demo-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  padding: 0 0.5rem;
+  height: 2.5rem;
+  box-sizing: border-box;
+
+  border-top: 1px solid var(--vp-c-divider);
+  font-size: 16px;
+}
+
+.vp-doc .demo-action {
+  padding: 0.5rem;
+  cursor: pointer;
+  color: var(--vp-c-text-2);
+  transition: 0.2s;
+}
+
+.vp-doc .demo-action:hover {
+  color: var(--vp-c-text-1);
+}
+
+.demo-source pre,
+.demo-source pre[class*='language-'] {
+  margin: 0;
+}
+
+.demo-source div[class*='language-'] {
+  border-radius: 0;
+  margin: 0;
+}
+
+/* expand anim */
+.demo-source-expand-enter-active,
+.demo-source-expand-leave-active {
+  transition-property: height !important;
+  transition-duration: 0.15s !important;
+  transition-duration: 0.2s !important;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
+  overflow: hidden;
+}
+.demo-source-expand-enter-from,
+.demo-source-expand-leave-to {
+  height: 0 !important;
+}
