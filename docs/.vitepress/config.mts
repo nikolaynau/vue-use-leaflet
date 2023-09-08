@@ -19,7 +19,12 @@ export default defineConfig({
   lang: 'en-US',
   lastUpdated: true,
 
-  markdown: { attrs: { disable: true } },
+  markdown: {
+    theme: {
+      light: 'vitesse-light',
+      dark: 'vitesse-dark'
+    }
+  },
 
   themeConfig: {
     logo: '/logo.svg',

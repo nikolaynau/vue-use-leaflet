@@ -9,5 +9,8 @@ export default defineConfig({
       'vue-use-leaflet': resolve(__dirname, '../src/index.ts')
     },
     dedupe: ['vue', 'vue-demi']
+  },
+  server: {
+    port: 5174
   }
 });

@@ -1,13 +1,13 @@
 /* vars */
 :root {
   --demo-height: 25rem;
-  --c-bg: #fff;
-  --c-text: #000;
+  --c-bg: #f6f6f7;
+  --c-text: rgb(60, 60, 67);
 }
 
 html.dark {
-  --c-bg: #242424;
-  --c-text: rgba(255, 255, 255, 0.87);
+  --c-bg: #161618;
+  --c-text: rgba(255, 255, 245, 0.86);
 }
 
 /* base */
