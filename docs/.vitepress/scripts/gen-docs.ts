@@ -121,7 +121,7 @@ ${byCategory
   return fs.writeFile(resolve(basePath, 'index.md'), fileContent);
 }
 
-function generateSidebarConfig(files: FileEntry[]): Promise<void> {
+async function generateSidebarConfig(files: FileEntry[]): Promise<void> {
   const byCategory = getSortedByCategories(files);
   const config = byCategory.map(item => ({
     text: item.name,
@@ -130,8 +130,9 @@ function generateSidebarConfig(files: FileEntry[]): Promise<void> {
       link: `/functions/${file.baseDir}/`
     }))
   }));
-  const fileContent = `export default ${JSON.stringify(config, null, 2)}`;
-  return fs.writeFile(sidebarFile, fileContent);
+  let code = `export default ${JSON.stringify(config, null, 2)}`;
+  code = await formatCode(code);
+  await fs.writeFile(sidebarFile, code);
 }
 
 function getSortedByCategories(files: FileEntry[]): CategoryEntry[] {
