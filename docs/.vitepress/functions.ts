@@ -36,6 +36,10 @@ export default [
         link: '/functions/useLeafletLayersControl/'
       },
       {
+        text: 'useLeafletLocateControl',
+        link: '/functions/useLeafletLocateControl/'
+      },
+      {
         text: 'useLeafletRemoveControl',
         link: '/functions/useLeafletRemoveControl/'
       },

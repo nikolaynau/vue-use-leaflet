@@ -26,6 +26,7 @@ export * from './useLeafletAttributionControl';
 export * from './useLeafletZoomControl';
 export * from './useLeafletScaleControl';
 export * from './useLeafletCustomControl';
+export * from './useLeafletLocateControl';
 export * from './useLeafletToggleObject';
 export * from './useLeafletDisplayObject';
 export * from './useLeafletDisplayLayer';
