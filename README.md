@@ -2,7 +2,7 @@
 
 > Vue composition utilities for leaflet map.
 
-[Demo & Documentation](https://vueuseleaflet.org)
+[Documentation & Demo](https://vueuseleaflet.org)
 
 ## Installation
 
