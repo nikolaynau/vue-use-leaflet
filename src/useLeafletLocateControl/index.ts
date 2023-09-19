@@ -1,7 +1,8 @@
 import { markRaw, shallowRef, type Ref } from 'vue-demi';
 import { Control, type ControlPosition } from 'leaflet';
 import { useLeafletRemoveControl } from '../useLeafletRemoveControl';
-import type { Locate, LocateConstructor, LocateOptions } from './types';
+import type { Locate, LocateConstructor, LocateOptions } from './extension';
+import * as LocateControlExtension from './extension';
 
 export interface UseLeafletLocateControlOptions extends LocateOptions {
   position?: ControlPosition | string | undefined;
@@ -10,6 +11,8 @@ export interface UseLeafletLocateControlOptions extends LocateOptions {
 }
 
 export type UseLeafletLocateControlReturn = Ref<Locate | null>;
+
+export type { LocateControlExtension };
 
 export function useLeafletLocateControl(
   options: UseLeafletLocateControlOptions = {}

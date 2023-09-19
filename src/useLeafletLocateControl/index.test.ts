@@ -3,7 +3,7 @@ import { unref, defineComponent, onUnmounted, h } from 'vue-demi';
 import { Control, Map } from 'leaflet';
 import { mount } from '../../.test';
 import { useLeafletLocateControl } from '.';
-import { LocateConstructor } from './types';
+import { LocateConstructor } from './extension';
 import '@leaflet-extensions/locatecontrol';
 
 describe('useLeafletLocateControl', () => {
