@@ -1,31 +1,37 @@
 import { markRaw, shallowRef, type Ref } from 'vue-demi';
 import { Control, type ControlPosition } from 'leaflet';
 import { useLeafletRemoveControl } from '../useLeafletRemoveControl';
-import type { Locate, LocateConstructor, LocateOptions } from './extension';
-import * as LocateControlExtension from './extension';
+import type {
+  LocateControlExtension,
+  LocateControlExtensionConstructor,
+  LocateControlExtensionOptions
+} from './extension';
 
-export interface UseLeafletLocateControlOptions extends LocateOptions {
+export * from './extension';
+
+export interface UseLeafletLocateControlOptions
+  extends LocateControlExtensionOptions {
   position?: ControlPosition | string | undefined;
-  factory?: (...args: any[]) => Locate;
+  factory?: (...args: any[]) => LocateControlExtension;
   dispose?: boolean;
 }
 
-export type UseLeafletLocateControlReturn = Ref<Locate | null>;
-
-export type { LocateControlExtension };
+export type UseLeafletLocateControlReturn = Ref<LocateControlExtension | null>;
 
 export function useLeafletLocateControl(
   options: UseLeafletLocateControlOptions = {}
 ): UseLeafletLocateControlReturn {
   const { factory, dispose = true, ...controlOptions } = options;
 
-  const _instance = shallowRef<Locate | null>(null);
+  const _instance = shallowRef<LocateControlExtension | null>(null);
 
   function create() {
-    const instance: Locate = factory
+    const instance: LocateControlExtension = factory
       ? factory(controlOptions)
       : checkExtension<true>() &&
-        new ((Control as any).Locate as LocateConstructor)(controlOptions);
+        new ((Control as any).Locate as LocateControlExtensionConstructor)(
+          controlOptions
+        );
 
     _instance.value = markRaw(instance);
   }

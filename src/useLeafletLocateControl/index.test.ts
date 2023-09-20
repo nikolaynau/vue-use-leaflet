@@ -3,11 +3,11 @@ import { unref, defineComponent, onUnmounted, h } from 'vue-demi';
 import { Control, Map } from 'leaflet';
 import { mount } from '../../.test';
 import { useLeafletLocateControl } from '.';
-import { LocateConstructor } from './extension';
+import { LocateControlExtensionConstructor } from './extension';
 import '@leaflet-extensions/locatecontrol';
 
 describe('useLeafletLocateControl', () => {
-  const Locate = (Control as any).Locate as LocateConstructor;
+  const Locate = (Control as any).Locate as LocateControlExtensionConstructor;
 
   it('should return not empty instance', () => {
     expect(unref(useLeafletLocateControl())).toBeInstanceOf(Locate);

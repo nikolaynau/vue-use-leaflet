@@ -7,12 +7,12 @@ import type {
   LocateOptions as LeafletLocateOptions
 } from 'leaflet';
 
-export interface LocateConstructor {
-  new (locateOptions?: LocateOptions): Locate;
+export interface LocateControlExtensionConstructor {
+  new (locateOptions?: LocateControlExtensionOptions): LocateControlExtension;
 }
 
-export declare class Locate extends Control {
-  constructor(locateOptions?: LocateOptions);
+export declare class LocateControlExtension extends Control {
+  constructor(locateOptions?: LocateControlExtensionOptions);
   onAdd(map: Map): HTMLElement;
   start(): void;
   stop(): void;
@@ -20,7 +20,7 @@ export declare class Locate extends Control {
   setView(): void;
 }
 
-export interface LocateOptions {
+export interface LocateControlExtensionOptions {
   position?: string | undefined;
   layer?: Layer | undefined;
   setView?: boolean | string | undefined;
@@ -47,16 +47,23 @@ export interface LocateOptions {
   circlePadding?: number[] | undefined;
   metric?: boolean | undefined;
   createButtonCallback?:
-    | ((container: HTMLDivElement, options: LocateOptions) => void)
+    | ((
+        container: HTMLDivElement,
+        options: LocateControlExtensionOptions
+      ) => void)
     | undefined;
-  onLocationError?: ((event: ErrorEvent, control: Locate) => void) | undefined;
-  onLocationOutsideMapBounds?: ((control: Locate) => void) | undefined;
+  onLocationError?:
+    | ((event: ErrorEvent, control: LocateControlExtension) => void)
+    | undefined;
+  onLocationOutsideMapBounds?:
+    | ((control: LocateControlExtension) => void)
+    | undefined;
   showPopup?: boolean | undefined;
-  strings?: StringsOptions | undefined;
+  strings?: LocateControlExtensionStringsOptions | undefined;
   locateOptions?: LeafletLocateOptions | undefined;
 }
 
-export interface StringsOptions {
+export interface LocateControlExtensionStringsOptions {
   title?: string | undefined;
   metersUnit?: string | undefined;
   feetUnit?: string | undefined;
