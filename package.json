@@ -1,6 +1,6 @@
 {
   "name": "vue-use-leaflet",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Vue composition utilities for leaflet map",
   "author": "Nikolay Naumenkov <nikolas.it.web@gmail.com>",
   "license": "MIT",
