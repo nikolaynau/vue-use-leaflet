@@ -17,10 +17,14 @@ hero:
       link: /functions/
 
 features:
-  - icon: 🧪
+  - icon: 
+      dark: /test-tube-dark.png
+      light: /test-tube-light.png
     title: Reactivity
     details: It possible to work with the leaflet API reactively
-  - icon: 🧳
+  - icon: 
+      dark: /luggage-dark.png
+      light: /luggage-light.png
     title: Fullness
     details: The set of functions fully covers the possibilities for working with the map and more
   - icon: 🎪
