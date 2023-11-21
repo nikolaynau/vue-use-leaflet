@@ -4,7 +4,7 @@ layout: home
 hero:
   name: 'VueUseLeaflet'
   text: 'Collection of Leaflet Utilities for Vue.js'
-  tagline: Collection of Vue Composition Utilities for Leaflet
+  tagline: Collection of Vue Composition Utilities for&nbsp;Leaflet.js
   image:
     src: /logo.svg
     alt: VueUseLeaflet
