@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router';
+import { setDefaultPrefix } from './utils';
+
+setDefaultPrefix();
 </script>
 
 <template>

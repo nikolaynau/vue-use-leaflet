@@ -1,3 +1,5 @@
+import { Control } from 'leaflet';
+
 export interface DemoEntry {
   title: string;
   url: string;
@@ -20,4 +22,9 @@ export function getDemoList(): DemoEntry[] {
   }
 
   return result;
+}
+
+export function setDefaultPrefix() {
+  Control.Attribution.prototype.options.prefix =
+    '<a href="https://leafletjs.com" title="A JavaScript library for interactive maps">Leaflet</a>';
 }
